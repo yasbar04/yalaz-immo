@@ -1,87 +1,623 @@
 {% extends 'base.html' %}
 {% block title %}Vendre votre bien — YalazAgence{% endblock %}
-{% block og_title %}Vendre votre bien avec YalazAgence{% endblock %}
-{% block meta_description %}Vendez votre propriété au meilleur prix. Nos experts vous accompagnent à chaque étape pour une vente rapide et sécurisée.{% endblock %}
+{% block og_title %}Déposez votre bien avec YalazAgence{% endblock %}
+{% block meta_description %}Déposez votre bien immobilier gratuitement. Notre équipe vous recontacte sous 24h pour une prise en charge complète.{% endblock %}
+
+{% block seo_keywords %}vendre bien immobilier maroc, vente appartement maroc, vente villa maroc, estimation gratuite maroc, deposer annonce immobilier maroc, yalazagence vente{% endblock %}
+
+{% block extra_scripts %}
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+        {
+            "@type": "Question",
+            "name": "Comment vendre mon bien immobilier au Maroc avec YalazAgence ?",
+            "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Déposez votre bien via notre formulaire en ligne. Notre équipe vous recontacte sous 24h pour une estimation gratuite, puis prend en charge la mise en vente, les visites et la négociation."
+            }
+        },
+        {
+            "@type": "Question",
+            "name": "Quelle est la commission de YalazAgence pour la vente d'un bien ?",
+            "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Notre commission est compétitive et discutée en toute transparence lors de la première rencontre. Le dépôt de votre bien est 100% gratuit et sans engagement."
+            }
+        },
+        {
+            "@type": "Question",
+            "name": "Combien de temps faut-il pour vendre un bien immobilier au Maroc ?",
+            "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Le délai moyen de vente varie selon le type de bien, le prix et la localisation. Avec YalazAgence, la plupart des biens correctement estimés se vendent en 1 à 3 mois."
+            }
+        },
+        {
+            "@type": "Question",
+            "name": "Quels documents dois-je fournir pour mettre mon bien en vente ?",
+            "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Le titre foncier, les plans du bien, les justificatifs de paiement des charges (eau, électricité, syndic) et votre pièce d'identité sont généralement requis. Notre équipe vous guide dans la préparation du dossier."
+            }
+        }
+    ]
+}
+</script>
+{% endblock %}
 
 {% block content %}
 
+<!-- Hero -->
 <section class="prem-hero">
     <div class="container prem-hero-inner">
         <span class="eyebrow">Service de vente professionnel</span>
-        <h1>Vendez votre bien immobilier<br>au meilleur prix</h1>
-        <p class="prem-hero-sub">Confiez votre vente à des professionnels expérimentés. Estimation gratuite, visibilité maximale, accompagnement complet.</p>
+        <h1>Vendez votre bien au meilleur prix</h1>
+        <p class="prem-hero-sub">Déposez votre bien en 2 minutes. Notre équipe vous recontacte sous 24h pour une estimation gratuite et un accompagnement complet.</p>
         <div class="prem-hero-meta">
-            <a href="{% url 'estimate' %}" class="btn-hero-prim">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15"><path d="M3 3v18h18"/><polyline points="9 9 13 5 17 9 21 5"/></svg>
-                Estimer gratuitement
-            </a>
-            <a href="{% url 'contact' %}" class="btn-hero-sec">Parler à un expert</a>
+            <span class="prem-hero-pill">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                Réponse sous 24h
+            </span>
+            <span class="prem-hero-pill">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                100% gratuit
+            </span>
+            <span class="prem-hero-pill">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+                Expert dédié
+            </span>
         </div>
     </div>
 </section>
 
-<div class="container">
+<div class="container sell-page-wrap">
 
-    <div class="section-head-centered" style="margin-bottom:2.5rem;">
-        <span class="eyebrow">Pourquoi nous choisir</span>
-        <h2>6 raisons de confier votre vente à YalazAgence</h2>
+    <!-- Steps -->
+    <div class="sell-steps-row">
+        <div class="sell-step-item">
+            <div class="sell-step-dot">1</div>
+            <div class="sell-step-text">
+                <strong>Remplissez le formulaire</strong>
+                <span>Décrivez votre bien en quelques clics</span>
+            </div>
+        </div>
+        <div class="sell-step-line"></div>
+        <div class="sell-step-item">
+            <div class="sell-step-dot">2</div>
+            <div class="sell-step-text">
+                <strong>Notre équipe vous contacte</strong>
+                <span>Sous 24h pour une estimation gratuite</span>
+            </div>
+        </div>
+        <div class="sell-step-line"></div>
+        <div class="sell-step-item">
+            <div class="sell-step-dot">3</div>
+            <div class="sell-step-text">
+                <strong>Vendez au meilleur prix</strong>
+                <span>Avec un accompagnement de A à Z</span>
+            </div>
+        </div>
     </div>
 
-    <div class="sell-prem-features" style="margin-bottom:4rem;">
+    <!-- Form -->
+    <form method="post" enctype="multipart/form-data" class="sell-form" id="sell-form" novalidate>
+        {% csrf_token %}
+
+        {% if form.errors %}
+        <div class="sell-error-banner">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            Veuillez corriger les erreurs ci-dessous avant d'envoyer.
+        </div>
+        {% endif %}
+
+        <!-- 1. Coordonnées -->
+        <div class="sell-card">
+            <div class="sell-card-head">
+                <span class="sell-num">1</span>
+                <div>
+                    <h2 class="sell-card-title">Vos coordonnées</h2>
+                    <p class="sell-card-sub">Pour que notre équipe puisse vous recontacter</p>
+                </div>
+            </div>
+            <div class="sell-grid-2">
+                <div class="sf-field">
+                    <label class="sf-label" for="{{ form.first_name.id_for_label }}">{{ form.first_name.label }} <span class="sf-req">*</span></label>
+                    {{ form.first_name }}
+                    {% if form.first_name.errors %}<span class="sf-error">{{ form.first_name.errors.0 }}</span>{% endif %}
+                </div>
+                <div class="sf-field">
+                    <label class="sf-label" for="{{ form.last_name.id_for_label }}">{{ form.last_name.label }} <span class="sf-req">*</span></label>
+                    {{ form.last_name }}
+                    {% if form.last_name.errors %}<span class="sf-error">{{ form.last_name.errors.0 }}</span>{% endif %}
+                </div>
+                <div class="sf-field">
+                    <label class="sf-label" for="{{ form.email.id_for_label }}">{{ form.email.label }} <span class="sf-req">*</span></label>
+                    {{ form.email }}
+                    {% if form.email.errors %}<span class="sf-error">{{ form.email.errors.0 }}</span>{% endif %}
+                </div>
+                <div class="sf-field">
+                    <label class="sf-label" for="{{ form.phone.id_for_label }}">{{ form.phone.label }} <span class="sf-req">*</span></label>
+                    {{ form.phone }}
+                    {% if form.phone.errors %}<span class="sf-error">{{ form.phone.errors.0 }}</span>{% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. Votre bien -->
+        <div class="sell-card">
+            <div class="sell-card-head">
+                <span class="sell-num">2</span>
+                <div>
+                    <h2 class="sell-card-title">Votre bien</h2>
+                    <p class="sell-card-sub">Les informations clés de votre propriété</p>
+                </div>
+            </div>
+            <div class="sell-grid-2">
+                <div class="sf-field">
+                    <label class="sf-label" for="{{ form.listing_type.id_for_label }}">{{ form.listing_type.label }} <span class="sf-req">*</span></label>
+                    {{ form.listing_type }}
+                    {% if form.listing_type.errors %}<span class="sf-error">{{ form.listing_type.errors.0 }}</span>{% endif %}
+                </div>
+                <div class="sf-field">
+                    <label class="sf-label" for="{{ form.property_type.id_for_label }}">{{ form.property_type.label }} <span class="sf-req">*</span></label>
+                    {{ form.property_type }}
+                    {% if form.property_type.errors %}<span class="sf-error">{{ form.property_type.errors.0 }}</span>{% endif %}
+                </div>
+                <div class="sf-field">
+                    <label class="sf-label" for="{{ form.city.id_for_label }}">{{ form.city.label }} <span class="sf-req">*</span></label>
+                    {{ form.city }}
+                    <datalist id="city-list">
+                        {% for city in cities %}<option value="{{ city }}">{% endfor %}
+                    </datalist>
+                    {% if form.city.errors %}<span class="sf-error">{{ form.city.errors.0 }}</span>{% endif %}
+                </div>
+                <div class="sf-field">
+                    <label class="sf-label" for="{{ form.district.id_for_label }}">{{ form.district.label }}</label>
+                    {{ form.district }}
+                </div>
+                <div class="sf-field">
+                    <label class="sf-label" for="{{ form.surface.id_for_label }}">{{ form.surface.label }}</label>
+                    {{ form.surface }}
+                </div>
+                <div class="sf-field">
+                    <label class="sf-label" for="{{ form.rooms.id_for_label }}">{{ form.rooms.label }}</label>
+                    {{ form.rooms }}
+                </div>
+                <div class="sf-field">
+                    <label class="sf-label" for="{{ form.bathrooms.id_for_label }}">{{ form.bathrooms.label }}</label>
+                    {{ form.bathrooms }}
+                </div>
+                <div class="sf-field">
+                    <label class="sf-label" for="{{ form.price.id_for_label }}">{{ form.price.label }}</label>
+                    {{ form.price }}
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. Équipements -->
+        <div class="sell-card">
+            <div class="sell-card-head">
+                <span class="sell-num">3</span>
+                <div>
+                    <h2 class="sell-card-title">Équipements &amp; prestations</h2>
+                    <p class="sell-card-sub">Cochez tout ce qui s'applique à votre bien</p>
+                </div>
+            </div>
+            <div class="sell-checks-grid">
+                <label class="sell-check-pill">
+                    {{ form.has_parking }}
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" width="16" height="16"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 17V7h4a3 3 0 0 1 0 6H9"/></svg>
+                    Parking
+                </label>
+                <label class="sell-check-pill">
+                    {{ form.has_pool }}
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" width="16" height="16"><path d="M2 12h2a2 2 0 0 1 2 2 2 2 0 0 0 2 2 2 2 0 0 0 2-2 2 2 0 0 1 2-2 2 2 0 0 1 2 2 2 2 0 0 0 2 2 2 2 0 0 0 2-2 2 2 0 0 1 2-2h2"/><path d="M12 3v6"/><path d="M8 5l4-2 4 2"/></svg>
+                    Piscine
+                </label>
+                <label class="sell-check-pill">
+                    {{ form.has_garden }}
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" width="16" height="16"><path d="M12 2a10 10 0 0 1 10 10c0 5.52-4.48 10-10 10S2 17.52 2 12"/><path d="M12 6v6l4 2"/></svg>
+                    Jardin
+                </label>
+                <label class="sell-check-pill">
+                    {{ form.has_terrace }}
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" width="16" height="16"><polyline points="23 7 13 17 8 12 1 19"/><polyline points="17 7 23 7 23 13"/></svg>
+                    Terrasse
+                </label>
+                <label class="sell-check-pill">
+                    {{ form.has_elevator }}
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" width="16" height="16"><rect x="5" y="2" width="14" height="20" rx="2"/><path d="M10 10l2-2 2 2"/><path d="M10 14l2 2 2-2"/></svg>
+                    Ascenseur
+                </label>
+                <label class="sell-check-pill">
+                    {{ form.has_security }}
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" width="16" height="16"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                    Sécurité / Gardien
+                </label>
+            </div>
+        </div>
+
+        <!-- 4. Description -->
+        <div class="sell-card">
+            <div class="sell-card-head">
+                <span class="sell-num">4</span>
+                <div>
+                    <h2 class="sell-card-title">Description</h2>
+                    <p class="sell-card-sub">Décrivez votre bien librement (points forts, état, travaux…)</p>
+                </div>
+            </div>
+            {{ form.description }}
+        </div>
+
+        <!-- 5. Photos -->
+        <div class="sell-card">
+            <div class="sell-card-head">
+                <span class="sell-num">5</span>
+                <div>
+                    <h2 class="sell-card-title">Photos</h2>
+                    <p class="sell-card-sub">Jusqu'à 10 photos (JPG, PNG — max 5 Mo chacune)</p>
+                </div>
+            </div>
+            <input type="file" name="photos" id="photos-input" accept="image/*" multiple style="display:none;">
+            <div class="sell-upload-zone" id="upload-zone">
+                <div id="upload-prompt">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="32" height="32" style="color:var(--gold);opacity:.7;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                    <p>Glissez vos photos ici ou <button type="button" class="sell-browse-btn" onclick="document.getElementById('photos-input').click()">parcourir</button></p>
+                    <span class="sell-upload-note">JPG, PNG · Max 5 Mo par photo</span>
+                </div>
+                <div class="sell-previews" id="upload-previews"></div>
+            </div>
+        </div>
+
+        <!-- Submit -->
+        <div class="sell-actions">
+            <button type="submit" class="btn-hero-prim sell-submit">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="15" height="15"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                Envoyer mon bien à Yalaz
+            </button>
+            <a href="{% url 'contact' %}" class="btn-hero-sec">Être rappelé par un expert</a>
+        </div>
+    </form>
+
+    <!-- Features bottom -->
+    <div class="sell-prem-features" style="margin-top:3.5rem;">
         <div class="sell-feature-card">
             <div class="sell-feature-icon">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" width="22" height="22"><path d="M3 3v18h18"/><polyline points="9 9 13 5 17 9 21 5"/></svg>
             </div>
             <h3>Expertise du Marché</h3>
-            <p>Nos agents connaissent parfaitement le marché immobilier local et vous aident à fixer le juste prix pour maximiser votre vente.</p>
+            <p>Nos agents connaissent parfaitement le marché local et vous aident à fixer le juste prix pour maximiser votre vente.</p>
         </div>
         <div class="sell-feature-card">
             <div class="sell-feature-icon">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" width="22" height="22"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
             </div>
             <h3>Visibilité Maximale</h3>
-            <p>Votre bien est présenté sur tous nos canaux pour atteindre le maximum d'acheteurs qualifiés et réduire les délais de vente.</p>
-        </div>
-        <div class="sell-feature-card">
-            <div class="sell-feature-icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" width="22" height="22"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-            </div>
-            <h3>Gestion Complète</h3>
-            <p>Du marketing à la finalisation, nous gérons chaque étape du processus de vente avec professionnalisme et efficacité.</p>
-        </div>
-        <div class="sell-feature-card">
-            <div class="sell-feature-icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" width="22" height="22"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-            </div>
-            <h3>Confidentialité Garantie</h3>
-            <p>Nous traitons votre vente avec discrétion et confidentialité à chaque étape, protégeant vos informations personnelles.</p>
-        </div>
-        <div class="sell-feature-card">
-            <div class="sell-feature-icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" width="22" height="22"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-            </div>
-            <h3>Suivi Transparent</h3>
-            <p>Restez informé en temps réel sur l'avancement de votre vente, les visites programmées et les offres reçues.</p>
+            <p>Votre bien est présenté sur tous nos canaux pour atteindre le maximum d'acheteurs qualifiés.</p>
         </div>
         <div class="sell-feature-card">
             <div class="sell-feature-icon">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" width="22" height="22"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
             </div>
-            <h3>Support Légal</h3>
-            <p>Nous vous conseillons sur les documents légaux et fiscaux nécessaires, assurant une transaction sécurisée et conforme.</p>
-        </div>
-    </div>
-
-    <div class="about-contact-section" style="margin-bottom:3rem;">
-        <div>
-            <h2>Prêt à vendre votre bien&nbsp;?</h2>
-            <p>Commencez par une estimation gratuite de votre propriété, puis nos experts prennent en charge le reste pour obtenir le meilleur prix.</p>
-        </div>
-        <div class="about-contact-actions">
-            <a href="{% url 'estimate' %}" class="btn-hero-prim">Estimer gratuitement</a>
-            <a href="{% url 'contact' %}" class="btn-hero-sec">Contacter un expert</a>
+            <h3>Accompagnement Complet</h3>
+            <p>Du dépôt à la signature, nous gérons chaque étape avec professionnalisme et confidentialité.</p>
         </div>
     </div>
 
 </div>
+
+<style>
+/* === Page layout === */
+.sell-page-wrap { padding-bottom: 5rem; }
+
+/* === Steps === */
+.sell-steps-row {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    background: #fff;
+    border: 1px solid var(--border-light);
+    border-radius: var(--r-lg);
+    padding: 1.5rem 2rem;
+    margin-bottom: 2.5rem;
+    box-shadow: var(--shadow-xs);
+}
+.sell-step-item {
+    display: flex;
+    align-items: center;
+    gap: .875rem;
+    flex: 1;
+}
+.sell-step-dot {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    background: var(--ink);
+    color: var(--gold);
+    font-family: var(--font-heading);
+    font-size: .9rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+.sell-step-text { display: flex; flex-direction: column; gap: .15rem; }
+.sell-step-text strong { font-size: .85rem; font-weight: 700; color: var(--text); }
+.sell-step-text span { font-size: .77rem; color: var(--muted); }
+.sell-step-line {
+    flex-shrink: 0;
+    width: 40px;
+    height: 1px;
+    background: var(--border);
+    margin: 0 .5rem;
+}
+
+/* === Form card === */
+.sell-card {
+    background: #fff;
+    border: 1px solid var(--border-light);
+    border-radius: var(--r-lg);
+    padding: 2rem;
+    margin-bottom: 1.25rem;
+    box-shadow: var(--shadow-xs);
+}
+.sell-card-head {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-bottom: 1.75rem;
+    padding-bottom: 1.25rem;
+    border-bottom: 1px solid var(--border-light);
+}
+.sell-num {
+    width: 34px; height: 34px;
+    border-radius: 50%;
+    background: var(--gold-mist);
+    border: 1px solid rgba(201,169,110,.3);
+    color: var(--gold-dark);
+    font-family: var(--font-heading);
+    font-size: .88rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: .1rem;
+}
+.sell-card-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--ink);
+    margin: 0 0 .2rem;
+    font-family: var(--font-heading);
+}
+.sell-card-sub {
+    font-size: .8rem;
+    color: var(--muted);
+    margin: 0;
+}
+
+/* === Fields === */
+.sell-grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.25rem;
+}
+.sf-field { display: flex; flex-direction: column; gap: .4rem; }
+.sf-label {
+    font-size: .78rem;
+    font-weight: 700;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: .05em;
+}
+.sf-req { color: var(--gold-dark); }
+.sf-error { font-size: .76rem; color: var(--danger); margin-top: .15rem; }
+.sf-field .form-control,
+.sell-card textarea.form-control {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--r-md);
+    color: var(--text);
+    padding: .625rem .875rem;
+    font-size: .9rem;
+    font-family: var(--font-body);
+    transition: border-color .2s, box-shadow .2s;
+    width: 100%;
+    box-sizing: border-box;
+}
+.sf-field .form-control:focus,
+.sell-card textarea.form-control:focus {
+    outline: none;
+    border-color: var(--gold);
+    box-shadow: 0 0 0 3px rgba(201,169,110,.12);
+    background: #fff;
+}
+.sell-card select.form-control { cursor: pointer; }
+.sell-card textarea.form-control { resize: vertical; min-height: 110px; display: block; }
+
+/* === Checkboxes === */
+.sell-checks-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .75rem;
+}
+.sell-check-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: .5rem;
+    padding: .55rem 1rem;
+    border: 1px solid var(--border);
+    border-radius: var(--r-full);
+    background: var(--bg);
+    font-size: .83rem;
+    font-weight: 600;
+    color: var(--text);
+    cursor: pointer;
+    transition: border-color .2s, background .2s, color .2s;
+    user-select: none;
+}
+.sell-check-pill input[type="checkbox"] {
+    accent-color: var(--gold-dark);
+    width: 15px; height: 15px;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+.sell-check-pill:has(input:checked) {
+    border-color: var(--gold);
+    background: var(--gold-mist);
+    color: var(--gold-dark);
+}
+
+/* === Upload === */
+.sell-upload-zone {
+    border: 2px dashed var(--border);
+    border-radius: var(--r-md);
+    padding: 2.5rem 1.5rem;
+    text-align: center;
+    background: var(--bg);
+    transition: border-color .2s, background .2s;
+    cursor: pointer;
+}
+.sell-upload-zone:hover, .sell-upload-zone.drag-over {
+    border-color: var(--gold);
+    background: var(--gold-mist);
+}
+#upload-prompt p { font-size: .9rem; color: var(--muted); margin: .75rem 0 .4rem; }
+.sell-browse-btn {
+    background: none; border: none;
+    color: var(--gold-dark); font-weight: 700;
+    cursor: pointer; padding: 0;
+    font-size: inherit;
+    text-decoration: underline;
+    font-family: var(--font-body);
+}
+.sell-upload-note { font-size: .75rem; color: var(--light-text); }
+.sell-previews {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .75rem;
+    margin-top: 1rem;
+    justify-content: center;
+}
+.sell-preview-item {
+    position: relative;
+    width: 88px; height: 88px;
+    border-radius: var(--r-sm);
+    overflow: hidden;
+    border: 1px solid var(--border);
+}
+.sell-preview-item img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.sell-preview-remove {
+    position: absolute; top: 3px; right: 3px;
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    background: rgba(11,28,46,.72);
+    border: none; color: #fff;
+    font-size: .7rem; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+}
+
+/* === Error banner === */
+.sell-error-banner {
+    display: flex; align-items: center; gap: .625rem;
+    padding: .875rem 1.25rem;
+    background: var(--danger-bg);
+    border: 1px solid rgba(153,27,27,.2);
+    border-radius: var(--r-md);
+    color: var(--danger);
+    font-size: .88rem; font-weight: 600;
+    margin-bottom: 1.5rem;
+}
+
+/* === Actions === */
+.sell-actions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-top: .5rem;
+}
+.sell-submit {
+    padding: .85rem 2rem;
+    font-size: .85rem;
+}
+
+/* === Responsive === */
+@media (max-width: 768px) {
+    .sell-steps-row { flex-direction: column; gap: 1rem; align-items: flex-start; }
+    .sell-step-line { width: 1px; height: 20px; margin: 0 .5rem; align-self: flex-start; margin-left: 18px; }
+    .sell-grid-2 { grid-template-columns: 1fr; }
+    .sell-card { padding: 1.25rem; }
+    .sell-actions { flex-direction: column; align-items: stretch; text-align: center; }
+}
+</style>
+
+<script>
+(function () {
+    const input = document.getElementById('photos-input');
+    const zone = document.getElementById('upload-zone');
+    const previews = document.getElementById('upload-previews');
+    const prompt = document.getElementById('upload-prompt');
+    let files = [];
+
+    function renderPreviews() {
+        previews.innerHTML = '';
+        prompt.style.display = files.length ? 'none' : '';
+        files.forEach((file, idx) => {
+            const reader = new FileReader();
+            reader.onload = e => {
+                const item = document.createElement('div');
+                item.className = 'sell-preview-item';
+                item.innerHTML = `<img src="${e.target.result}" alt=""><button type="button" class="sell-preview-remove" data-idx="${idx}">✕</button>`;
+                item.querySelector('button').addEventListener('click', ev => {
+                    ev.stopPropagation();
+                    files.splice(idx, 1);
+                    renderPreviews();
+                    syncInput();
+                });
+                previews.appendChild(item);
+            };
+            reader.readAsDataURL(file);
+        });
+        if (files.length > 0) {
+            const add = document.createElement('button');
+            add.type = 'button';
+            add.className = 'sell-browse-btn';
+            add.style.cssText = 'margin-top:.625rem;display:block;width:100%;font-size:.84rem;';
+            add.textContent = `+ Ajouter des photos (${files.length}/10)`;
+            add.addEventListener('click', ev => { ev.stopPropagation(); input.click(); });
+            previews.appendChild(add);
+        }
+    }
+
+    function syncInput() {
+        const dt = new DataTransfer();
+        files.forEach(f => dt.items.add(f));
+        input.files = dt.files;
+    }
+
+    input.addEventListener('change', () => {
+        Array.from(input.files).forEach(f => {
+            if (files.length < 10 && f.type.startsWith('image/')) files.push(f);
+        });
+        renderPreviews(); syncInput();
+    });
+
+    zone.addEventListener('click', e => { if (!e.target.closest('button')) input.click(); });
+    zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('drag-over'); });
+    zone.addEventListener('dragleave', () => zone.classList.remove('drag-over'));
+    zone.addEventListener('drop', e => {
+        e.preventDefault(); zone.classList.remove('drag-over');
+        Array.from(e.dataTransfer.files).forEach(f => {
+            if (files.length < 10 && f.type.startsWith('image/')) files.push(f);
+        });
+        renderPreviews(); syncInput();
+    });
+})();
+</script>
+
 {% endblock %}

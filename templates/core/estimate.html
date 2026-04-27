@@ -5,6 +5,49 @@
 {% block meta_description %}Estimez la valeur réelle de votre bien immobilier avec les prix du marché marocain par quartier — gratuit et sans engagement.{% endblock %}
 {% block og_description %}Obtenez l'estimation gratuite de votre propriété au Maroc.{% endblock %}
 
+{% block extra_scripts %}
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+        {
+            "@type": "Question",
+            "name": "Comment estimer la valeur de mon bien immobilier au Maroc ?",
+            "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Notre outil d'estimation utilise les prix du marché marocain par ville et par quartier. Sélectionnez votre ville, votre quartier et la surface pour obtenir une estimation instantanée et gratuite."
+            }
+        },
+        {
+            "@type": "Question",
+            "name": "L'estimation immobilière YalazAgence est-elle gratuite ?",
+            "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Oui, l'estimation en ligne est 100% gratuite et sans engagement. Pour une estimation plus précise avec visite, notre équipe peut se déplacer sur rendez-vous."
+            }
+        },
+        {
+            "@type": "Question",
+            "name": "Quels facteurs influencent le prix d'un bien immobilier au Maroc ?",
+            "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "La localisation (ville, quartier), la surface, le type de bien, l'état général, les équipements (piscine, parking, terrasse) et la proximité des commodités influencent fortement le prix."
+            }
+        },
+        {
+            "@type": "Question",
+            "name": "Les prix immobiliers varient-ils beaucoup d'une ville à l'autre au Maroc ?",
+            "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Oui, fortement. Casablanca et Marrakech affichent les prix les plus élevés, jusqu'à 25 000 MAD/m² dans les quartiers premium. Des villes comme Fès ou Meknès offrent des prix bien plus accessibles."
+            }
+        }
+    ]
+}
+</script>
+{% endblock %}
+
 {% block content %}
 <div class="container">
     <div class="page-header">

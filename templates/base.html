@@ -1,56 +1,97 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="fr" prefix="og: https://ogp.me/ns#">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    {% get_media_prefix as MEDIA_PREFIX %}
-    <title>{% block title %}YalazAgence | Agence Immobilière Professionnelle{% endblock %}</title>
-    <meta name="description" content="{% block meta_description %}YalazAgence, votre agence immobilière de confiance. Acheter, vendre, louer ou estimer votre bien immobilier avec des professionnels.{% endblock %}">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="format-detection" content="telephone=no">
+
+    <!-- Identity -->
+    <title>{% block title %}YalazAgence | Agence Immobilière Professionnelle au Maroc{% endblock %}</title>
+    <meta name="application-name" content="YalazAgence">
+    <meta name="author" content="YalazAgence">
+    <meta name="description" content="{% block meta_description %}YalazAgence, votre agence immobilière de confiance au Maroc. Achetez, vendez, louez ou estimez votre bien avec des professionnels expérimentés.{% endblock %}">
+    <meta name="keywords" content="{% block seo_keywords %}immobilier maroc, acheter bien maroc, louer maroc, vendre propriete maroc, agence immobiliere maroc, estimation immobiliere maroc, appartement maroc, villa maroc, maison maroc, terrain maroc{% endblock %}">
+    <meta name="robots" content="{% block robots %}index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1{% endblock %}">
+
+    <!-- Geo — Morocco -->
+    <meta name="geo.region" content="MA">
     <meta name="geo.placename" content="Maroc">
     <meta name="geo.position" content="31.7917;-7.0926">
     <meta name="ICBM" content="31.7917,-7.0926">
     <meta name="language" content="fr-MA">
+    <meta name="dc.language" content="fr-MA">
+    <meta name="dc.coverage" content="Maroc">
+    <meta name="dc.rights" content="© 2026 YalazAgence">
+
+    <!-- Canonical & hreflang -->
     <link rel="canonical" href="{% block canonical_url %}{{ request.build_absolute_uri }}{% endblock %}">
     <link rel="alternate" hreflang="fr-MA" href="{{ request.build_absolute_uri }}">
-    <link rel="icon" type="image/png" href="{{ MEDIA_PREFIX }}front/logo_yalaz.png">
+    <link rel="alternate" hreflang="fr" href="{{ request.build_absolute_uri }}">
+    <link rel="alternate" hreflang="x-default" href="{{ request.build_absolute_uri }}">
+    <link rel="home" href="{% url 'home' %}">
+
+    <!-- Favicon & theme -->
+    <link rel="icon" type="image/png" sizes="32x32" href="{% static 'images/logo_yalaz.png' %}">
+    <link rel="apple-touch-icon" href="{% static 'images/logo_yalaz.png' %}">
+    <meta name="theme-color" content="#C9A96E">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="YalazAgence">
+
+    <!-- Site verification (fill in from GSC / Bing Webmaster) -->
+    {% block seo_verification %}{% endblock %}
+
+    <!-- Preconnect for performance -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="dns-prefetch" href="https://fonts.googleapis.com">
+
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Josefin+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+    <!-- CSS -->
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
-    
-    <!-- Open Graph / Facebook -->
+
+    <!-- Open Graph -->
+    <meta property="og:site_name" content="YalazAgence">
     <meta property="og:type" content="{% block og_type %}website{% endblock %}">
-    <meta property="og:url" content="{{ request.build_absolute_uri }}">
-    <meta property="og:title" content="{% block og_title %}YalazAgence | Agence Immobilière Professionnelle{% endblock %}">
-    <meta property="og:description" content="{% block og_description %}YalazAgence, votre agence immobilière de confiance. Acheter, vendre, louer ou estimer votre bien immobilier avec des professionnels.{% endblock %}">
-    <meta property="og:image" content="{{ MEDIA_PREFIX }}front/logo_yalaz.png">
     <meta property="og:locale" content="fr_MA">
-    
-    <!-- Twitter -->
+    <meta property="og:url" content="{{ request.build_absolute_uri }}">
+    <meta property="og:title" content="{% block og_title %}YalazAgence | Agence Immobilière Professionnelle au Maroc{% endblock %}">
+    <meta property="og:description" content="{% block og_description %}YalazAgence, votre agence immobilière de confiance. Achetez, vendez, louez ou estimez votre bien au Maroc avec des experts.{% endblock %}">
+    <meta property="og:image" content="{% block og_image %}{{ request.scheme }}://{{ request.get_host }}{% static 'images/logo_yalaz.png' %}{% endblock %}">
+    <meta property="og:image:width" content="{% block og_image_width %}512{% endblock %}">
+    <meta property="og:image:height" content="{% block og_image_height %}512{% endblock %}">
+    <meta property="og:image:alt" content="{% block og_image_alt %}Logo YalazAgence — Agence Immobilière Maroc{% endblock %}">
+
+    <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="{% block twitter_title %}YalazAgence | Agence Immobilière Professionnelle{% endblock %}">
-    <meta name="twitter:description" content="{% block twitter_description %}YalazAgence, votre agence immobilière de confiance. Acheter, vendre, louer ou estimer votre bien immobilier avec des professionnels.{% endblock %}">
-    <meta name="twitter:image" content="{{ MEDIA_PREFIX }}front/logo_yalaz.png">
-    
-    <!-- Additional SEO Meta Tags -->
-    <meta name="keywords" content="{% block seo_keywords %}immobilier maroc, acheter bien maroc, louer maroc, vendre propriete maroc, agence immobiliere maroc, estimation immobiliere maroc{% endblock %}">
-    <meta name="author" content="YalazAgence">
-    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
-    <meta name="google-site-verification" content="REPLACE_WITH_GOOGLE_GSC_CODE">
-    <meta name="msvalidate.01" content="REPLACE_WITH_BING_WEBMASTER_CODE">
-    <link rel="home" href="{% url 'home' %}">
-    
-    <!-- JSON-LD Structured Data -->
+    <meta name="twitter:site" content="@yalazagence">
+    <meta name="twitter:creator" content="@yalazagence">
+    <meta name="twitter:title" content="{% block twitter_title %}YalazAgence | Agence Immobilière Professionnelle au Maroc{% endblock %}">
+    <meta name="twitter:description" content="{% block twitter_description %}YalazAgence, votre agence immobilière de confiance. Achetez, vendez, louez ou estimez votre bien au Maroc.{% endblock %}">
+    <meta name="twitter:image" content="{{ request.scheme }}://{{ request.get_host }}{% static 'images/logo_yalaz.png' %}">
+    <meta name="twitter:image:alt" content="YalazAgence — Agence Immobilière au Maroc">
+
+    <!-- JSON-LD: LocalBusiness -->
     <script type="application/ld+json">
     {
         "@context": "https://schema.org",
-        "@type": "LocalBusiness",
+        "@type": "RealEstateAgent",
+        "@id": "{% url 'home' %}#organization",
         "name": "YalazAgence",
-        "description": "Agence immobilière professionnelle au Maroc. Acheter, vendre, louer ou estimer votre bien immobilier.",
-        "url": "{% url 'home' %}",
-        "image": "{{ MEDIA_PREFIX }}front/logo_yalaz.png",
-        "telephone": "+212xxx",
+        "alternateName": "Yalaz Agence Immobilière",
+        "description": "Agence immobilière professionnelle au Maroc. Achat, vente, location et estimation de biens immobiliers.",
+        "url": "{{ request.scheme }}://{{ request.get_host }}{% url 'home' %}",
+        "logo": {
+            "@type": "ImageObject",
+            "url": "{{ request.scheme }}://{{ request.get_host }}{% static 'images/logo_yalaz.png' %}",
+            "width": 512,
+            "height": 512
+        },
+        "image": "{{ request.scheme }}://{{ request.get_host }}{% static 'images/logo_yalaz.png' %}",
         "email": "contact@yalazagence.ma",
         "address": {
             "@type": "PostalAddress",
@@ -59,34 +100,48 @@
         },
         "areaServed": {
             "@type": "Country",
-            "name": "Maroc"
+            "name": "Maroc",
+            "sameAs": "https://www.wikidata.org/wiki/Q1028"
         },
-        "priceRange": "$$$",
-        "ratingValue": 4.8,
-        "aggregateRating": {
-            "@type": "AggregateRating",
-            "ratingValue": "4.8",
-            "reviewCount": "50"
-        },
+        "priceRange": "€€€",
+        "inLanguage": ["fr", "ar"],
         "sameAs": [
             "https://www.facebook.com/yalazagence",
             "https://www.instagram.com/yalazagence"
+        ],
+        "openingHoursSpecification": [
+            {
+                "@type": "OpeningHoursSpecification",
+                "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday"],
+                "opens": "09:00",
+                "closes": "18:00"
+            },
+            {
+                "@type": "OpeningHoursSpecification",
+                "dayOfWeek": "Saturday",
+                "opens": "10:00",
+                "closes": "14:00"
+            }
         ]
     }
     </script>
-    
+
+    <!-- JSON-LD: Organization -->
     <script type="application/ld+json">
     {
         "@context": "https://schema.org",
         "@type": "Organization",
+        "@id": "{% url 'home' %}#org",
         "name": "YalazAgence",
-        "url": "{% url 'home' %}",
-        "logo": "{{ MEDIA_PREFIX }}front/logo_yalaz.png",
+        "url": "{{ request.scheme }}://{{ request.get_host }}{% url 'home' %}",
+        "logo": "{{ request.scheme }}://{{ request.get_host }}{% static 'images/logo_yalaz.png' %}",
         "description": "Plateforme immobilière pour acheter, vendre, louer ou estimer des propriétés au Maroc",
+        "foundingDate": "2020",
         "contactPoint": {
             "@type": "ContactPoint",
-            "contactType": "Customer Service",
-            "availableLanguage": ["fr", "ar"]
+            "contactType": "customer service",
+            "availableLanguage": ["French", "Arabic"],
+            "areaServed": "MA"
         },
         "address": {
             "@type": "PostalAddress",
@@ -98,22 +153,29 @@
         ]
     }
     </script>
-    
+
+    <!-- JSON-LD: WebSite + SearchAction -->
     <script type="application/ld+json">
     {
         "@context": "https://schema.org",
         "@type": "WebSite",
+        "@id": "{% url 'home' %}#website",
         "name": "YalazAgence",
-        "url": "{% url 'home' %}",
-        "searchAction": {
+        "alternateName": "Yalaz Immobilier Maroc",
+        "url": "{{ request.scheme }}://{{ request.get_host }}{% url 'home' %}",
+        "inLanguage": "fr-MA",
+        "potentialAction": {
             "@type": "SearchAction",
             "target": {
                 "@type": "EntryPoint",
-                "urlTemplate": "{% url 'listing_list' %}?search={search_term_string}"
-            }
+                "urlTemplate": "{{ request.scheme }}://{{ request.get_host }}{% url 'listing_list' %}?search={search_term_string}"
+            },
+            "query-input": "required name=search_term_string"
         }
     }
     </script>
+
+    {% block extra_head %}{% endblock %}
 </head>
 <body class="{% block body_class %}{% endblock %}">
     <div class="site-backdrop" aria-hidden="true">
@@ -126,7 +188,7 @@
         <div class="nav-shell">
             <a href="{% url 'home' %}" class="brand nav-brand" aria-label="YalazAgence - Retour à l'accueil">
                 <span class="brand-mark">
-                    <img src="{{ MEDIA_PREFIX }}front/logo_yalaz.png" alt="Logo Yalaz" width="40" height="40">
+                    <img src="{% static 'images/logo_yalaz.png' %}" alt="Logo YalazAgence" width="40" height="40" loading="eager">
                 </span>
                 <span class="brand-name">Yalaz</span>
             </a>
@@ -239,7 +301,7 @@
             <div class="footer-shell">
                 <div class="footer-brand">
                     <span class="brand-mark">
-                        <img src="{{ MEDIA_PREFIX }}front/logo_yalaz.png" alt="Logo Yalaz" width="40" height="40">
+                        <img src="{% static 'images/logo_yalaz.png' %}" alt="Logo YalazAgence" width="40" height="40" loading="lazy">
                     </span>
                     <div class="footer-brand-text">
                         <strong>YalazAgence</strong>

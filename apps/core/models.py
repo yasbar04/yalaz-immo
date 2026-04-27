@@ -162,6 +162,88 @@ class FinancialTransaction(models.Model):
         return f"{self.get_type_display()} - {self.amount} DH"
 
 
+class SellerRequest(models.Model):
+    STATUS_CHOICES = [
+        ('new', 'Nouveau'),
+        ('in_progress', 'En cours'),
+        ('accepted', 'Accepté'),
+        ('rejected', 'Refusé'),
+    ]
+
+    PROPERTY_TYPE_CHOICES = [
+        ('apartment', 'Appartement'),
+        ('house', 'Maison'),
+        ('villa', 'Villa'),
+        ('riad', 'Riad'),
+        ('land', 'Terrain'),
+        ('office', 'Bureau / Local commercial'),
+        ('other', 'Autre'),
+    ]
+
+    LISTING_TYPE_CHOICES = [
+        ('sale', 'Vente'),
+        ('rent', 'Location'),
+    ]
+
+    # Coordonnées du vendeur
+    first_name = models.CharField(max_length=100)
+    last_name = models.CharField(max_length=100)
+    email = models.EmailField()
+    phone = models.CharField(max_length=20)
+
+    # Informations du bien
+    listing_type = models.CharField(max_length=10, choices=LISTING_TYPE_CHOICES, default='sale')
+    property_type = models.CharField(max_length=20, choices=PROPERTY_TYPE_CHOICES)
+    city = models.CharField(max_length=100)
+    district = models.CharField(max_length=100, blank=True)
+    surface = models.PositiveIntegerField(null=True, blank=True, help_text='Surface en m²')
+    rooms = models.PositiveIntegerField(null=True, blank=True)
+    bathrooms = models.PositiveIntegerField(null=True, blank=True)
+    price = models.DecimalField(max_digits=15, decimal_places=0, null=True, blank=True, help_text='Prix souhaité en MAD')
+    description = models.TextField(blank=True)
+
+    # Équipements
+    has_parking = models.BooleanField(default=False)
+    has_pool = models.BooleanField(default=False)
+    has_garden = models.BooleanField(default=False)
+    has_terrace = models.BooleanField(default=False)
+    has_elevator = models.BooleanField(default=False)
+    has_security = models.BooleanField(default=False)
+
+    # Champs admin
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='new')
+    admin_note = models.TextField(blank=True)
+
+    # Métadonnées
+    ip_address = models.GenericIPAddressField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['-created_at']
+        verbose_name = 'Demande vendeur'
+        verbose_name_plural = 'Demandes vendeurs'
+
+    def __str__(self):
+        return f"{self.first_name} {self.last_name} — {self.city} ({self.get_status_display()})"
+
+    @property
+    def full_name(self):
+        return f"{self.first_name} {self.last_name}".strip()
+
+
+class SellerRequestImage(models.Model):
+    seller_request = models.ForeignKey(SellerRequest, on_delete=models.CASCADE, related_name='images')
+    image = models.ImageField(upload_to='seller_requests/')
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['uploaded_at']
+
+    def __str__(self):
+        return f"Photo #{self.pk} — {self.seller_request}"
+
+
 class ContactMessage(models.Model):
     SUBJECT_CHOICES = [
         ('acheter', 'Je souhaite acheter un bien'),

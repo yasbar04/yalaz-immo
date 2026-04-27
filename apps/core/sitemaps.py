@@ -1,9 +1,8 @@
+from datetime import date
 from django.views.generic import TemplateView
 from django.utils.safestring import mark_safe
 from django.urls import reverse
-from django.db.models import Q
 from apps.listings.models import Listing
-import json
 from urllib.parse import urljoin
 
 
@@ -17,25 +16,28 @@ class SitemapView(TemplateView):
         
         base_url = f"{self.request.scheme}://{self.request.get_host()}"
         
+        today = date.today().isoformat()
+
         # Static pages
         static_pages = [
-            {'url': reverse('home'), 'priority': '1.0', 'changefreq': 'daily'},
-            {'url': reverse('listing_list'), 'priority': '0.9', 'changefreq': 'hourly'},
-            {'url': reverse('buy'), 'priority': '0.9', 'changefreq': 'daily'},
-            {'url': reverse('rent'), 'priority': '0.9', 'changefreq': 'daily'},
-            {'url': reverse('sell'), 'priority': '0.8', 'changefreq': 'weekly'},
-            {'url': reverse('estimate'), 'priority': '0.8', 'changefreq': 'weekly'},
-            {'url': reverse('about'), 'priority': '0.7', 'changefreq': 'monthly'},
+            {'url': reverse('home'), 'priority': '1.0', 'changefreq': 'daily', 'lastmod': today},
+            {'url': reverse('listing_list'), 'priority': '0.9', 'changefreq': 'hourly', 'lastmod': today},
+            {'url': reverse('buy'), 'priority': '0.9', 'changefreq': 'daily', 'lastmod': today},
+            {'url': reverse('rent'), 'priority': '0.9', 'changefreq': 'daily', 'lastmod': today},
+            {'url': reverse('sell'), 'priority': '0.8', 'changefreq': 'weekly', 'lastmod': today},
+            {'url': reverse('estimate'), 'priority': '0.8', 'changefreq': 'weekly', 'lastmod': today},
+            {'url': reverse('about'), 'priority': '0.7', 'changefreq': 'monthly', 'lastmod': today},
+            {'url': reverse('contact'), 'priority': '0.6', 'changefreq': 'monthly', 'lastmod': today},
         ]
-        
+
         # Dynamic listings
         listings = Listing.objects.filter(status='published').values('pk', 'updated_at')
-        
+
         urls = []
         for page in static_pages:
             urls.append({
                 'loc': urljoin(base_url, page['url']),
-                'lastmod': '',
+                'lastmod': page['lastmod'],
                 'priority': page['priority'],
                 'changefreq': page['changefreq'],
             })

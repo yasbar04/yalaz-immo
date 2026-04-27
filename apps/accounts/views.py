@@ -64,29 +64,26 @@ def login_view(request):
     # Check if user is already authenticated
     if request.user.is_authenticated:
         if _is_admin(request.user):
-            return redirect('admin_dashboard')
+            return redirect('dashboard')
         else:
-            # Non-admin users cannot login in v1
             logout(request)
             return render(request, 'accounts/admin_only.html', status=403)
-    
+
     # Show login form
     if request.method == 'POST':
         form = LoginForm(request, data=request.POST)
         if form.is_valid():
             user = form.get_user()
-            # Check if user is admin
             if not _is_admin(user):
-                messages.error(request, 'Acces reserve aux administrateurs.')
+                messages.error(request, 'Accès réservé aux membres de l\'équipe Yalaz.')
                 return render(request, 'accounts/login.html', {'form': form})
-            
+
             login(request, user, backend='django.contrib.auth.backends.ModelBackend')
-            
-            # Check if user needs to change password
+
             if hasattr(user, 'profile') and user.profile.password_change_required:
                 return redirect('change_password_required')
-            
-            return redirect('admin_dashboard')
+
+            return redirect('dashboard')
     else:
         form = LoginForm()
     
@@ -276,8 +273,44 @@ def recover_verification_view(request):
 
 
 @admin_only
+@login_required
 def dashboard(request):
-    """Admin-only dashboard."""
+    """User dashboard or staff back office."""
+    from django.utils.timezone import now
+    from datetime import timedelta
+    from apps.listings.models import Listing, Report
+    from django.db.models import Q
+    
+    # Staff users see back office dashboard
+    if request.user.is_staff or request.user.is_superuser:
+        last_7_days = now() - timedelta(days=7)
+        
+        stats = {
+            'total_users': User.objects.count(),
+            'total_listings': Listing.objects.count(),
+            'published_listings': Listing.objects.filter(status=Listing.Status.PUBLISHED).count(),
+            'pending_listings': Listing.objects.filter(status=Listing.Status.PENDING).count(),
+            'pending_reports': Report.objects.filter(status=Report.Status.PENDING).count(),
+            'new_users_7days': User.objects.filter(date_joined__gte=last_7_days).count(),
+            'new_listings_7days': Listing.objects.filter(created_at__gte=last_7_days).count(),
+            'total_admins': User.objects.filter(is_superuser=True).count(),
+        }
+        
+        recent_listings = Listing.objects.all()[:10]
+        recent_reports = Report.objects.filter(status=Report.Status.PENDING)[:5]
+        pending_listings = Listing.objects.filter(status=Listing.Status.PENDING)[:10]
+        
+        context = {
+            'stats': stats,
+            'recent_listings': recent_listings,
+            'recent_reports': recent_reports,
+            'pending_listings': pending_listings,
+            'is_staff_view': True,
+        }
+        
+        return render(request, 'admin/dashboard.html', context)
+    
+    # Regular user dashboard
     listings = (
         Listing.objects.filter(owner=request.user)
         .prefetch_related('contacts', 'images')

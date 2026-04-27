@@ -3,6 +3,49 @@
 {% block og_title %}Acheter un bien | YalazAgence Maroc{% endblock %}
 {% block meta_description %}Découvrez notre sélection de propriétés à vendre au Maroc. Appartements, villas, riads — trouvez le bien idéal avec YalazAgence.{% endblock %}
 
+{% block extra_scripts %}
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+        {
+            "@type": "Question",
+            "name": "Comment acheter un bien immobilier au Maroc avec YalazAgence ?",
+            "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Parcourez notre catalogue, contactez notre équipe, et nous vous accompagnons à chaque étape : visite, négociation, signature. Service gratuit pour les acheteurs."
+            }
+        },
+        {
+            "@type": "Question",
+            "name": "Quels types de biens sont disponibles à l'achat au Maroc ?",
+            "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "YalazAgence propose des appartements, villas, maisons, riads, terrains et locaux commerciaux dans les principales villes du Maroc."
+            }
+        },
+        {
+            "@type": "Question",
+            "name": "Quels sont les frais d'achat immobilier au Maroc ?",
+            "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Les frais d'acquisition incluent les droits d'enregistrement (4%), la conservation foncière (1%), et les honoraires du notaire. Notre équipe vous guide pour optimiser ces coûts."
+            }
+        },
+        {
+            "@type": "Question",
+            "name": "Les étrangers peuvent-ils acheter un bien immobilier au Maroc ?",
+            "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Oui, les étrangers peuvent acquérir des biens immobiliers au Maroc sans restrictions particulières. Le rapatriement des fonds est possible sous certaines conditions bancaires."
+            }
+        }
+    ]
+}
+</script>
+{% endblock %}
+
 {% block content %}
 
 <section class="prem-hero">

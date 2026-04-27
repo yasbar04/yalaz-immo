@@ -24,19 +24,8 @@
 
 <div class="container" style="padding-bottom:4rem;">
 
-    <!-- Stats -->
+    <!-- Stats row 1 -->
     <div class="admin-stats-4">
-        <div class="admin-stat-prem">
-            <div class="admin-stat-icon-wrap">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" width="20" height="20"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-            </div>
-            <div class="admin-stat-body">
-                <strong>{{ stats.total_users }}</strong>
-                <span>Utilisateurs</span>
-                <small>+{{ stats.new_users_7days }} cette semaine</small>
-            </div>
-        </div>
-
         <div class="admin-stat-prem">
             <div class="admin-stat-icon-wrap">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" width="20" height="20"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
@@ -69,7 +58,34 @@
                 <small>À examiner</small>
             </div>
         </div>
+
+        <div class="admin-stat-prem is-seller">
+            <div class="admin-stat-icon-wrap">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" width="20" height="20"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+            </div>
+            <div class="admin-stat-body">
+                <strong>{{ stats.new_seller_requests }}</strong>
+                <span>Dépôts vendeurs</span>
+                <small>Nouveaux à traiter</small>
+            </div>
+        </div>
     </div>
+
+    {% if user.is_superuser %}
+    <!-- Users stat — superuser only -->
+    <div style="display:flex;gap:1rem;margin-top:1rem;">
+        <div class="admin-stat-prem" style="flex:1;max-width:280px;">
+            <div class="admin-stat-icon-wrap">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" width="20" height="20"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            </div>
+            <div class="admin-stat-body">
+                <strong>{{ stats.total_users }}</strong>
+                <span>Utilisateurs</span>
+                <small>+{{ stats.new_users_7days }} cette semaine</small>
+            </div>
+        </div>
+    </div>
+    {% endif %}
 
     <!-- Main grid -->
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-top:2rem;">
@@ -90,9 +106,9 @@
                     <span>Traiter <strong>{{ stats.pending_reports }}</strong> signalement{{ stats.pending_reports|pluralize }}</span>
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><path d="M9 18l6-6-6-6"/></svg>
                 </a>
-                <a href="{% url 'admin_users' %}" class="admin-quick-btn">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" width="18" height="18"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-                    <span>Gérer les utilisateurs</span>
+                <a href="{% url 'admin_seller_requests' %}?status=new" class="admin-quick-btn is-seller">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" width="18" height="18"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                    <span>Dépôts vendeurs <strong>{{ stats.new_seller_requests }}</strong> nouveau{{ stats.new_seller_requests|pluralize }}</span>
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><path d="M9 18l6-6-6-6"/></svg>
                 </a>
                 <a href="{% url 'admin_listings' %}" class="admin-quick-btn">
@@ -106,6 +122,11 @@
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><path d="M9 18l6-6-6-6"/></svg>
                 </a>
                 {% if user.is_superuser %}
+                <a href="{% url 'admin_users' %}" class="admin-quick-btn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" width="18" height="18"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                    <span>Gérer les utilisateurs</span>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><path d="M9 18l6-6-6-6"/></svg>
+                </a>
                 <a href="{% url 'admin_staff_list' %}" class="admin-quick-btn">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" width="18" height="18"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
                     <span>Comptes staff</span>
@@ -138,6 +159,41 @@
                     {% endfor %}
                 {% else %}
                     <p class="meta-copy" style="text-align:center;padding:2rem 0;">Aucune annonce en attente</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Seller requests -->
+    <div style="margin-top:1.5rem;">
+        <div class="admin-panel-card">
+            <div class="admin-panel-head">
+                <h2>
+                    Dépôts vendeurs récents
+                    {% if stats.new_seller_requests %}
+                        <span class="pill pill-seller" style="margin-left:.5rem;">{{ stats.new_seller_requests }} nouveau{{ stats.new_seller_requests|pluralize }}</span>
+                    {% endif %}
+                </h2>
+                <a href="{% url 'admin_seller_requests' %}" class="admin-back-pill">Voir tout →</a>
+            </div>
+            <div class="admin-prem-list">
+                {% if recent_seller_requests %}
+                    {% for sr in recent_seller_requests %}
+                        <div class="admin-prem-item">
+                            <div class="admin-item-body">
+                                <a href="{% url 'admin_seller_request_detail' sr.id %}" class="admin-item-title">{{ sr.full_name }} — {{ sr.city }}</a>
+                                <div class="admin-item-meta">
+                                    <span>{{ sr.get_property_type_display }}</span>
+                                    <span>{{ sr.get_listing_type_display }}</span>
+                                    {% if sr.price %}<span>{{ sr.price|floatformat:0 }} MAD</span>{% endif %}
+                                    <span>{{ sr.created_at|date:"d M H:i" }}</span>
+                                </div>
+                            </div>
+                            <span class="pill pill-seller">Nouveau</span>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <p class="meta-copy" style="text-align:center;padding:2rem 0;">Aucun dépôt vendeur récent</p>
                 {% endif %}
             </div>
         </div>
@@ -215,5 +271,16 @@
     background: rgba(59,130,246,0.1);
     border-color: #3b82f6;
 }
+.admin-quick-btn.is-seller {
+    border-color: rgba(16,185,129,0.3);
+    background: rgba(16,185,129,0.04);
+    color: #10b981;
+}
+.admin-quick-btn.is-seller:hover {
+    background: rgba(16,185,129,0.1);
+    border-color: #10b981;
+}
+.admin-stat-prem.is-seller .admin-stat-icon-wrap { background: rgba(16,185,129,0.12); color: #10b981; }
+.pill-seller { background: rgba(16,185,129,.12); color: #10b981; border-color: rgba(16,185,129,.25); }
 </style>
 {% endblock %}

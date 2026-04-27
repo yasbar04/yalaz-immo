@@ -1,32 +1,57 @@
+from functools import wraps
+
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
-from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.models import User, Group
+from django.core.exceptions import PermissionDenied
 from django.db import models
 from django.db.models import Q, Count
+from django.shortcuts import render, redirect, get_object_or_404
 from django.utils.timezone import now
 from datetime import timedelta
+
 from apps.listings.models import Listing, Report, Favorite
-from django.contrib import messages
 from django import forms
 
 from .services import send_listing_approved_notification
 
+
 def is_admin(user):
-    """Check if user is admin"""
-    return user.is_superuser or user.groups.filter(name='Administrators').exists()
+    return user.is_staff or user.is_superuser or user.groups.filter(name='Administrators').exists()
 
 
 def is_superuser(user):
-    """Check if user is superuser"""
     return user.is_superuser
 
 
-@login_required
-@user_passes_test(is_admin)
+def admin_required(view_func):
+    """Redirige les anonymes vers login, lève 403 pour les connectés sans accès."""
+    @wraps(view_func)
+    @login_required
+    def _wrapped(request, *args, **kwargs):
+        if not is_admin(request.user):
+            raise PermissionDenied
+        return view_func(request, *args, **kwargs)
+    return _wrapped
+
+
+def superuser_required(view_func):
+    """Réservé aux superusers uniquement."""
+    @wraps(view_func)
+    @login_required
+    def _wrapped(request, *args, **kwargs):
+        if not is_superuser(request.user):
+            raise PermissionDenied
+        return view_func(request, *args, **kwargs)
+    return _wrapped
+
+
+@admin_required
 def admin_dashboard(request):
     """Dashboard admin avec stats"""
+    from apps.core.models import SellerRequest
     last_7_days = now() - timedelta(days=7)
-    
+
     stats = {
         'total_users': User.objects.count(),
         'total_listings': Listing.objects.count(),
@@ -36,24 +61,27 @@ def admin_dashboard(request):
         'new_users_7days': User.objects.filter(date_joined__gte=last_7_days).count(),
         'new_listings_7days': Listing.objects.filter(created_at__gte=last_7_days).count(),
         'total_admins': User.objects.filter(is_superuser=True).count(),
+        'new_seller_requests': SellerRequest.objects.filter(status='new').count(),
+        'total_seller_requests': SellerRequest.objects.count(),
     }
-    
+
     recent_listings = Listing.objects.all()[:10]
     recent_reports = Report.objects.filter(status=Report.Status.PENDING)[:5]
     pending_listings = Listing.objects.filter(status=Listing.Status.PENDING)[:10]
-    
+    recent_seller_requests = SellerRequest.objects.filter(status='new').prefetch_related('images')[:5]
+
     context = {
         'stats': stats,
         'recent_listings': recent_listings,
         'recent_reports': recent_reports,
         'pending_listings': pending_listings,
+        'recent_seller_requests': recent_seller_requests,
     }
-    
+
     return render(request, 'admin/dashboard.html', context)
 
 
-@login_required
-@user_passes_test(is_admin)
+@admin_required
 def admin_listings(request):
     """Gérer toutes les annonces"""
     status_filter = request.GET.get('status', '')
@@ -71,8 +99,7 @@ def admin_listings(request):
     return render(request, 'admin/listings.html', context)
 
 
-@login_required
-@user_passes_test(is_admin)
+@admin_required
 def admin_listing_detail(request, pk):
     """Détails d'une annonce pour l'admin"""
     listing = get_object_or_404(Listing, pk=pk)
@@ -121,8 +148,7 @@ def admin_listing_detail(request, pk):
     return render(request, 'admin/listing_detail.html', context)
 
 
-@login_required
-@user_passes_test(is_admin)
+@superuser_required
 def admin_users(request):
     """Gérer les utilisateurs"""
     search = request.GET.get('search', '')
@@ -139,8 +165,7 @@ def admin_users(request):
     return render(request, 'admin/users.html', context)
 
 
-@login_required
-@user_passes_test(is_admin)
+@superuser_required
 def admin_user_detail(request, user_id):
     """Détails d'un utilisateur"""
     user = get_object_or_404(User, id=user_id)
@@ -186,8 +211,7 @@ def admin_user_detail(request, user_id):
     return render(request, 'admin/user_detail.html', context)
 
 
-@login_required
-@user_passes_test(is_admin)
+@admin_required
 def admin_reports(request):
     """Gérer les signalements"""
     status_filter = request.GET.get('status', 'pending')
@@ -205,8 +229,7 @@ def admin_reports(request):
     return render(request, 'admin/reports.html', context)
 
 
-@login_required
-@user_passes_test(is_admin)
+@admin_required
 def admin_report_detail(request, report_id):
     """Détails d'un signalement"""
     report = get_object_or_404(Report, id=report_id)
@@ -326,8 +349,7 @@ def favorites(request):
 # Superadmin staff management
 
 
-@login_required
-@user_passes_test(is_superuser)
+@superuser_required
 def admin_staff_list(request):
     """Lister tous les utilisateurs staff"""
     staff_users = User.objects.filter(is_staff=True).annotate(
@@ -342,74 +364,70 @@ def admin_staff_list(request):
 
 
 class StaffForm(forms.ModelForm):
-    """Formulaire pour créer/modifier un utilisateur staff"""
     password = forms.CharField(
-        widget=forms.PasswordInput,
+        widget=forms.PasswordInput(attrs={'autocomplete': 'new-password'}),
         required=False,
-        help_text='Laissez vide pour ne pas changer le mot de passe'
+        min_length=8,
+        help_text='Laissez vide pour ne pas changer le mot de passe',
     )
     password_confirm = forms.CharField(
-        widget=forms.PasswordInput,
+        widget=forms.PasswordInput(attrs={'autocomplete': 'new-password'}),
         required=False,
-        help_text='Confirmation du mot de passe'
+        label='Confirmer le mot de passe',
     )
-    
+
     class Meta:
         model = User
         fields = ['username', 'first_name', 'last_name', 'email']
-        widgets = {
-            'username': forms.TextInput(attrs={'class': 'form-control'}),
-            'first_name': forms.TextInput(attrs={'class': 'form-control'}),
-            'last_name': forms.TextInput(attrs={'class': 'form-control'}),
-            'email': forms.EmailInput(attrs={'class': 'form-control'}),
-        }
-    
+
+    def __init__(self, *args, **kwargs):
+        self.is_creation = kwargs.pop('is_creation', False)
+        super().__init__(*args, **kwargs)
+        if self.is_creation:
+            self.fields['password'].required = True
+            self.fields['password'].help_text = 'Minimum 8 caractères'
+            self.fields['password_confirm'].required = True
+            self.fields['email'].required = True
+
     def clean(self):
         cleaned_data = super().clean()
         password = cleaned_data.get('password')
         password_confirm = cleaned_data.get('password_confirm')
-        
         if password and password != password_confirm:
-            raise forms.ValidationError("Les mots de passe ne correspondent pas")
-        
+            raise forms.ValidationError('Les mots de passe ne correspondent pas.')
         return cleaned_data
 
 
-@login_required
-@user_passes_test(is_superuser)
+@superuser_required
 def admin_staff_create(request):
-    """Créer un nouvel utilisateur staff"""
     if request.method == 'POST':
-        form = StaffForm(request.POST)
+        form = StaffForm(request.POST, is_creation=True)
         if form.is_valid():
             user = form.save(commit=False)
             user.is_staff = True
-            
-            if form.cleaned_data.get('password'):
-                user.set_password(form.cleaned_data['password'])
-            
+            user.set_password(form.cleaned_data['password'])
             user.save()
-            
-            # Activer le flag de changement de mot de passe obligatoire
+            # Le signal crée le profil — on active le changement de mdp obligatoire
             user.profile.password_change_required = True
             user.profile.save()
-            
-            messages.success(request, f"Utilisateur staff '{user.username}' créé avec succès. Il devra changer son mot de passe à la première connexion.")
+            messages.success(
+                request,
+                f"Compte staff '{user.username}' créé. "
+                "Il devra changer son mot de passe à la première connexion."
+            )
             return redirect('admin_staff_list')
     else:
-        form = StaffForm()
-    
-    context = {
+        form = StaffForm(is_creation=True)
+
+    return render(request, 'admin/staff_form.html', {
         'form': form,
-        'page_title': 'Ajouter un nouvel utilisateur staff',
+        'page_title': 'Ajouter un compte staff',
         'submit_label': 'Créer le compte',
-    }
-    
-    return render(request, 'admin/staff_form.html', context)
+        'is_creation': True,
+    })
 
 
-@login_required
-@user_passes_test(is_superuser)
+@superuser_required
 def admin_staff_edit(request, user_id):
     """Modifier un utilisateur staff"""
     user = get_object_or_404(User, id=user_id, is_staff=True)
@@ -439,8 +457,7 @@ def admin_staff_edit(request, user_id):
     return render(request, 'admin/staff_form.html', context)
 
 
-@login_required
-@user_passes_test(is_superuser)
+@superuser_required
 def admin_staff_delete(request, user_id):
     """Supprimer un utilisateur staff"""
     user = get_object_or_404(User, id=user_id, is_staff=True)

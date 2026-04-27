@@ -1,34 +1,34 @@
-# YalazAgence - Real Estate Platform
-# Robots.txt for Maroc-based SEO optimization
+# YalazAgence — robots.txt
+# Agence immobilière au Maroc | Moroccan Real Estate Platform
 
 User-agent: *
 Allow: /
 Allow: /listings/
-Allow: /accounts/
 Allow: /buy/
 Allow: /rent/
 Allow: /sell/
 Allow: /estimate/
 Allow: /about/
+Allow: /contact/
+Allow: /sitemap.xml
+Allow: /sitemap-listings.xml
+Allow: /sitemap-index.xml
 
 Disallow: /admin/
 Disallow: /api/
+Disallow: /accounts/admin/
 Disallow: /accounts/login/
 Disallow: /accounts/signup/
 Disallow: /accounts/dashboard/
+Disallow: /accounts/profile/edit/
+Disallow: /accounts/verify/
 Disallow: /listings/create/
 Disallow: /listings/*/edit/
 Disallow: /listings/*/delete/
-Disallow: /*?*sort=
-Disallow: /*?*page=
 Disallow: /static/
-Disallow: /media/
-Disallow: /*.json$
-Disallow: /*.xml$
-Disallow: /*search*
-Disallow: /*filter*
+Disallow: /media/seller_requests/
 
-# Specific rules for search engines
+# Search engine specific
 User-agent: Googlebot
 Allow: /listings/
 Allow: /
@@ -42,7 +42,7 @@ Crawl-delay: 1
 User-agent: MJ12bot
 Crawl-delay: 10
 
-# Block bad bots
+# Block useless crawlers to preserve crawl budget
 User-agent: AhrefsBot
 Disallow: /
 
@@ -52,9 +52,12 @@ Disallow: /
 User-agent: DotBot
 Disallow: /
 
-# Sitemap
+User-agent: PetalBot
+Disallow: /
+
+User-agent: Bytespider
+Disallow: /
+
+# Sitemaps
 Sitemap: https://yalazagence.ma/sitemap.xml
 Sitemap: https://yalazagence.ma/sitemap-listings.xml
-
-# Specify crawl rate
-Request-rate: 1/1s

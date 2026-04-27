@@ -8,6 +8,7 @@ from .admin_views import (
     admin_staff_list, admin_staff_create, admin_staff_edit, admin_staff_delete,
     change_password_required,
 )
+from apps.core.views import admin_seller_requests, admin_seller_request_detail
 from .views import (
     login_view,
     dashboard,
@@ -49,6 +50,10 @@ urlpatterns = [
     path('admin/staff/add/', admin_staff_create, name='admin_staff_create'),
     path('admin/staff/<int:user_id>/edit/', admin_staff_edit, name='admin_staff_edit'),
     path('admin/staff/<int:user_id>/delete/', admin_staff_delete, name='admin_staff_delete'),
+
+    # Demandes vendeurs (admin/staff)
+    path('admin/seller-requests/', admin_seller_requests, name='admin_seller_requests'),
+    path('admin/seller-requests/<int:request_id>/', admin_seller_request_detail, name='admin_seller_request_detail'),
 
     # User features
     path('report/<int:listing_id>/', report_content, name='report_listing'),

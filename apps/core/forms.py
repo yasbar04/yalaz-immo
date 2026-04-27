@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth import get_user_model
 from django.utils import timezone
-from .models import FinancialTransaction
+from .models import FinancialTransaction, SellerRequest
 
 User = get_user_model()
 
@@ -174,3 +174,55 @@ class FinancialTransactionForm(forms.ModelForm):
                     )
 
         return cleaned_data
+
+
+class SellerRequestForm(forms.ModelForm):
+    class Meta:
+        model = SellerRequest
+        fields = [
+            'first_name', 'last_name', 'email', 'phone',
+            'listing_type', 'property_type', 'city', 'district',
+            'surface', 'rooms', 'bathrooms', 'price', 'description',
+            'has_parking', 'has_pool', 'has_garden', 'has_terrace',
+            'has_elevator', 'has_security',
+        ]
+        widgets = {
+            'first_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Votre prénom'}),
+            'last_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Votre nom'}),
+            'email': forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'votre@email.com'}),
+            'phone': forms.TextInput(attrs={'class': 'form-control', 'placeholder': '+212 6XX XXX XXX'}),
+            'listing_type': forms.Select(attrs={'class': 'form-control'}),
+            'property_type': forms.Select(attrs={'class': 'form-control'}),
+            'city': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Ex: Casablanca', 'list': 'city-list'}),
+            'district': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Ex: Maârif, Agdal…'}),
+            'surface': forms.NumberInput(attrs={'class': 'form-control', 'min': '1', 'placeholder': 'En m²'}),
+            'rooms': forms.NumberInput(attrs={'class': 'form-control', 'min': '1', 'placeholder': 'Nombre de pièces'}),
+            'bathrooms': forms.NumberInput(attrs={'class': 'form-control', 'min': '1', 'placeholder': 'Salles de bain'}),
+            'price': forms.NumberInput(attrs={'class': 'form-control', 'min': '0', 'placeholder': 'Prix en MAD'}),
+            'description': forms.Textarea(attrs={
+                'class': 'form-control',
+                'rows': 4,
+                'placeholder': 'Décrivez votre bien : état, points forts, travaux récents…',
+            }),
+        }
+        labels = {
+            'first_name': 'Prénom',
+            'last_name': 'Nom',
+            'email': 'Email',
+            'phone': 'Téléphone',
+            'listing_type': 'Type d\'opération',
+            'property_type': 'Type de bien',
+            'city': 'Ville',
+            'district': 'Quartier / Secteur',
+            'surface': 'Surface (m²)',
+            'rooms': 'Nombre de pièces',
+            'bathrooms': 'Salles de bain',
+            'price': 'Prix souhaité (MAD)',
+            'description': 'Description',
+            'has_parking': 'Parking',
+            'has_pool': 'Piscine',
+            'has_garden': 'Jardin',
+            'has_terrace': 'Terrasse',
+            'has_elevator': 'Ascenseur',
+            'has_security': 'Sécurité / Gardien',
+        }

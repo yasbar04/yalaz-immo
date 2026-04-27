@@ -3,6 +3,49 @@
 {% block og_title %}Louer un bien | YalazAgence Maroc{% endblock %}
 {% block meta_description %}Large choix de locations au Maroc. Appartements, maisons, riads — trouvez votre location idéale avec YalazAgence.{% endblock %}
 
+{% block extra_scripts %}
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+        {
+            "@type": "Question",
+            "name": "Comment louer un appartement ou une maison au Maroc avec YalazAgence ?",
+            "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Consultez nos annonces de location, contactez notre équipe et nous organisons les visites. Nous vous accompagnons dans la rédaction du bail et la remise des clés."
+            }
+        },
+        {
+            "@type": "Question",
+            "name": "Quels documents faut-il pour louer un bien au Maroc ?",
+            "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Un justificatif d'identité, une preuve de revenus (bulletins de salaire, relevés bancaires), et parfois une caution ou garantie sont généralement requis par le bailleur."
+            }
+        },
+        {
+            "@type": "Question",
+            "name": "Quel est le prix moyen d'une location au Maroc ?",
+            "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Les prix varient selon la ville et le type de bien. À Casablanca, un appartement se loue entre 4 000 et 15 000 MAD/mois selon le quartier. Notre outil d'estimation vous aide à évaluer le juste prix."
+            }
+        },
+        {
+            "@type": "Question",
+            "name": "Les locations sont-elles disponibles pour les expatriés au Maroc ?",
+            "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Oui, YalazAgence accompagne aussi bien les ressortissants marocains qu'étrangers pour trouver une location adaptée à leurs besoins partout au Maroc."
+            }
+        }
+    ]
+}
+</script>
+{% endblock %}
+
 {% block content %}
 
 <section class="prem-hero">

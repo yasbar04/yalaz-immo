@@ -1,23 +1,25 @@
 import csv
 import json
 from datetime import timedelta
+from functools import wraps
 from pathlib import Path
 
 from django.contrib import messages
 from django.contrib.auth import get_user_model
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import UserPassesTestMixin
-from django.contrib.auth.decorators import user_passes_test
+from django.core.exceptions import PermissionDenied
 from django.db.models import Q, Sum
 from django.http import JsonResponse
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse_lazy
 from django.utils import timezone
 from django.views.generic import CreateView, DeleteView, DetailView, ListView, UpdateView
 from django.core.mail import send_mail
 from django.conf import settings
 from apps.listings.models import Listing
-from .forms import FinancialTransactionForm
-from .models import ContactMessage, FinancialTransaction
+from .forms import FinancialTransactionForm, SellerRequestForm
+from .models import ContactMessage, FinancialTransaction, SellerRequest, SellerRequestImage
 
 User = get_user_model()
 
@@ -69,6 +71,17 @@ def _load_price_data():
 
 def is_staff_user(user):
     return user.is_authenticated and user.is_staff
+
+
+def staff_required(view_func):
+    """Redirige les anonymes vers login, lève 403 pour les connectés sans accès staff."""
+    @wraps(view_func)
+    @login_required
+    def _wrapped(request, *args, **kwargs):
+        if not request.user.is_staff:
+            raise PermissionDenied
+        return view_func(request, *args, **kwargs)
+    return _wrapped
 
 
 def home(request):
@@ -125,8 +138,39 @@ def estimate(request):
 
 
 def sell(request):
+    price_data = _load_price_data()
+    cities = sorted(price_data.keys())
+
+    if request.method == 'POST':
+        form = SellerRequestForm(request.POST)
+        if form.is_valid():
+            seller_request = form.save(commit=False)
+            x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+            seller_request.ip_address = (
+                x_forwarded_for.split(',')[0] if x_forwarded_for else request.META.get('REMOTE_ADDR')
+            )
+            seller_request.save()
+
+            for image_file in request.FILES.getlist('photos'):
+                SellerRequestImage.objects.create(
+                    seller_request=seller_request,
+                    image=image_file,
+                )
+
+            messages.success(
+                request,
+                'Votre demande a bien été envoyée ! Notre équipe vous contactera sous 24h.',
+            )
+            return redirect('sell')
+
+        messages.error(request, 'Veuillez corriger les erreurs ci-dessous.')
+    else:
+        form = SellerRequestForm()
+
     context = {
         'page_title': 'Vendre votre bien',
+        'form': form,
+        'cities': cities,
     }
     return render(request, 'core/sell.html', context)
 
@@ -198,6 +242,11 @@ class StaffRequiredMixin(UserPassesTestMixin):
     def test_func(self):
         return is_staff_user(self.request.user)
 
+    def handle_no_permission(self):
+        if self.request.user.is_authenticated:
+            raise PermissionDenied
+        return super().handle_no_permission()
+
 
 def financial_queryset(request):
     queryset = FinancialTransaction.objects.select_related(
@@ -242,7 +291,7 @@ def _compute_summary(queryset):
     }
 
 
-@user_passes_test(is_staff_user)
+@staff_required
 def financial_dashboard(request):
     date_filter = request.GET.get('date_range', '30')
     try:
@@ -265,7 +314,7 @@ def financial_dashboard(request):
     return render(request, 'admin/financial_dashboard.html', context)
 
 
-@user_passes_test(is_staff_user)
+@staff_required
 def financial_stats_api(request):
     transactions = financial_queryset(request)
     summary = _compute_summary(transactions)
@@ -375,6 +424,56 @@ class FinancialTransactionDeleteView(StaffRequiredMixin, DeleteView):
     def form_valid(self, form):
         messages.success(self.request, 'Transaction supprimée avec succès.')
         return super().form_valid(form)
+
+
+@staff_required
+def admin_seller_requests(request):
+    status_filter = request.GET.get('status', '')
+    qs = SellerRequest.objects.prefetch_related('images')
+
+    if status_filter:
+        qs = qs.filter(status=status_filter)
+
+    context = {
+        'seller_requests': qs,
+        'status_choices': SellerRequest.STATUS_CHOICES,
+        'current_status': status_filter,
+        'new_count': SellerRequest.objects.filter(status='new').count(),
+    }
+    return render(request, 'admin/seller_requests.html', context)
+
+
+@staff_required
+def admin_seller_request_detail(request, request_id):
+    seller_request = get_object_or_404(SellerRequest, id=request_id)
+
+    if request.method == 'POST':
+        action = request.POST.get('action')
+        admin_note = request.POST.get('admin_note', '')
+
+        if action in ('new', 'in_progress', 'accepted', 'rejected'):
+            seller_request.status = action
+            seller_request.admin_note = admin_note
+            seller_request.save()
+            messages.success(request, f'Statut mis à jour : {seller_request.get_status_display()}')
+
+        elif action == 'save_note':
+            seller_request.admin_note = admin_note
+            seller_request.save()
+            messages.success(request, 'Note interne enregistrée.')
+
+        elif action == 'delete':
+            seller_request.delete()
+            messages.success(request, 'Demande supprimée.')
+            return redirect('admin_seller_requests')
+
+        return redirect('admin_seller_request_detail', request_id=seller_request.id)
+
+    context = {
+        'seller_request': seller_request,
+        'status_choices': SellerRequest.STATUS_CHOICES,
+    }
+    return render(request, 'admin/seller_request_detail.html', context)
 
 
 def csrf_failure(request, reason=''):

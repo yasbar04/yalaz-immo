@@ -8,9 +8,14 @@
 
 {% block og_description %}{{ listing.title|truncatewords:20 }} - {% if listing.listing_type == 'rent' %}À louer{% else %}À vendre{% endif %} à {{ listing.city }} Maroc. {{ listing.bedrooms }} chambre{{ listing.bedrooms|pluralize }}, {{ listing.bathrooms }} sdb, {{ listing.surface_area }}m².{% endblock %}
 
-{% block og_type %}property{% endblock %}
+{% block og_type %}article{% endblock %}
 
-{% block title %}{{ listing.title }} - {% if listing.listing_type == 'rent' %}Location{% else %}Vente{% endif %} {{ listing.city }} | YalazAgence{% endblock %}
+{% block og_image %}{{ request.scheme }}://{{ request.get_host }}{{ gallery_images.0.url }}{% endblock %}
+{% block og_image_width %}1200{% endblock %}
+{% block og_image_height %}800{% endblock %}
+{% block og_image_alt %}{{ listing.title }} - {{ listing.get_property_type_display }} à {{ listing.city }}{% endblock %}
+
+{% block title %}{{ listing.title }} — {% if listing.listing_type == 'rent' %}Location{% else %}Vente{% endif %} {{ listing.get_property_type_display }} {{ listing.city }} | YalazAgence{% endblock %}
 
 {% block content %}
 <div class="container detail-prem-shell" style="max-width:1200px;">
@@ -358,7 +363,7 @@ function switchImage(url, alt, thumbEl) {
 <script type="application/ld+json">
 {
     "@context": "https://schema.org",
-    "@type": "{% if listing.listing_type == 'sale' %}RealEstateAgent{% else %}Apartment{% endif %}",
+    "@type": "{% if listing.property_type == 'apartment' %}Apartment{% elif listing.property_type == 'house' or listing.property_type == 'riad' %}SingleFamilyResidence{% elif listing.property_type == 'villa' %}SingleFamilyResidence{% elif listing.property_type == 'land' %}LandLot{% else %}Accommodation{% endif %}",
     "name": "{{ listing.title }}",
     "description": "{{ listing.description|truncatewords:30 }}",
     "url": "{{ request.build_absolute_uri }}",

@@ -1,0 +1,135 @@
+{% extends 'base.html' %}
+{% block title %}Dépôts vendeurs — YalazAgence{% endblock %}
+
+{% block content %}
+
+<div class="admin-prem-header">
+    <div class="container admin-header-inner">
+        <div>
+            <a href="{% url 'admin_dashboard' %}" class="admin-back-pill">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><path d="M15 18l-6-6 6-6"/></svg>
+                Dashboard
+            </a>
+            <span class="eyebrow" style="display:block;margin-top:.5rem;">Administration</span>
+            <h1>Dépôts vendeurs</h1>
+        </div>
+        <div style="display:flex;gap:.625rem;align-items:center;flex-wrap:wrap;">
+            {% if new_count %}
+                <span class="pill pill-seller" style="font-size:.85rem;padding:.4rem .9rem;">{{ new_count }} nouveau{{ new_count|pluralize }}</span>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<div class="container" style="padding-bottom:4rem;">
+
+    <!-- Filtres status -->
+    <div class="admin-filter-bar" style="margin-bottom:1.5rem;">
+        <a href="{% url 'admin_seller_requests' %}" class="admin-filter-pill {% if not current_status %}active{% endif %}">Tous</a>
+        {% for val, label in status_choices %}
+            <a href="?status={{ val }}" class="admin-filter-pill {% if current_status == val %}active{% endif %}">{{ label }}</a>
+        {% endfor %}
+    </div>
+
+    <!-- Liste -->
+    <div class="admin-panel-card" style="padding:0;overflow:hidden;">
+        {% if seller_requests %}
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>Vendeur</th>
+                        <th>Bien</th>
+                        <th>Ville</th>
+                        <th>Prix</th>
+                        <th>Photos</th>
+                        <th>Date</th>
+                        <th>Statut</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for sr in seller_requests %}
+                    <tr>
+                        <td>
+                            <div style="font-weight:600;font-size:.88rem;">{{ sr.full_name }}</div>
+                            <div style="font-size:.78rem;color:var(--text-muted,#888);">{{ sr.phone }}</div>
+                        </td>
+                        <td>
+                            <div style="font-size:.85rem;">{{ sr.get_property_type_display }}</div>
+                            <div style="font-size:.78rem;color:var(--text-muted,#888);">{{ sr.get_listing_type_display }}</div>
+                        </td>
+                        <td style="font-size:.88rem;">
+                            {{ sr.city }}{% if sr.district %}<br><span style="font-size:.78rem;color:var(--text-muted,#888);">{{ sr.district }}</span>{% endif %}
+                        </td>
+                        <td style="font-size:.88rem;">
+                            {% if sr.price %}{{ sr.price|floatformat:0 }} MAD{% else %}<span style="color:var(--text-muted,#888);">—</span>{% endif %}
+                        </td>
+                        <td style="font-size:.85rem;text-align:center;">{{ sr.images.count }}</td>
+                        <td style="font-size:.8rem;color:var(--text-muted,#888);">{{ sr.created_at|date:"d M Y H:i" }}</td>
+                        <td>
+                            {% if sr.status == 'new' %}
+                                <span class="pill pill-seller">Nouveau</span>
+                            {% elif sr.status == 'in_progress' %}
+                                <span class="pill pill-warning">En cours</span>
+                            {% elif sr.status == 'accepted' %}
+                                <span class="pill pill-success">Accepté</span>
+                            {% else %}
+                                <span class="pill pill-danger">Refusé</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="{% url 'admin_seller_request_detail' sr.id %}" class="admin-back-pill">Voir →</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <div style="padding:3rem;text-align:center;">
+                <p class="meta-copy">Aucun dépôt vendeur{% if current_status %} avec ce statut{% endif %}.</p>
+            </div>
+        {% endif %}
+    </div>
+
+</div>
+
+<style>
+.admin-filter-bar { display:flex;gap:.5rem;flex-wrap:wrap; }
+.admin-filter-pill {
+    padding:.35rem .9rem;
+    border-radius:99px;
+    border: 1px solid rgba(255,255,255,.1);
+    font-size:.82rem;
+    font-weight:600;
+    color:var(--text-muted,#888);
+    text-decoration:none;
+    transition: border-color .2s, color .2s;
+}
+.admin-filter-pill:hover, .admin-filter-pill.active {
+    border-color: var(--coral,#ff6b6b);
+    color: var(--coral,#ff6b6b);
+}
+.admin-table { width:100%;border-collapse:collapse; }
+.admin-table th {
+    padding:.75rem 1.25rem;
+    text-align:left;
+    font-size:.78rem;
+    font-weight:700;
+    text-transform:uppercase;
+    letter-spacing:.06em;
+    color:var(--text-muted,#888);
+    border-bottom:1px solid rgba(255,255,255,.07);
+}
+.admin-table td {
+    padding:.85rem 1.25rem;
+    border-bottom:1px solid rgba(255,255,255,.04);
+    vertical-align:middle;
+}
+.admin-table tr:last-child td { border-bottom:none; }
+.admin-table tbody tr:hover { background:rgba(255,255,255,.02); }
+.pill-seller { background:rgba(16,185,129,.12);color:#10b981;border-color:rgba(16,185,129,.25); }
+.pill-success { background:rgba(34,197,94,.12);color:#22c55e;border-color:rgba(34,197,94,.25); }
+.pill-danger  { background:rgba(239,68,68,.12);color:#ef4444;border-color:rgba(239,68,68,.25); }
+</style>
+
+{% endblock %}
