@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% block title %}Confirmer la suppression — Admin | YalazAgence{% endblock %}
+
+{% block content %}
+<div class="error-prem-page">
+    <div class="error-prem-card" style="border-color:rgba(153,27,27,0.15);">
+        <div class="error-prem-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="30" height="30"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        </div>
+
+        <h1 class="error-prem-title">Confirmer la suppression</h1>
+        <p class="error-prem-desc">
+            Vous êtes sur le point de supprimer le compte staff <strong style="color:var(--ink);">{{ staff_user.username }}</strong>. Cette action est irréversible.
+        </p>
+
+        <div style="background:var(--bg);border:1px solid var(--border-light);border-radius:.875rem;padding:1.25rem 1.5rem;text-align:left;margin-bottom:1.5rem;">
+            <div class="profile-detail-item" style="padding:.375rem 0;border-bottom:1px solid var(--border-light);">
+                <span>Utilisateur</span>
+                <strong>{{ staff_user.username }}</strong>
+            </div>
+            {% if staff_user.get_full_name %}
+            <div class="profile-detail-item" style="padding:.375rem 0;border-bottom:1px solid var(--border-light);">
+                <span>Nom complet</span>
+                <strong>{{ staff_user.get_full_name }}</strong>
+            </div>
+            {% endif %}
+            <div class="profile-detail-item" style="padding:.375rem 0;">
+                <span>Email</span>
+                <strong>{{ staff_user.email }}</strong>
+            </div>
+        </div>
+
+        <div style="background:var(--warning-bg);border:1px solid rgba(146,64,14,0.15);border-radius:.75rem;padding:.875rem 1.125rem;text-align:left;margin-bottom:2rem;font-size:.82rem;color:var(--warning);">
+            Les données associées à ce compte seront définitivement perdues.
+        </div>
+
+        <form method="post" class="error-prem-actions">
+            {% csrf_token %}
+            <button type="submit" class="btn-hero-prim" style="background:var(--danger);color:#fff;">Confirmer la suppression</button>
+            <a href="{% url 'admin_staff_list' %}" class="btn-hero-sec" style="border-color:var(--border);color:var(--muted);">Annuler</a>
+        </form>
+    </div>
+</div>
+{% endblock %}

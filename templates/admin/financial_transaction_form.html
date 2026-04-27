@@ -1,0 +1,548 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{% if object %}Modifier{% else %}Nouvelle{% endif %} Transaction - Yalaz Agence{% endblock %}
+
+{% block content %}
+<div class="container" style="padding-top: var(--sp-8); padding-bottom: var(--sp-16); max-width: 960px;">
+
+    <!-- Header -->
+    <div style="margin-bottom: var(--sp-8);">
+        <a href="{% url 'financial_transactions_list' %}" style="color: var(--gold-dark); text-decoration: none; font-size: var(--text-sm); display: inline-flex; align-items: center; gap: 4px; margin-bottom: var(--sp-3);">
+            ← Retour aux transactions
+        </a>
+        <h1 style="font-size: clamp(1.5rem, 3vw, 2.2rem); margin: 0 0 var(--sp-1) 0; font-weight: 700;">
+            {% if object %}Modifier la Transaction{% else %}Nouvelle Transaction{% endif %}
+        </h1>
+        <p style="color: var(--muted); margin: 0; font-size: var(--text-sm);">Enregistrez une entrée ou sortie d'argent liée à l'activité</p>
+    </div>
+
+    <form method="post" id="transaction-form">
+        {% csrf_token %}
+
+        <!-- Erreurs globales -->
+        {% if form.non_field_errors %}
+        <div style="background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.3); border-radius: var(--r-md); padding: var(--sp-4); margin-bottom: var(--sp-6);">
+            {% for error in form.non_field_errors %}
+            <p style="color: var(--danger); margin: 0;">• {{ error }}</p>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <!-- ═══════════════════════════════════════════════ -->
+        <!-- SECTION 1 — Informations générales              -->
+        <!-- ═══════════════════════════════════════════════ -->
+        <div class="form-card" style="margin-bottom: var(--sp-6);">
+            <div class="form-card-header">
+                <span class="section-num">1</span>
+                <h2 class="section-title">Informations générales</h2>
+            </div>
+            <div class="form-card-body">
+
+                <!-- Type (Entrée / Sortie) - boutons toggle -->
+                <div class="field-group" style="margin-bottom: var(--sp-6);">
+                    <label class="field-label">Type de transaction *</label>
+                    <div class="type-toggle" id="type-toggle">
+                        <button type="button" class="type-btn entry-btn {% if form.type.value == 'entry' or not form.type.value %}active{% endif %}" data-value="entry" onclick="selectType('entry')">
+                            <span style="font-size: 1.2rem;">↓</span>
+                            <strong>Entrée</strong>
+                            <small>Revenu, commission...</small>
+                        </button>
+                        <button type="button" class="type-btn exit-btn {% if form.type.value == 'exit' %}active{% endif %}" data-value="exit" onclick="selectType('exit')">
+                            <span style="font-size: 1.2rem;">↑</span>
+                            <strong>Sortie</strong>
+                            <small>Dépense, frais...</small>
+                        </button>
+                    </div>
+                    {{ form.type }}
+                    {% if form.type.errors %}<p class="field-error">{{ form.type.errors.0 }}</p>{% endif %}
+                </div>
+
+                <!-- Montant + Date -->
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-5); margin-bottom: var(--sp-5);">
+                    <div class="field-group">
+                        <label class="field-label">{{ form.amount.label }} *</label>
+                        <div style="position: relative;">
+                            {{ form.amount }}
+                            <span style="position: absolute; right: var(--sp-3); top: 50%; transform: translateY(-50%); color: var(--muted); font-weight: 600; pointer-events: none;">DH</span>
+                        </div>
+                        {% if form.amount.errors %}<p class="field-error">{{ form.amount.errors.0 }}</p>{% endif %}
+                    </div>
+                    <div class="field-group">
+                        <label class="field-label">{{ form.transaction_date.label }} *</label>
+                        {{ form.transaction_date }}
+                        {% if form.transaction_date.errors %}<p class="field-error">{{ form.transaction_date.errors.0 }}</p>{% endif %}
+                    </div>
+                </div>
+
+                <!-- Description + Catégorie -->
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-5); margin-bottom: var(--sp-5);">
+                    <div class="field-group">
+                        <label class="field-label">{{ form.description.label }} *</label>
+                        {{ form.description }}
+                        <p class="field-hint">Ex: Vidéo réseaux sociaux, Commission vente villa...</p>
+                        {% if form.description.errors %}<p class="field-error">{{ form.description.errors.0 }}</p>{% endif %}
+                    </div>
+                    <div class="field-group">
+                        <label class="field-label">{{ form.category.label }} *</label>
+                        {{ form.category }}
+                        {% if form.category.errors %}<p class="field-error">{{ form.category.errors.0 }}</p>{% endif %}
+                    </div>
+                </div>
+
+                <!-- Membre staff + Statut -->
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-5);">
+                    <div class="field-group">
+                        <label class="field-label">{{ form.assigned_to.label }}</label>
+                        {{ form.assigned_to }}
+                        <p class="field-hint">Membre du staff lié à cette transaction</p>
+                        {% if form.assigned_to.errors %}<p class="field-error">{{ form.assigned_to.errors.0 }}</p>{% endif %}
+                    </div>
+                    <div class="field-group">
+                        <label class="field-label">{{ form.status.label }}</label>
+                        {{ form.status }}
+                        {% if form.status.errors %}<p class="field-error">{{ form.status.errors.0 }}</p>{% endif %}
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════ -->
+        <!-- SECTION 2 — Commission immobilière (optionnel)  -->
+        <!-- ═══════════════════════════════════════════════ -->
+        <div class="form-card" id="commission-section" style="margin-bottom: var(--sp-6); display: none;">
+            <div class="form-card-header" style="background: rgba(59,130,246,0.06); border-bottom-color: rgba(59,130,246,0.15);">
+                <span class="section-num" style="background: rgba(59,130,246,0.15); color: #3b82f6;">%</span>
+                <h2 class="section-title">Calcul de commission immobilière</h2>
+                <span style="font-size: var(--text-xs); color: var(--muted); margin-left: auto;">Optionnel — rempli automatiquement</span>
+            </div>
+            <div class="form-card-body">
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-5); margin-bottom: var(--sp-5);">
+                    <div class="field-group">
+                        <label class="field-label">{{ form.property_price.label }}</label>
+                        <div style="position: relative;">
+                            {{ form.property_price }}
+                            <span style="position: absolute; right: var(--sp-3); top: 50%; transform: translateY(-50%); color: var(--muted); font-weight: 600; pointer-events: none;">DH</span>
+                        </div>
+                        <p class="field-hint">Prix total de vente ou location du bien</p>
+                        {% if form.property_price.errors %}<p class="field-error">{{ form.property_price.errors.0 }}</p>{% endif %}
+                    </div>
+                    <div class="field-group">
+                        <label class="field-label">{{ form.commission_percentage.label }}</label>
+                        <div style="position: relative;">
+                            {{ form.commission_percentage }}
+                            <span style="position: absolute; right: var(--sp-3); top: 50%; transform: translateY(-50%); color: var(--muted); font-weight: 600; pointer-events: none;">%</span>
+                        </div>
+                        <p class="field-hint">Ex: 2.5 pour 2,5%</p>
+                        {% if form.commission_percentage.errors %}<p class="field-error">{{ form.commission_percentage.errors.0 }}</p>{% endif %}
+                    </div>
+                </div>
+
+                <!-- Résultat du calcul -->
+                <div id="commission-result" style="display: none; background: rgba(59,130,246,0.06); border: 1px solid rgba(59,130,246,0.2); border-radius: var(--r-md); padding: var(--sp-4);">
+                    <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: var(--sp-3);">
+                        <div>
+                            <p style="color: var(--muted); font-size: var(--text-xs); margin: 0; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Commission calculée</p>
+                            <p id="commission-calc-text" style="color: #3b82f6; font-size: 1.5rem; font-weight: 700; margin: var(--sp-1) 0 0;">—</p>
+                        </div>
+                        <button type="button" onclick="applyCommission()" class="btn btn-blue" style="white-space: nowrap;">
+                            Appliquer au montant →
+                        </button>
+                    </div>
+                    <p id="commission-formula" style="color: var(--muted); font-size: var(--text-xs); margin: var(--sp-2) 0 0;"></p>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════ -->
+        <!-- SECTION 3 — Source du paiement (optionnel)      -->
+        <!-- ═══════════════════════════════════════════════ -->
+        <div class="form-card" id="payment-section" style="margin-bottom: var(--sp-6); display: none;">
+            <div class="form-card-header" style="background: rgba(16,185,129,0.05); border-bottom-color: rgba(16,185,129,0.15);">
+                <span class="section-num" style="background: rgba(16,185,129,0.15); color: var(--success);">💰</span>
+                <h2 class="section-title">Source du paiement</h2>
+                <span style="font-size: var(--text-xs); color: var(--muted); margin-left: auto;">Qui a payé la commission ?</span>
+            </div>
+            <div class="form-card-body">
+
+                <!-- Cases à cocher - source -->
+                <div class="field-group" style="margin-bottom: var(--sp-5);">
+                    <label class="field-label">{{ form.payment_source.label }}</label>
+                    <div class="payment-source-grid">
+                        <label class="payment-source-option" id="src-owner">
+                            <input type="radio" name="payment_source" value="owner"
+                                {% if form.payment_source.value == 'owner' %}checked{% endif %}
+                                onchange="updatePaymentSource('owner')">
+                            <div class="payment-source-card">
+                                <span style="font-size: 1.5rem;">🏠</span>
+                                <strong>Propriétaire</strong>
+                                <small>La commission est payée par le propriétaire</small>
+                            </div>
+                        </label>
+                        <label class="payment-source-option" id="src-client">
+                            <input type="radio" name="payment_source" value="client"
+                                {% if form.payment_source.value == 'client' %}checked{% endif %}
+                                onchange="updatePaymentSource('client')">
+                            <div class="payment-source-card">
+                                <span style="font-size: 1.5rem;">👤</span>
+                                <strong>Client</strong>
+                                <small>La commission est payée par le client</small>
+                            </div>
+                        </label>
+                        <label class="payment-source-option" id="src-both">
+                            <input type="radio" name="payment_source" value="both"
+                                {% if form.payment_source.value == 'both' %}checked{% endif %}
+                                onchange="updatePaymentSource('both')">
+                            <div class="payment-source-card">
+                                <span style="font-size: 1.5rem;">🤝</span>
+                                <strong>Les deux</strong>
+                                <small>Partagée entre propriétaire et client</small>
+                            </div>
+                        </label>
+                    </div>
+                    <!-- Champ caché pour Django -->
+                    <input type="hidden" id="id_payment_source" name="payment_source_hidden" value="{{ form.payment_source.value|default:'' }}">
+                    {% if form.payment_source.errors %}<p class="field-error">{{ form.payment_source.errors.0 }}</p>{% endif %}
+                </div>
+
+                <!-- Montants détaillés (visible uniquement si "Les deux") -->
+                <div id="both-amounts" style="display: {% if form.payment_source.value == 'both' %}grid{% else %}none{% endif %}; grid-template-columns: 1fr 1fr; gap: var(--sp-5);">
+                    <div class="field-group">
+                        <label class="field-label">{{ form.owner_amount.label }}</label>
+                        <div style="position: relative;">
+                            {{ form.owner_amount }}
+                            <span style="position: absolute; right: var(--sp-3); top: 50%; transform: translateY(-50%); color: var(--muted); font-weight: 600; pointer-events: none;">DH</span>
+                        </div>
+                        {% if form.owner_amount.errors %}<p class="field-error">{{ form.owner_amount.errors.0 }}</p>{% endif %}
+                    </div>
+                    <div class="field-group">
+                        <label class="field-label">{{ form.client_amount.label }}</label>
+                        <div style="position: relative;">
+                            {{ form.client_amount }}
+                            <span style="position: absolute; right: var(--sp-3); top: 50%; transform: translateY(-50%); color: var(--muted); font-weight: 600; pointer-events: none;">DH</span>
+                        </div>
+                        {% if form.client_amount.errors %}<p class="field-error">{{ form.client_amount.errors.0 }}</p>{% endif %}
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════ -->
+        <!-- SECTION 4 — Bien immobilier & Notes             -->
+        <!-- ═══════════════════════════════════════════════ -->
+        <div class="form-card" style="margin-bottom: var(--sp-6);">
+            <div class="form-card-header">
+                <span class="section-num">4</span>
+                <h2 class="section-title">Bien immobilier & Notes</h2>
+            </div>
+            <div class="form-card-body">
+
+                <div class="field-group" style="margin-bottom: var(--sp-5);">
+                    <label class="field-label">{{ form.listing.label }}</label>
+                    {{ form.listing }}
+                    <p class="field-hint">Lier cette transaction à un bien publié (optionnel)</p>
+                    {% if form.listing.errors %}<p class="field-error">{{ form.listing.errors.0 }}</p>{% endif %}
+                </div>
+
+                <div class="field-group">
+                    <label class="field-label">{{ form.notes.label }}</label>
+                    {{ form.notes }}
+                    {% if form.notes.errors %}<p class="field-error">{{ form.notes.errors.0 }}</p>{% endif %}
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Boutons -->
+        <div style="display: flex; gap: var(--sp-4); justify-content: flex-end;">
+            <a href="{% url 'financial_transactions_list' %}" class="btn btn-ghost">Annuler</a>
+            <button type="submit" class="btn btn-primary" style="padding: var(--sp-3) var(--sp-8);">
+                {% if object %}Mettre à jour{% else %}Créer la transaction{% endif %}
+            </button>
+        </div>
+
+    </form>
+</div>
+
+<style>
+/* ── Layout ── */
+.form-card {
+    background: white;
+    border: 1px solid var(--border-color);
+    border-radius: var(--r-xl);
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+}
+.form-card-header {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-3);
+    padding: var(--sp-4) var(--sp-6);
+    background: var(--bg-sand);
+    border-bottom: 1px solid var(--border-color);
+}
+.form-card-body {
+    padding: var(--sp-6);
+}
+.section-num {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: rgba(201,169,110,0.2);
+    color: var(--gold-dark);
+    font-weight: 700;
+    font-size: var(--text-sm);
+    flex-shrink: 0;
+}
+.section-title {
+    font-size: 1rem;
+    font-weight: 700;
+    margin: 0;
+    color: var(--text);
+}
+.field-group { display: flex; flex-direction: column; gap: var(--sp-1); }
+.field-label { font-weight: 600; font-size: var(--text-sm); color: var(--text); }
+.field-hint { color: var(--muted); font-size: var(--text-xs); margin: 0; }
+.field-error { color: var(--danger); font-size: var(--text-xs); margin: 0; }
+
+/* ── Inputs ── */
+input[type="text"],
+input[type="number"],
+input[type="date"],
+select,
+textarea {
+    width: 100%;
+    padding: var(--sp-3) var(--sp-4);
+    border: 1px solid var(--border-color);
+    border-radius: var(--r-md);
+    font-size: var(--text-sm);
+    font-family: inherit;
+    background: white;
+    color: var(--text);
+    transition: border-color 0.2s, box-shadow 0.2s;
+    box-sizing: border-box;
+}
+input[type="text"]:focus,
+input[type="number"]:focus,
+input[type="date"]:focus,
+select:focus,
+textarea:focus {
+    outline: none;
+    border-color: var(--gold-dark);
+    box-shadow: 0 0 0 3px rgba(217,119,6,0.1);
+}
+select {
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    background-size: 18px;
+    padding-right: 36px;
+}
+textarea { resize: vertical; min-height: 100px; }
+
+/* ── Type toggle ── */
+#id_type { display: none !important; }
+.type-toggle {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--sp-3);
+}
+.type-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    padding: var(--sp-4) var(--sp-6);
+    border: 2px solid var(--border-color);
+    border-radius: var(--r-lg);
+    background: white;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: inherit;
+    color: var(--muted);
+}
+.type-btn strong { font-size: 1rem; }
+.type-btn small { font-size: var(--text-xs); }
+.type-btn.entry-btn.active {
+    border-color: var(--success);
+    background: rgba(16,185,129,0.06);
+    color: var(--success);
+}
+.type-btn.exit-btn.active {
+    border-color: var(--danger);
+    background: rgba(239,68,68,0.06);
+    color: var(--danger);
+}
+.type-btn:hover:not(.active) {
+    border-color: var(--gold-mist);
+    background: var(--bg-sand);
+}
+
+/* ── Payment source ── */
+.payment-source-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--sp-3);
+}
+.payment-source-option input[type="radio"] { display: none; }
+.payment-source-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    padding: var(--sp-4);
+    border: 2px solid var(--border-color);
+    border-radius: var(--r-lg);
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: center;
+    background: white;
+}
+.payment-source-card strong { font-size: var(--text-sm); color: var(--text); }
+.payment-source-card small { font-size: var(--text-xs); color: var(--muted); }
+.payment-source-option input:checked + .payment-source-card {
+    border-color: var(--gold-dark);
+    background: rgba(201,169,110,0.08);
+}
+
+/* ── Buttons ── */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--sp-3) var(--sp-6);
+    border-radius: var(--r-md);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: var(--text-sm);
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s;
+    font-family: inherit;
+}
+.btn-primary { background: var(--gold-dark); color: white; }
+.btn-primary:hover { background: var(--gold-darker); }
+.btn-ghost { background: transparent; color: var(--muted); border: 1px solid var(--border-color); }
+.btn-ghost:hover { background: var(--bg-sand); color: var(--text); }
+.btn-blue { background: rgba(59,130,246,0.1); color: #3b82f6; border: 1px solid rgba(59,130,246,0.3); }
+.btn-blue:hover { background: rgba(59,130,246,0.2); }
+
+@media (max-width: 640px) {
+    .type-toggle { grid-template-columns: 1fr; }
+    .payment-source-grid { grid-template-columns: 1fr; }
+    [style*="grid-template-columns: 1fr 1fr"] { grid-template-columns: 1fr !important; }
+}
+</style>
+
+<script>
+// ── Sélection du type (Entrée / Sortie) ──
+function selectType(value) {
+    document.getElementById('id_type').value = value;
+    document.querySelectorAll('.type-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.value === value);
+    });
+    toggleCommissionSection();
+    togglePaymentSection();
+}
+
+// ── Catégories commission ──
+const COMMISSION_CATEGORIES = ['commission_vente', 'commission_location'];
+
+function toggleCommissionSection() {
+    const type = document.getElementById('id_type').value;
+    const cat = document.getElementById('id_category').value;
+    const show = type === 'entry' && COMMISSION_CATEGORIES.includes(cat);
+    document.getElementById('commission-section').style.display = show ? 'block' : 'none';
+    if (show) updateCommissionCalc();
+}
+
+function togglePaymentSection() {
+    const type = document.getElementById('id_type').value;
+    const cat = document.getElementById('id_category').value;
+    const show = type === 'entry' && COMMISSION_CATEGORIES.includes(cat);
+    document.getElementById('payment-section').style.display = show ? 'block' : 'none';
+}
+
+// ── Calcul commission ──
+function updateCommissionCalc() {
+    const price = parseFloat(document.getElementById('id_property_price').value) || 0;
+    const pct = parseFloat(document.getElementById('id_commission_percentage').value) || 0;
+    const resultDiv = document.getElementById('commission-result');
+    if (price > 0 && pct > 0) {
+        const commission = price * pct / 100;
+        document.getElementById('commission-calc-text').textContent = formatDH(commission);
+        document.getElementById('commission-formula').textContent =
+            `${formatDH(price)} × ${pct}% = ${formatDH(commission)}`;
+        resultDiv.style.display = 'block';
+    } else {
+        resultDiv.style.display = 'none';
+    }
+}
+
+function applyCommission() {
+    const price = parseFloat(document.getElementById('id_property_price').value) || 0;
+    const pct = parseFloat(document.getElementById('id_commission_percentage').value) || 0;
+    if (price > 0 && pct > 0) {
+        const commission = price * pct / 100;
+        document.getElementById('id_amount').value = commission.toFixed(2);
+        document.getElementById('id_amount').dispatchEvent(new Event('input'));
+        // Flash visual
+        const amountInput = document.getElementById('id_amount');
+        amountInput.style.borderColor = '#3b82f6';
+        amountInput.style.boxShadow = '0 0 0 3px rgba(59,130,246,0.2)';
+        setTimeout(() => {
+            amountInput.style.borderColor = '';
+            amountInput.style.boxShadow = '';
+        }, 1200);
+    }
+}
+
+function formatDH(val) {
+    return new Intl.NumberFormat('fr-MA', { maximumFractionDigits: 2 }).format(val) + ' DH';
+}
+
+// ── Source de paiement ──
+function updatePaymentSource(value) {
+    document.getElementById('id_payment_source').value = value;
+    // Sync avec le champ Django (hidden)
+    document.querySelector('[name="payment_source"]') && (
+        document.querySelectorAll('[name="payment_source"]').forEach(r => r.checked = r.value === value)
+    );
+    const bothDiv = document.getElementById('both-amounts');
+    bothDiv.style.display = value === 'both' ? 'grid' : 'none';
+}
+
+// ── Catégorie change ──
+document.getElementById('id_category').addEventListener('change', function() {
+    toggleCommissionSection();
+    togglePaymentSection();
+});
+
+// ── Commission fields change ──
+document.getElementById('id_property_price').addEventListener('input', updateCommissionCalc);
+document.getElementById('id_commission_percentage').addEventListener('input', updateCommissionCalc);
+
+// ── Init ──
+(function init() {
+    // Sync le type depuis le select caché
+    const typeVal = document.getElementById('id_type').value || 'entry';
+    selectType(typeVal);
+
+    // Sync payment source depuis l'état des radios
+    const checkedRadio = document.querySelector('input[name="payment_source"]:checked');
+    if (checkedRadio) updatePaymentSource(checkedRadio.value);
+
+    // Calculer la commission si données déjà présentes (edit mode)
+    updateCommissionCalc();
+})();
+</script>
+{% endblock %}

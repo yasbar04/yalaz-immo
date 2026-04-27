@@ -1,0 +1,19 @@
+<html>
+<body style="margin:0;padding:0;background:#f4f8ff;font-family:Arial,sans-serif;color:#0f1f36;">
+    <div style="max-width:620px;margin:0 auto;padding:32px 20px;">
+        <div style="background:#ffffff;border:1px solid rgba(15,31,54,0.08);border-radius:24px;padding:32px;box-shadow:0 20px 40px rgba(15,31,54,0.08);">
+            <p style="margin:0 0 12px;color:#2563eb;font-size:12px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;">Confirmation</p>
+            <h1 style="margin:0 0 16px;font-size:30px;line-height:1.1;">Votre demande a bien ete envoyee</h1>
+            <p style="margin:0 0 18px;color:#51627a;font-size:16px;line-height:1.7;">
+                Votre message pour <strong>{{ listing.title }}</strong> a ete transmis au proprietaire.
+                Vous pouvez conserver ce lien pour retrouver rapidement le bien.
+            </p>
+            <p style="margin:0;">
+                <a href="{{ listing_url }}" style="display:inline-block;padding:14px 22px;border-radius:999px;background:#2563eb;color:#ffffff;text-decoration:none;font-weight:700;">
+                    Revoir l annonce
+                </a>
+            </p>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,11 @@
+Bonjour {{ user.first_name|default:user.username }},
+
+Votre compte {{ platform_name }} est maintenant actif.
+
+Acceder a votre espace :
+{{ dashboard_url }}
+
+Vous pouvez desormais publier vos annonces, suivre vos contacts et gerer vos favoris.
+
+Bienvenue,
+L equipe {{ platform_name }}

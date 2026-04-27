@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+{% block title %}Utilisateurs — Admin | YalazAgence{% endblock %}
+
+{% block content %}
+
+<div class="admin-prem-header">
+    <div class="container admin-header-inner">
+        <div>
+            <a href="{% url 'admin_dashboard' %}" class="admin-back-pill">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><path d="M15 18l-6-6 6-6"/></svg>
+                Dashboard
+            </a>
+            <span class="eyebrow" style="display:block;margin-top:.5rem;">Administration</span>
+            <h1>Gestion des utilisateurs</h1>
+        </div>
+    </div>
+</div>
+
+<div class="container" style="padding-bottom:4rem;">
+
+    <!-- Search -->
+    <form method="get" style="margin-bottom:1.5rem;">
+        <div class="filter-prem-main" style="max-width:480px;">
+            <div class="filter-prem-search">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                <input type="text" name="search" value="{{ search }}" placeholder="Nom d'utilisateur ou email…">
+            </div>
+            <button type="submit" class="btn-hero-prim" style="height:2.75rem;padding:0 1.25rem;font-size:.875rem;">Rechercher</button>
+        </div>
+    </form>
+
+    {% if users %}
+        <div class="admin-table-wrap">
+            <table class="admin-prem-table">
+                <thead>
+                    <tr>
+                        <th>Utilisateur</th>
+                        <th>Email</th>
+                        <th>Annonces</th>
+                        <th>Rôle</th>
+                        <th>Inscription</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in users %}
+                        <tr>
+                            <td><strong>{{ user.username }}</strong></td>
+                            <td class="td-muted">{{ user.email }}</td>
+                            <td>{{ user.listings.count }}</td>
+                            <td>
+                                {% if user.is_superuser %}
+                                    <span class="pill pill-gold">Admin</span>
+                                {% elif user.is_staff %}
+                                    <span class="pill pill-mint">Staff</span>
+                                {% else %}
+                                    <span class="pill">Utilisateur</span>
+                                {% endif %}
+                            </td>
+                            <td class="td-muted">{{ user.date_joined|date:"d M Y" }}</td>
+                            <td>
+                                <a href="{% url 'admin_user_detail' user.id %}" class="admin-table-action">Voir</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="dash-empty" style="margin-top:2rem;">
+            <div class="dash-empty-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="28" height="28"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            </div>
+            {% if search %}
+                <h3>Aucun résultat pour "{{ search }}"</h3>
+            {% else %}
+                <h3>Aucun utilisateur</h3>
+            {% endif %}
+        </div>
+    {% endif %}
+
+</div>
+{% endblock %}

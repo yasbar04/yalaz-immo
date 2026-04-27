@@ -1,0 +1,27 @@
+<html>
+<body style="margin:0;padding:0;background:#f4f8ff;font-family:Arial,sans-serif;color:#0f1f36;">
+    <div style="max-width:620px;margin:0 auto;padding:32px 20px;">
+        <div style="background:#ffffff;border:1px solid rgba(15,31,54,0.08);border-radius:24px;padding:32px;box-shadow:0 20px 40px rgba(15,31,54,0.08);">
+            <p style="margin:0 0 12px;color:#2563eb;font-size:12px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;">Verification email</p>
+            <h1 style="margin:0 0 16px;font-size:32px;line-height:1.05;">Confirmez votre adresse email</h1>
+            <p style="margin:0 0 20px;color:#51627a;font-size:16px;line-height:1.7;">
+                Bonjour {{ user.first_name|default:user.username }}, votre compte {{ platform_name }} a bien ete cree.
+                Il ne reste plus qu a confirmer votre adresse email pour poursuivre l activation.
+            </p>
+            <p style="margin:0 0 24px;">
+                <a href="{{ verification_url }}" style="display:inline-block;padding:14px 22px;border-radius:999px;background:#2563eb;color:#ffffff;text-decoration:none;font-weight:700;">
+                    Confirmer mon email
+                </a>
+            </p>
+            <div style="padding:18px;border-radius:18px;background:#eef4ff;border:1px solid rgba(37,99,235,0.12);margin-bottom:20px;">
+                <p style="margin:0 0 6px;color:#51627a;font-size:13px;text-transform:uppercase;letter-spacing:0.08em;font-weight:700;">Code de verification</p>
+                <p style="margin:0;font-size:30px;font-weight:800;letter-spacing:0.24em;">{{ email_code }}</p>
+            </div>
+            <p style="margin:0;color:#51627a;font-size:14px;line-height:1.7;">
+                Le lien et le code expirent dans {{ code_ttl_minutes }} minutes. Si vous n etes pas a l origine de cette inscription,
+                vous pouvez ignorer cet email.
+            </p>
+        </div>
+    </div>
+</body>
+</html>

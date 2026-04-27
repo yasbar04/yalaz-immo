@@ -1,0 +1,12 @@
+Bonjour {{ user.first_name|default:user.username }},
+
+Nous avons bien recu votre annonce "{{ listing.title }}" sur {{ platform_name }}.
+Elle est maintenant en attente de validation par notre equipe.
+
+Vous pouvez suivre son statut depuis votre espace :
+{{ dashboard_url }}
+
+Lien direct vers l annonce :
+{{ listing_url }}
+
+L equipe {{ platform_name }}

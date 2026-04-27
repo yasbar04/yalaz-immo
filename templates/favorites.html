@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+{% block title %}Mes favoris — YalazAgence{% endblock %}
+
+{% block content %}
+
+<section class="prem-hero">
+    <div class="container prem-hero-inner">
+        <span class="eyebrow">Sélection personnelle</span>
+        <h1>Mes favoris</h1>
+        <p class="prem-hero-sub">Conservez les biens à comparer ou à recontacter sans refaire votre recherche.</p>
+        <div class="prem-hero-meta">
+            <a href="{% url 'listing_list' %}" class="btn-hero-prim">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                Parcourir les annonces
+            </a>
+        </div>
+    </div>
+</section>
+
+<div class="container" style="padding-bottom:4rem;">
+    {% if listings %}
+        <div class="listing-grid" style="margin-top:2rem;">
+            {% for listing in listings %}
+                <article class="listing-card" data-reveal>
+                    <a href="{% url 'listing_detail' listing.pk %}">
+                        <div class="listing-image-wrapper">
+                            {% if listing.image %}
+                                <img src="{{ listing.image.url }}" alt="{{ listing.title }}" loading="lazy">
+                            {% else %}
+                                {% with extra_image=listing.images.first %}
+                                    {% if extra_image %}
+                                        <img src="{{ extra_image.image.url }}" alt="{{ listing.title }}" loading="lazy">
+                                    {% else %}
+                                        <div class="placeholder">Pas de photo</div>
+                                    {% endif %}
+                                {% endwith %}
+                            {% endif %}
+                            {% if listing.is_featured %}<span class="listing-badge">En vedette</span>{% endif %}
+                        </div>
+                        <div class="listing-content">
+                            <div class="listing-badges">
+                                <span class="pill">{{ listing.get_property_type_display }}</span>
+                                <span class="pill pill-mint">{{ listing.get_listing_type_display }}</span>
+                            </div>
+                            <h3>{{ listing.title }}</h3>
+                            <div class="listing-location">
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                                <span>{{ listing.city }}</span>{% if listing.district %}<span>•</span><span>{{ listing.district }}</span>{% endif %}
+                            </div>
+                            <div class="listing-specs">
+                                <div class="spec-item"><strong>{{ listing.surface_area }}</strong><small>m²</small></div>
+                                <div class="spec-item"><strong>{{ listing.bedrooms }}</strong><small>ch.</small></div>
+                                <div class="spec-item"><strong>{{ listing.price|floatformat:0 }}</strong><small>MAD</small></div>
+                            </div>
+                            <div class="listing-footer">
+                                <small class="meta-copy">{{ listing.views_count }} vue{{ listing.views_count|pluralize }}</small>
+                                <span class="listing-contact-cta">Consulter →</span>
+                            </div>
+                        </div>
+                    </a>
+                    <div style="padding:.75rem 1.25rem;border-top:1px solid var(--border);">
+                        <a href="{% url 'toggle_favorite' listing.pk %}" class="dash-action-btn-del" style="font-size:.8rem;padding:.4rem .75rem;border-radius:.4rem;">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>
+                            Retirer des favoris
+                        </a>
+                    </div>
+                </article>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="dash-empty" style="margin-top:3rem;">
+            <div class="dash-empty-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="28" height="28"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+            </div>
+            <h3>Aucun favori pour le moment</h3>
+            <p>Ajoutez des biens à vos favoris pour les comparer ou les retrouver plus tard.</p>
+            <a href="{% url 'listing_list' %}" class="btn-hero-prim" style="display:inline-flex;align-items:center;gap:.5rem;margin-top:1rem;">Explorer les annonces</a>
+        </div>
+    {% endif %}
+</div>
+
+{% endblock %}

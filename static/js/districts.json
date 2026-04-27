@@ -1,0 +1,76 @@
+{
+    "Casablanca": [
+        "Centre-ville",
+        "Anfa",
+        "Gautier",
+        "Ain Sebaa",
+        "Sidi Belyout",
+        "Racine",
+        "Hay Mohammadi",
+        "Bourgogne",
+        "California",
+        "Mers Sultan"
+    ],
+    "Rabat": [
+        "Yacoub Mansour",
+        "Agdal",
+        "Souissi",
+        "Salé",
+        "Hay Riad",
+        "Centre-ville",
+        "Salammbo",
+        "Takadoum"
+    ],
+    "Fès": [
+        "Nouvelle Fès",
+        "Medina",
+        "Saïss",
+        "Ville Nouvelle",
+        "Hay Salam",
+        "Agdal"
+    ],
+    "Marrakech": [
+        "Medina",
+        "Nouvelle Ville",
+        "Hivernage",
+        "Guéliz",
+        "Oasis",
+        "Amnéjar",
+        "Semlalia"
+    ],
+    "Agadir": [
+        "Centre-ville",
+        "Talborjt",
+        "Anza",
+        "Unité",
+        "Secteur Balneaire"
+    ],
+    "Tanger": [
+        "Centre-ville",
+        "Médina",
+        "Nouvelle Ville",
+        "Marshan",
+        "Malabata"
+    ],
+    "Meknes": [
+        "Médina",
+        "Ville Nouvelle",
+        "Hamriya",
+        "Sakane"
+    ],
+    "Oujda": [
+        "Centre-ville",
+        "Nouvelle Ville",
+        "Hay Salam"
+    ],
+    "Safi": [
+        "Centre-ville",
+        "Port",
+        "Nouvelle Ville"
+    ],
+    "Essaouira": [
+        "Médina",
+        "Centre-ville",
+        "El Menzah"
+    ]
+}

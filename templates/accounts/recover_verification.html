@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+{% block title %}Retrouver mes confirmations — YalazAgence{% endblock %}
+
+{% block content %}
+<div class="auth-split">
+
+    <!-- LEFT -->
+    <div class="auth-split-left">
+        <div class="auth-left-inner">
+            <div class="auth-left-logo">
+                {% load static %}
+                {% get_media_prefix as MEDIA_PREFIX %}
+                <span class="brand-mark"><img src="{{ MEDIA_PREFIX }}front/logo_yalaz.png" alt="Logo" width="44" height="44"></span>
+                <span class="auth-left-logo-name">Yalaz</span>
+            </div>
+            <h2 class="auth-left-heading">Reprenez votre<br><em>parcours d'activation</em></h2>
+            <p class="auth-left-sub">Saisissez l'adresse email utilisée lors de l'inscription pour relancer les confirmations et revenir sur l'écran de vérification.</p>
+            <div class="auth-left-benefits">
+                <div class="auth-benefit">
+                    <div class="auth-benefit-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" width="16" height="16"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div>
+                    <div class="auth-benefit-text">
+                        <strong>Relance du lien email</strong>
+                        <span>Un nouveau lien de confirmation est envoyé</span>
+                    </div>
+                </div>
+                <div class="auth-benefit">
+                    <div class="auth-benefit-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" width="16" height="16"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.13 11.5 19.79 19.79 0 0 1 1.06 2.84 2 2 0 0 1 3 .66h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.09 8.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21 16z"/></svg></div>
+                    <div class="auth-benefit-text">
+                        <strong>Relance du code SMS</strong>
+                        <span>Si disponible sur votre compte</span>
+                    </div>
+                </div>
+                <div class="auth-benefit">
+                    <div class="auth-benefit-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" width="16" height="16"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.21"/></svg></div>
+                    <div class="auth-benefit-text">
+                        <strong>Reprise du parcours</strong>
+                        <span>Sans avoir à recréer de compte</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- RIGHT -->
+    <div class="auth-split-right">
+        <div class="auth-right-card">
+            <div class="auth-card-head">
+                <span class="eyebrow">Retrouver mon compte</span>
+                <h2>Relancer les confirmations</h2>
+                <p>Utilisez l'email du compte en attente d'activation.</p>
+            </div>
+
+            <form method="post" class="auth-form-grid">
+                {% csrf_token %}
+                {% if form.non_field_errors %}
+                    <div class="cform-alert cform-alert-error">{% for e in form.non_field_errors %}{{ e }}{% endfor %}</div>
+                {% endif %}
+                <div class="auth-field">
+                    <label for="{{ form.email.id_for_label }}">{{ form.email.label }}</label>
+                    {{ form.email }}
+                    {% if form.email.errors %}<div class="auth-field-errors">{% for e in form.email.errors %}<span class="auth-field-error">{{ e }}</span>{% endfor %}</div>{% endif %}
+                </div>
+                <button type="submit" class="auth-submit-btn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.21"/></svg>
+                    Retrouver et relancer
+                </button>
+            </form>
+
+            <div class="auth-links">
+                <a href="{% url 'signup' %}">Pas encore de compte ? <strong>Créer un compte</strong></a>
+                <a href="{% url 'login' %}">Déjà activé ? <strong>Se connecter</strong></a>
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

@@ -1,0 +1,14 @@
+Bonjour,
+
+{{ requester_name }} vient de {{ contact.created_at|date:"d/m/Y H:i" }} vous envoyer une demande pour l annonce "{{ listing.title }}".
+
+Email : {{ contact.email }}
+{% if contact.phone %}Telephone : {{ contact.phone }}{% endif %}
+
+Message :
+{{ contact.message }}
+
+Voir l annonce :
+{{ listing_url }}
+
+L equipe {{ platform_name }}

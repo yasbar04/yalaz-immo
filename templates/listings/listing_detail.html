@@ -1,0 +1,436 @@
+{% extends 'base.html' %}
+
+{% block seo_keywords %}{{ listing.title }}, {{ listing.get_property_type_display }} à {{ listing.listing_type }} {{ listing.city }} maroc, immobilier maroc, {% if listing.bedrooms %}{{ listing.bedrooms }} chambre{{ listing.bedrooms|pluralize }}{% endif %}{% endblock %}
+
+{% block meta_description %}{{ listing.title }} - {% if listing.listing_type == 'rent' %}À louer{% else %}À vendre{% endif %} à {{ listing.city }}{% if listing.district %}, {{ listing.district }}{% endif %} - {{ listing.surface_area }}m² - {{ listing.bedrooms }} chambre{{ listing.bedrooms|pluralize }} | YalazAgence Maroc{% endblock %}
+
+{% block og_title %}{{ listing.title }} - {{ listing.get_property_type_display }} à {{ listing.listing_type }} | YalazAgence{% endblock %}
+
+{% block og_description %}{{ listing.title|truncatewords:20 }} - {% if listing.listing_type == 'rent' %}À louer{% else %}À vendre{% endif %} à {{ listing.city }} Maroc. {{ listing.bedrooms }} chambre{{ listing.bedrooms|pluralize }}, {{ listing.bathrooms }} sdb, {{ listing.surface_area }}m².{% endblock %}
+
+{% block og_type %}property{% endblock %}
+
+{% block title %}{{ listing.title }} - {% if listing.listing_type == 'rent' %}Location{% else %}Vente{% endif %} {{ listing.city }} | YalazAgence{% endblock %}
+
+{% block content %}
+<div class="container detail-prem-shell" style="max-width:1200px;">
+
+    <!-- TOP: Gallery + Summary -->
+    <div class="detail-prem-top">
+
+        <!-- GALLERY -->
+        <div class="detail-prem-gallery">
+            <div class="detail-prem-main-img" id="mainImageWrap">
+                {% if gallery_images %}
+                    <img src="{{ gallery_images.0.url }}" alt="{{ gallery_images.0.alt }}" id="mainImage">
+                    <div class="detail-prem-badges">
+                        <span class="detail-prem-chip">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                            {{ photo_count }} photo{{ photo_count|pluralize }}
+                        </span>
+                        <span class="detail-prem-chip">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                            {{ listing.views_count }} vue{{ listing.views_count|pluralize }}
+                        </span>
+                    </div>
+                {% else %}
+                    <div style="display:flex;align-items:center;justify-content:center;height:100%;min-height:280px;color:var(--muted);">
+                        <span>Aucune photo disponible</span>
+                    </div>
+                {% endif %}
+            </div>
+
+            {% if photo_count > 1 %}
+                <div class="detail-prem-thumb-strip">
+                    {% for image in gallery_images %}
+                        <div
+                            class="detail-prem-thumb {% if forloop.first %}is-active{% endif %}"
+                            onclick="switchImage('{{ image.url }}', '{{ image.alt }}', this)"
+                        >
+                            <img src="{{ image.url }}" alt="{{ image.alt }}">
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <div class="detail-prem-gallery-foot">
+                <div>
+                    <p class="eyebrow" style="color:var(--muted);margin-bottom:.2rem;">Expérience visuelle</p>
+                    <p style="font-size:.875rem;font-weight:600;color:var(--ink);">{{ listing.title }}</p>
+                </div>
+                <div style="display:flex;gap:.5rem;">
+                    <span class="detail-prem-chip">Réf. #{{ listing.pk }}</span>
+                    <span class="detail-prem-chip">{{ listing.created_at|date:"d/m/Y" }}</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- SUMMARY -->
+        <div class="detail-prem-summary">
+            <div class="detail-prem-summary-head">
+                <div class="listing-badges" style="margin-bottom:.875rem;">
+                    <span class="pill pill-mint">{{ listing.get_listing_type_display }}</span>
+                    <span class="pill">{{ listing.get_property_type_display }}</span>
+                    <span class="pill status-{{ listing.status }}">{{ listing.get_status_display }}</span>
+                    {% if listing.is_featured %}<span class="pill pill-gold">Mis en avant</span>{% endif %}
+                </div>
+
+                {% if user == listing.owner %}
+                    <div class="detail-prem-owner-banner">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                        <span><strong>Vue propriétaire</strong> — Vous consultez votre propre annonce.</span>
+                    </div>
+                {% endif %}
+
+                <h1 class="detail-prem-title">{{ listing.title }}</h1>
+                <p class="detail-prem-location">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                    {{ listing.city }}{% if listing.district %} — {{ listing.district }}{% endif %}
+                </p>
+            </div>
+
+            <div class="detail-prem-price-bar">
+                <div>
+                    <p class="detail-prem-price-sub">Prix</p>
+                    <p class="detail-prem-price">{{ listing.price|floatformat:0 }} MAD</p>
+                </div>
+                <div style="text-align:right;">
+                    <p class="detail-prem-price-sub">Publication</p>
+                    <p style="font-size:.875rem;font-weight:600;color:var(--ink);">{{ listing.created_at|date:"d/m/Y" }}</p>
+                </div>
+            </div>
+
+            <div class="detail-prem-metrics">
+                {% for metric in detail_metrics %}
+                    <div class="detail-prem-metric">
+                        <strong>{{ metric.value }}</strong>
+                        <span>{{ metric.label }}</span>
+                    </div>
+                {% endfor %}
+            </div>
+
+            <div class="detail-prem-chips">
+                <div class="detail-prem-info-chip">
+                    <span>Référence</span>
+                    <strong>#{{ listing.pk }}</strong>
+                </div>
+                <div class="detail-prem-info-chip" style="margin-left:1.5rem;">
+                    <span>Propriétaire</span>
+                    <strong>{{ owner_display_name }}</strong>
+                </div>
+                <div class="detail-prem-info-chip" style="margin-left:1.5rem;">
+                    <span>Mise à jour</span>
+                    <strong>{{ listing.updated_at|date:"d/m/Y" }}</strong>
+                </div>
+            </div>
+
+            {% if amenities %}
+                <div class="detail-prem-amenity-badges">
+                    {% for amenity in amenities|slice:":5" %}
+                        <span class="detail-prem-amenity-badge">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="10" height="10"><polyline points="20 6 9 17 4 12"/></svg>
+                            {{ amenity }}
+                        </span>
+                    {% endfor %}
+                    {% if amenities|length > 5 %}
+                        <span class="detail-prem-amenity-badge" style="background:var(--bg);color:var(--muted);border-color:var(--border-light);">+{{ amenities|length|add:"-5" }} autres</span>
+                    {% endif %}
+                </div>
+            {% endif %}
+
+            <div class="detail-prem-actions">
+                {% if user == listing.owner %}
+                    {% if can_edit %}
+                        <a href="{% url 'listing_edit' listing.pk %}" class="btn-hero-prim">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                            Modifier l'annonce
+                        </a>
+                    {% else %}
+                        <button class="btn-hero-sec" disabled style="opacity:.5;cursor:not-allowed;">Modification verrouillée</button>
+                        <small style="font-size:.75rem;color:var(--muted);text-align:center;">Une annonce publiée doit passer par l'équipe admin pour être modifiée.</small>
+                    {% endif %}
+                    {% if can_delete %}
+                        <a href="{% url 'listing_delete' listing.pk %}" class="btn-hero-sec" style="border-color:var(--danger);color:var(--danger);">Supprimer</a>
+                    {% else %}
+                        <button class="btn-hero-sec" disabled style="opacity:.5;cursor:not-allowed;">Suppression verrouillée</button>
+                    {% endif %}
+                {% else %}
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'contact_owner' listing.pk %}" class="btn-hero-prim">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                            {% if contact_sent %}Modifier ma demande{% else %}Contacter le propriétaire{% endif %}
+                        </a>
+                        <a href="{% url 'toggle_favorite' listing.pk %}" class="btn-hero-sec">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"{% if is_favorite %} fill="currentColor"{% endif %}/></svg>
+                            {% if is_favorite %}Retirer des favoris{% else %}Ajouter aux favoris{% endif %}
+                        </a>
+                        <a href="{% url 'report_listing' listing.pk %}" style="font-size:.78rem;color:var(--muted);text-align:center;text-decoration:none;">Signaler cette annonce</a>
+                    {% else %}
+                        <a href="{% url 'login' %}" class="btn-hero-prim">Se connecter pour contacter</a>
+                    {% endif %}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- BODY GRID: Content + Sidebar -->
+    <div class="detail-prem-body-grid">
+
+        <!-- MAIN COLUMN -->
+        <div class="detail-prem-main-col">
+
+            <!-- Description -->
+            <div class="admin-panel-card">
+                <div class="admin-panel-head">
+                    <div>
+                        <span class="eyebrow" style="color:var(--gold);display:block;margin-bottom:.25rem;">Description</span>
+                        <h2>Ce qu'il faut savoir sur le bien</h2>
+                    </div>
+                </div>
+                <div style="padding:1.5rem;font-size:.9rem;color:var(--text);line-height:1.8;">
+                    {{ listing.description|linebreaks }}
+                </div>
+            </div>
+
+            <!-- Informations clés -->
+            <div class="admin-panel-card">
+                <div class="admin-panel-head">
+                    <div>
+                        <span class="eyebrow" style="color:var(--gold);display:block;margin-bottom:.25rem;">Informations clés</span>
+                        <h2>Lecture rapide de l'annonce</h2>
+                    </div>
+                </div>
+                <div class="detail-prem-facts-grid">
+                    {% for item in property_details %}
+                        <div class="detail-prem-fact">
+                            <span>{{ item.label }}</span>
+                            <strong>
+                                {% if item.is_datetime %}{{ item.value|date:"d/m/Y" }}{% else %}{{ item.value }}{% endif %}
+                            </strong>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Équipements -->
+            {% if amenities %}
+                <div class="admin-panel-card">
+                    <div class="admin-panel-head">
+                        <div>
+                            <span class="eyebrow" style="color:var(--gold);display:block;margin-bottom:.25rem;">Confort et services</span>
+                            <h2>Équipements disponibles</h2>
+                        </div>
+                    </div>
+                    <div class="detail-prem-amenities-grid">
+                        {% for amenity in amenities %}
+                            <div class="detail-prem-amenity-item">
+                                <span class="detail-prem-amenity-dot"></span>
+                                {{ amenity }}
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endif %}
+
+            <!-- Messages (si propriétaire) -->
+            {% if user == listing.owner %}
+                <div class="admin-panel-card">
+                    <div class="admin-panel-head">
+                        <div>
+                            <span class="eyebrow" style="color:var(--gold);display:block;margin-bottom:.25rem;">Messages reçus</span>
+                            <h2>{{ listing.contacts.count }} contact{{ listing.contacts.count|pluralize }}</h2>
+                        </div>
+                    </div>
+
+                    {% if listing.contacts.all %}
+                        <div>
+                            {% for contact in listing.contacts.all %}
+                                <div class="detail-prem-contact-item {% if not contact.is_read %}is-unread{% endif %}">
+                                    <p class="detail-prem-contact-name">{{ contact.from_user.username }}</p>
+                                    <p class="detail-prem-contact-date">{{ contact.created_at|date:"d/m/Y à H:i" }}</p>
+                                    <div class="detail-prem-contact-meta">
+                                        <a href="mailto:{{ contact.email }}">{{ contact.email }}</a>
+                                        {% if contact.phone %}<span>{{ contact.phone }}</span>{% endif %}
+                                    </div>
+                                    <p class="detail-prem-contact-msg">{{ contact.message }}</p>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="dash-empty" style="padding:2rem;">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="32" height="32"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                            <p>Aucune demande de contact pour le moment.</p>
+                            <span>Les messages reçus depuis cette annonce apparaîtront ici dès qu'un acheteur vous écrit.</span>
+                        </div>
+                    {% endif %}
+                </div>
+            {% endif %}
+
+        </div>
+
+        <!-- SIDEBAR -->
+        <div class="detail-prem-side-col">
+
+            <!-- Owner card -->
+            <div class="admin-panel-card">
+                <div class="admin-panel-head">
+                    <div>
+                        <span class="eyebrow" style="color:var(--gold);display:block;margin-bottom:.25rem;">Propriétaire</span>
+                        <h2>{{ owner_display_name }}</h2>
+                    </div>
+                </div>
+                <div class="detail-prem-owner-identity">
+                    <div class="detail-prem-owner-avatar">{{ owner_display_name|slice:":1"|upper }}</div>
+                    <div>
+                        <p class="detail-prem-owner-name">{{ owner_display_name }}</p>
+                        <p class="detail-prem-owner-since">Membre depuis {{ listing.owner.date_joined|date:"d/m/Y" }}</p>
+                    </div>
+                </div>
+
+                {% if contact_methods %}
+                    <div class="detail-prem-contact-grid">
+                        {% for method in contact_methods %}
+                            <a href="{{ method.href }}" class="detail-prem-contact-link"
+                               {% if method.is_external %}target="_blank" rel="noopener"{% endif %}>
+                                <div>
+                                    <span>{{ method.label }}</span>
+                                    <strong>{{ method.value }}</strong>
+                                </div>
+                            </a>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div style="padding:1rem 1.5rem;">
+                        <div class="detail-prem-owner-note">
+                            Utilisez le bouton principal pour envoyer une demande de contact.
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Trust indicators -->
+            <div class="admin-panel-card">
+                <div class="admin-panel-head">
+                    <div>
+                        <span class="eyebrow" style="color:var(--gold);display:block;margin-bottom:.25rem;">Repères utiles</span>
+                        <h2>Ce que montre cette fiche</h2>
+                    </div>
+                </div>
+                <div class="detail-prem-trust">
+                    <div class="detail-prem-trust-row">
+                        <span class="detail-prem-trust-label">Photos disponibles</span>
+                        <span class="detail-prem-trust-val">{{ photo_count }}</span>
+                    </div>
+                    <div class="detail-prem-trust-row">
+                        <span class="detail-prem-trust-label">Vues enregistrées</span>
+                        <span class="detail-prem-trust-val">{{ listing.views_count }}</span>
+                    </div>
+                    <div class="detail-prem-trust-row">
+                        <span class="detail-prem-trust-label">Équipements mis en avant</span>
+                        <span class="detail-prem-trust-val">{{ amenities|length }}</span>
+                    </div>
+                </div>
+                <div style="padding:1rem 1.5rem;border-top:1px solid var(--border-light);">
+                    <p style="font-size:.78rem;color:var(--muted);line-height:1.6;">Chaque bloc est pensé pour aider à évaluer rapidement la pertinence du bien avant prise de contact.</p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+<script>
+function switchImage(url, alt, thumbEl) {
+    const mainImg = document.getElementById('mainImage');
+    if (mainImg) {
+        mainImg.src = url;
+        mainImg.alt = alt;
+    }
+    document.querySelectorAll('.detail-prem-thumb').forEach(t => t.classList.remove('is-active'));
+    thumbEl.classList.add('is-active');
+}
+</script>
+{% endblock %}
+
+{% block extra_scripts %}
+<!-- JSON-LD Structured Data for Property -->
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "{% if listing.listing_type == 'sale' %}RealEstateAgent{% else %}Apartment{% endif %}",
+    "name": "{{ listing.title }}",
+    "description": "{{ listing.description|truncatewords:30 }}",
+    "url": "{{ request.build_absolute_uri }}",
+    "image": "{{ gallery_images.0.url }}",
+    "address": {
+        "@type": "PostalAddress",
+        "addressCountry": "MA",
+        "addressRegion": "{{ listing.city }}",
+        "addressLocality": "{{ listing.district }}"
+    },
+    "priceRange": "{{ listing.price }}",
+    "priceCurrency": "MAD",
+    "numberOfRooms": {{ listing.bedrooms }},
+    "numberOfBathroomsUnitComplete": {{ listing.bathrooms }},
+    "floorSize": {
+        "@type": "QuantitativeValue",
+        "value": "{{ listing.surface_area }}",
+        "unitCode": "MTK"
+    },
+    "amenityFeature": [
+        {% if listing.kitchen_equipped %}{"@type": "LocationFeatureSpecification", "name": "cuisine équipée"}{% if listing.swimming_pool or listing.garden or listing.garage or listing.parking or listing.terrace or listing.balcony or listing.air_conditioning or listing.furnished or listing.security %},{% endif %}{% endif %}
+        {% if listing.swimming_pool %}{"@type": "LocationFeatureSpecification", "name": "piscine"}{% if listing.garden or listing.garage or listing.parking or listing.terrace or listing.balcony or listing.air_conditioning or listing.furnished or listing.security %},{% endif %}{% endif %}
+        {% if listing.garden %}{"@type": "LocationFeatureSpecification", "name": "jardin"}{% if listing.garage or listing.parking or listing.terrace or listing.balcony or listing.air_conditioning or listing.furnished or listing.security %},{% endif %}{% endif %}
+        {% if listing.garage %}{"@type": "LocationFeatureSpecification", "name": "garage"}{% if listing.parking or listing.terrace or listing.balcony or listing.air_conditioning or listing.furnished or listing.security %},{% endif %}{% endif %}
+        {% if listing.parking %}{"@type": "LocationFeatureSpecification", "name": "parking"}{% if listing.terrace or listing.balcony or listing.air_conditioning or listing.furnished or listing.security %},{% endif %}{% endif %}
+        {% if listing.terrace %}{"@type": "LocationFeatureSpecification", "name": "terrasse"}{% if listing.balcony or listing.air_conditioning or listing.furnished or listing.security %},{% endif %}{% endif %}
+        {% if listing.balcony %}{"@type": "LocationFeatureSpecification", "name": "balcon"}{% if listing.air_conditioning or listing.furnished or listing.security %},{% endif %}{% endif %}
+        {% if listing.air_conditioning %}{"@type": "LocationFeatureSpecification", "name": "climatisation"}{% if listing.furnished or listing.security %},{% endif %}{% endif %}
+        {% if listing.furnished %}{"@type": "LocationFeatureSpecification", "name": "meublé"}{% if listing.security %},{% endif %}{% endif %}
+        {% if listing.security %}{"@type": "LocationFeatureSpecification", "name": "gardiennage/sécurité"}{% endif %}
+    ],
+    "offers": {
+        "@type": "Offer",
+        "priceCurrency": "MAD",
+        "price": "{{ listing.price }}",
+        "availability": "https://schema.org/InStock",
+        "url": "{{ request.build_absolute_uri }}"
+    },
+    "agent": {
+        "@type": "RealEstateAgent",
+        "name": "{{ listing.owner.get_full_name }}",
+        "email": "{{ listing.owner_email }}",
+        "telephone": "{{ listing.owner_phone }}"
+    }
+}
+</script>
+
+<!-- Breadcrumb Schema -->
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+        {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Accueil",
+            "item": "{% url 'home' %}"
+        },
+        {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "Annonces",
+            "item": "{% url 'listing_list' %}"
+        },
+        {
+            "@type": "ListItem",
+            "position": 3,
+            "name": "{{ listing.title }}",
+            "item": "{{ request.build_absolute_uri }}"
+        }
+    ]
+}
+</script>
+{% endblock %}

@@ -1,0 +1,114 @@
+{% extends 'base.html' %}
+{% block title %}Signalement #{{ report.id }} | Admin YalazAgence{% endblock %}
+
+{% block content %}
+
+<div class="admin-prem-header">
+    <div class="container admin-header-inner">
+        <div>
+            <a href="{% url 'admin_reports' %}" class="admin-back-pill">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><path d="M15 18l-6-6 6-6"/></svg>
+                Signalements
+            </a>
+            <span class="eyebrow" style="display:block;margin-top:.5rem;">Détail signalement</span>
+            <h1>Signalement #{{ report.id }}</h1>
+            <p class="meta-copy">{{ report.get_report_type_display }} · {{ report.created_at|date:"d/m/Y H:i" }}</p>
+        </div>
+    </div>
+</div>
+
+<div class="container" style="padding-bottom:4rem;">
+    <div style="display:grid;grid-template-columns:1fr 340px;gap:1.5rem;align-items:start;">
+
+        <!-- Report info -->
+        <div class="admin-panel-card">
+            <div class="listing-badges" style="margin-bottom:1.25rem;">
+                <span class="pill status-{{ report.status }}">{{ report.get_status_display }}</span>
+                <span class="pill">{{ report.get_report_type_display }}</span>
+            </div>
+
+            <div class="profile-detail-list">
+                <div class="profile-detail-item">
+                    <span>Signalé par</span>
+                    <strong>{{ report.reporter.username }} — {{ report.reporter.email }}</strong>
+                </div>
+                {% if report.reported_user %}
+                    <div class="profile-detail-item">
+                        <span>Utilisateur visé</span>
+                        <a href="{% url 'admin_user_detail' report.reported_user.id %}" style="color:var(--gold-dark);font-weight:600;text-decoration:none;">{{ report.reported_user.username }}</a>
+                    </div>
+                {% endif %}
+                {% if report.listing %}
+                    <div class="profile-detail-item">
+                        <span>Annonce visée</span>
+                        <a href="{% url 'admin_listing_detail' report.listing.pk %}" style="color:var(--gold-dark);font-weight:600;text-decoration:none;">{{ report.listing.title }}</a>
+                    </div>
+                {% endif %}
+            </div>
+
+            <div style="margin-top:1.5rem;">
+                <span class="eyebrow">Raison du signalement</span>
+                <div class="description-content" style="margin-top:.75rem;">
+                    {{ report.reason|linebreaks }}
+                </div>
+            </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="admin-panel-card">
+            <div class="admin-panel-head"><h2>Actions admin</h2></div>
+            <form method="post" style="display:flex;flex-direction:column;gap:.75rem;">
+                {% csrf_token %}
+                <div style="margin-bottom:.25rem;">
+                    <label style="font-size:.8rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:.5rem;">Note interne</label>
+                    <textarea name="admin_note" rows="5" placeholder="Ajouter une note pour l'équipe…" style="width:100%;border:1px solid var(--border);border-radius:.5rem;padding:.75rem;font-size:.875rem;font-family:inherit;background:var(--surface);color:var(--ink);resize:vertical;">{{ report.admin_note }}</textarea>
+                </div>
+                {% if report.status == 'pending' %}
+                    <button type="submit" name="action" value="review" class="admin-action-btn-prem">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                        Marquer comme examiné
+                    </button>
+                {% endif %}
+                {% if report.status != 'resolved' %}
+                    <button type="submit" name="action" value="resolve" class="btn-hero-prim" style="border-radius:.5rem;" onclick="return confirm('Cette action supprimera l\'annonce. Continuer ?');">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><polyline points="20 6 9 17 4 12"/></svg>
+                        Résoudre et supprimer l'annonce
+                    </button>
+                {% endif %}
+                {% if report.status != 'dismissed' %}
+                    <button type="submit" name="action" value="dismiss" class="admin-action-btn-prem is-danger">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                        Rejeter le signalement
+                    </button>
+                {% endif %}
+            </form>
+        </div>
+    </div>
+
+    {% if report.listing %}
+        <div class="admin-panel-card" style="margin-top:1.5rem;">
+            <div class="admin-panel-head">
+                <div>
+                    <span class="eyebrow">Aperçu annonce</span>
+                    <h2>{{ report.listing.title }}</h2>
+                    <p class="meta-copy">{{ report.listing.get_status_display }} · {{ report.listing.get_property_type_display }}</p>
+                </div>
+                <a href="{% url 'admin_listing_detail' report.listing.pk %}" class="btn-hero-sec" style="font-size:.8rem;padding:.5rem 1rem;">Voir l'annonce</a>
+            </div>
+            <div class="description-content" style="margin-top:1rem;">
+                {{ report.listing.description|linebreaks }}
+            </div>
+            {% if report.listing.images.all %}
+                <div class="listing-grid" style="grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:.75rem;margin-top:1rem;">
+                    {% for image in report.listing.images.all %}
+                        <div style="border-radius:.5rem;overflow:hidden;aspect-ratio:4/3;">
+                            <img src="{{ image.image.url }}" alt="{{ image.alt_text|default:report.listing.title }}" style="width:100%;height:100%;object-fit:cover;">
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+    {% endif %}
+
+</div>
+{% endblock %}

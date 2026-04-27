@@ -1,0 +1,133 @@
+{% extends 'base.html' %}
+{% block title %}Activation du compte — YalazAgence{% endblock %}
+
+{% block content %}
+<div class="verify-prem-layout">
+
+    <!-- LEFT -->
+    <div class="verify-prem-left">
+        <div class="verify-prem-inner">
+            <div class="auth-left-logo">
+                {% load static %}
+                {% get_media_prefix as MEDIA_PREFIX %}
+                <span class="brand-mark"><img src="{{ MEDIA_PREFIX }}front/logo_yalaz.png" alt="Logo" width="44" height="44"></span>
+                <span class="auth-left-logo-name">Yalaz</span>
+            </div>
+            <h2 class="auth-left-heading">Finalisez votre<br><em>activation de compte</em></h2>
+            <p class="auth-left-sub">Confirmez votre email et votre numéro de téléphone pour activer votre espace professionnel Yalaz.</p>
+
+            <div class="verify-status-cards">
+                <div class="verify-status-card {% if email_verified %}is-done{% endif %}">
+                    <div class="verify-status-icon">
+                        {% if email_verified %}
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><polyline points="20 6 9 17 4 12"/></svg>
+                        {% else %}
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                        {% endif %}
+                    </div>
+                    <div class="verify-status-body">
+                        <strong>Email</strong>
+                        <span>{{ masked_email }}</span>
+                        <em>{% if email_verified %}Confirmé{% else %}En attente{% endif %}</em>
+                    </div>
+                </div>
+                <div class="verify-status-card {% if phone_verified %}is-done{% endif %}">
+                    <div class="verify-status-icon">
+                        {% if phone_verified %}
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><polyline points="20 6 9 17 4 12"/></svg>
+                        {% else %}
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.13 11.5 19.79 19.79 0 0 1 1.06 2.84 2 2 0 0 1 3 .66h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.09 8.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21 16z"/></svg>
+                        {% endif %}
+                    </div>
+                    <div class="verify-status-body">
+                        <strong>SMS</strong>
+                        <span>{{ masked_phone }}</span>
+                        <em>{% if phone_verified %}Confirmé{% else %}En attente{% endif %}</em>
+                    </div>
+                </div>
+            </div>
+
+            <div class="verify-step-list">
+                <div class="verify-step {% if email_verified %}is-done{% endif %}">
+                    <div class="verify-step-num">{% if email_verified %}<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="14" height="14"><polyline points="20 6 9 17 4 12"/></svg>{% else %}1{% endif %}</div>
+                    <div>
+                        <strong>Confirmer l'email</strong>
+                        <span>Cliquez sur le lien reçu dans votre boîte mail</span>
+                    </div>
+                </div>
+                <div class="verify-step {% if phone_verified %}is-done{% endif %}">
+                    <div class="verify-step-num">{% if phone_verified %}<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="14" height="14"><polyline points="20 6 9 17 4 12"/></svg>{% else %}2{% endif %}</div>
+                    <div>
+                        <strong>Valider le code SMS</strong>
+                        <span>Saisissez le code à 6 chiffres reçu par SMS</span>
+                    </div>
+                </div>
+                <div class="verify-step">
+                    <div class="verify-step-num">3</div>
+                    <div>
+                        <strong>Compte activé</strong>
+                        <span>Accédez à votre espace professionnel complet</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- RIGHT -->
+    <div class="verify-prem-right">
+        <div class="verify-prem-card">
+            <div class="auth-card-head">
+                <span class="eyebrow">Vérification</span>
+                <h2>Finaliser l'activation</h2>
+                <p>Une fois les deux confirmations validées, votre compte devient actif automatiquement.</p>
+            </div>
+
+            {% if not phone_verified %}
+                <form method="post" class="auth-form-grid">
+                    {% csrf_token %}
+                    {% if form.non_field_errors %}
+                        <div class="cform-alert cform-alert-error">{% for e in form.non_field_errors %}{{ e }}{% endfor %}</div>
+                    {% endif %}
+                    <div class="auth-field auth-field-full">
+                        <label for="{{ form.sms_code.id_for_label }}">{{ form.sms_code.label }}</label>
+                        {{ form.sms_code }}
+                        {% if form.sms_code.errors %}<div class="auth-field-errors">{% for e in form.sms_code.errors %}<span class="auth-field-error">{{ e }}</span>{% endfor %}</div>{% endif %}
+                    </div>
+                    <button type="submit" class="auth-submit-btn">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><polyline points="20 6 9 17 4 12"/></svg>
+                        Vérifier le code SMS
+                    </button>
+                </form>
+            {% else %}
+                <div class="verify-success-banner">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="24" height="24"><polyline points="20 6 9 17 4 12"/></svg>
+                    <div>
+                        <strong>Numéro confirmé</strong>
+                        <p>Votre vérification SMS est validée. Si l'email est aussi confirmé, l'activation est immédiate.</p>
+                    </div>
+                </div>
+            {% endif %}
+
+            <div class="verify-resend-row">
+                <form method="post" action="{% url 'resend_email_verification' %}">
+                    {% csrf_token %}
+                    <button type="submit" class="verify-resend-btn">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.21"/></svg>
+                        Renvoyer l'email
+                    </button>
+                </form>
+                <form method="post" action="{% url 'resend_sms_verification' %}">
+                    {% csrf_token %}
+                    <button type="submit" class="verify-resend-btn">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.21"/></svg>
+                        Renvoyer le SMS
+                    </button>
+                </form>
+            </div>
+
+            <p class="auth-field-hint" style="text-align:center;margin-top:1rem;">Pas de message reçu ? Vérifiez vos spams, puis relancez un envoi si besoin.</p>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

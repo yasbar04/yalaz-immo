@@ -1,0 +1,11 @@
+Bonjour {{ user.first_name|default:user.username }},
+
+Bonne nouvelle : votre annonce "{{ listing.title }}" a ete validee par notre equipe.
+
+Elle est maintenant visible sur {{ platform_name }} :
+{{ listing_url }}
+
+Vous pouvez aussi la suivre depuis votre espace :
+{{ dashboard_url }}
+
+L equipe {{ platform_name }}

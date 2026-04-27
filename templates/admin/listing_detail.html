@@ -1,0 +1,133 @@
+{% extends 'base.html' %}
+{% block title %}{{ listing.title }} | Admin YalazAgence{% endblock %}
+
+{% block content %}
+
+<div class="admin-prem-header">
+    <div class="container admin-header-inner">
+        <div>
+            <a href="{% url 'admin_listings' %}" class="admin-back-pill">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><path d="M15 18l-6-6 6-6"/></svg>
+                Annonces
+            </a>
+            <span class="eyebrow" style="display:block;margin-top:.5rem;">Détail annonce</span>
+            <h1>{{ listing.title }}</h1>
+            <p class="meta-copy">{{ listing.owner.username }} · {{ listing.city }} · {{ listing.price|floatformat:0 }} MAD</p>
+        </div>
+    </div>
+</div>
+
+<div class="container" style="padding-bottom:4rem;">
+    <div style="display:grid;grid-template-columns:1fr 340px;gap:1.5rem;align-items:start;">
+
+        <!-- Main info -->
+        <div class="admin-panel-card">
+            <div class="listing-badges" style="margin-bottom:1rem;">
+                <span class="pill status-{{ listing.status }}">{{ listing.get_status_display }}</span>
+                <span class="pill">{{ listing.get_property_type_display }}</span>
+                <span class="pill pill-mint">{{ listing.get_listing_type_display }}</span>
+                {% if listing.is_featured %}<span class="pill pill-gold">Mise en avant</span>{% endif %}
+            </div>
+
+            <div class="admin-stats-4" style="margin-bottom:1.5rem;">
+                <div class="admin-stat-prem" style="padding:1rem;">
+                    <div class="admin-stat-body">
+                        <strong>{{ listing.views_count }}</strong>
+                        <span>Vues</span>
+                    </div>
+                </div>
+                <div class="admin-stat-prem" style="padding:1rem;">
+                    <div class="admin-stat-body">
+                        <strong>{{ listing.contacts.count }}</strong>
+                        <span>Contacts</span>
+                    </div>
+                </div>
+                <div class="admin-stat-prem" style="padding:1rem;">
+                    <div class="admin-stat-body">
+                        <strong>{{ listing.favorited_by.count }}</strong>
+                        <span>Favoris</span>
+                    </div>
+                </div>
+                <div class="admin-stat-prem" style="padding:1rem;">
+                    <div class="admin-stat-body">
+                        <strong>{{ listing.created_at|date:"d/m/Y" }}</strong>
+                        <span>Création</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="description-content">
+                {{ listing.description|linebreaks }}
+            </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="admin-panel-card">
+            <div class="admin-panel-head"><h2>Actions admin</h2></div>
+            <form method="post" style="display:flex;flex-direction:column;gap:.75rem;">
+                {% csrf_token %}
+                {% if listing.status == 'pending' %}
+                    <button type="submit" name="action" value="approve" class="btn-hero-prim" style="border-radius:.5rem;">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><polyline points="20 6 9 17 4 12"/></svg>
+                        Approuver et publier
+                    </button>
+                    <button type="submit" name="action" value="reject" class="admin-action-btn-prem is-danger">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                        Rejeter
+                    </button>
+                {% endif %}
+                <button type="submit" name="action" value="feature" class="admin-action-btn-prem">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                    {% if listing.is_featured %}Retirer la mise en avant{% else %}Mettre en avant{% endif %}
+                </button>
+                <button type="submit" name="action" value="delete" class="admin-action-btn-prem is-danger" onclick="return confirm('Supprimer cette annonce ?');">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>
+                    Supprimer l'annonce
+                </button>
+            </form>
+        </div>
+    </div>
+
+    {% if listing.images.all %}
+        <div class="admin-panel-card" style="margin-top:1.5rem;">
+            <div class="admin-panel-head">
+                <h2>Galerie photos</h2>
+                <span class="meta-copy">{{ listing.images.count }} photo{{ listing.images.count|pluralize }}</span>
+            </div>
+            <div class="listing-grid" style="grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:1rem;">
+                {% for image in listing.images.all %}
+                    <div style="border-radius:.75rem;overflow:hidden;aspect-ratio:4/3;">
+                        <img src="{{ image.image.url }}" alt="{{ image.alt_text|default:listing.title }}" style="width:100%;height:100%;object-fit:cover;">
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
+
+    {% if listing.contacts.all %}
+        <div class="admin-panel-card" style="margin-top:1.5rem;">
+            <div class="admin-panel-head">
+                <h2>Demandes de contact</h2>
+                <span class="meta-copy">{{ listing.contacts.count }} message{{ listing.contacts.count|pluralize }}</span>
+            </div>
+            <div class="admin-prem-list">
+                {% for contact in listing.contacts.all %}
+                    <div class="admin-prem-item" style="flex-direction:column;align-items:flex-start;gap:.5rem;">
+                        <div style="display:flex;justify-content:space-between;width:100%;">
+                            <strong>{{ contact.from_user.username }}</strong>
+                            <span class="meta-copy" style="font-size:.8rem;">{{ contact.created_at|date:"d/m/Y H:i" }}</span>
+                        </div>
+                        <div class="admin-item-meta">
+                            <span>{{ contact.email }}</span>
+                            {% if contact.phone %}<span>{{ contact.phone }}</span>{% endif %}
+                            <span>{% if contact.is_read %}Lu{% else %}<em style="color:var(--gold-dark);">Non lu</em>{% endif %}</span>
+                        </div>
+                        <p style="font-size:.875rem;color:var(--muted);margin:0;">{{ contact.message|truncatewords:30 }}</p>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
+
+</div>
+{% endblock %}

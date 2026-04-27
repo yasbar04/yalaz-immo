@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+{% block title %}Louer un bien — YalazAgence{% endblock %}
+{% block og_title %}Louer un bien | YalazAgence Maroc{% endblock %}
+{% block meta_description %}Large choix de locations au Maroc. Appartements, maisons, riads — trouvez votre location idéale avec YalazAgence.{% endblock %}
+
+{% block content %}
+
+<section class="prem-hero">
+    <div class="container prem-hero-inner">
+        <span class="eyebrow">Large choix de locations</span>
+        <h1>Louer votre bien immobilier</h1>
+        <p class="prem-hero-sub">Un large choix de locations adaptées à vos besoins et votre budget, sélectionnées par nos experts au Maroc.</p>
+    </div>
+</section>
+
+<div class="container">
+    <div class="listings-intro-bar">
+        <div class="listing-count">
+            {% if listings %}
+                <strong>{{ listings|length }}</strong> bien{{ listings|length|pluralize }} disponible{{ listings|length|pluralize }} à la location
+            {% else %}
+                Annonces mises à jour régulièrement
+            {% endif %}
+        </div>
+        <div class="listings-cta-row">
+            <a href="{% url 'listing_list' %}" class="btn btn-secondary">Toutes les annonces</a>
+            <a href="{% url 'contact' %}" class="btn btn-primary">Nous contacter</a>
+        </div>
+    </div>
+
+    {% if listings %}
+        <div class="listing-grid" style="margin-bottom:3rem;">
+            {% for listing in listings %}
+                <article class="listing-card" data-reveal>
+                    <a href="{% url 'listing_detail' listing.pk %}">
+                        <div class="listing-image-wrapper">
+                            {% if listing.image %}
+                                <img src="{{ listing.image.url }}" alt="{{ listing.title }}" loading="lazy">
+                            {% else %}
+                                <div class="placeholder">Pas de photo</div>
+                            {% endif %}
+                            {% if listing.is_featured %}<span class="listing-badge">En vedette</span>{% endif %}
+                        </div>
+                        <div class="listing-content">
+                            <h3>{{ listing.title }}</h3>
+                            <div class="listing-location">
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                                <span>{{ listing.city }}</span>{% if listing.district %}<span>•</span><span>{{ listing.district }}</span>{% endif %}
+                            </div>
+                            <div class="listing-specs">
+                                <div class="spec-item"><strong>{{ listing.surface_area }}</strong><small>m²</small></div>
+                                <div class="spec-item"><strong>{{ listing.bedrooms }}</strong><small>ch.</small></div>
+                                <div class="spec-item"><strong>Location</strong></div>
+                            </div>
+                            <div class="listing-footer">
+                                <small class="meta-copy">{{ listing.views_count }} vue{{ listing.views_count|pluralize }}</small>
+                                <span class="listing-contact-cta">Loyer sur demande →</span>
+                            </div>
+                        </div>
+                    </a>
+                </article>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="dash-empty" style="margin-bottom:3rem;" data-reveal>
+            <div class="dash-empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="28" height="28"><rect x="1" y="3" width="15" height="13" rx="2"/><path d="M16 8h4l3 3v5h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg></div>
+            <h3>Aucun bien disponible à la location pour le moment</h3>
+            <p>Nos annonces sont régulièrement actualisées. Contactez-nous pour une recherche personnalisée.</p>
+            <a href="{% url 'contact' %}" class="btn-hero-prim" style="display:inline-flex;align-items:center;gap:.5rem;margin-top:.5rem;">Nous décrire votre recherche</a>
+        </div>
+    {% endif %}
+
+    <div class="about-contact-section" style="margin-bottom:3rem;">
+        <div>
+            <h2>Vous cherchez un logement spécifique&nbsp;?</h2>
+            <p>Décrivez vos critères à notre équipe et nous cherchons dans notre réseau pour vous trouver la location parfaite.</p>
+        </div>
+        <div class="about-contact-actions">
+            <a href="{% url 'contact' %}" class="btn-hero-prim">Parler à un expert</a>
+            <a href="{% url 'estimate' %}" class="btn-hero-sec">Estimer mon budget</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

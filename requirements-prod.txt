@@ -1,0 +1,24 @@
+Django>=5.0,<6.0
+Pillow>=10.0
+python-dotenv>=1.0
+djangorestframework>=3.14.0
+django-cors-headers>=4.3.0
+django-filter>=22.0
+
+# Production server
+gunicorn>=21.0.0
+
+# Database
+psycopg2-binary>=2.9.0
+
+# Security & monitoring
+django-environ>=0.11.2
+
+# Caching
+redis>=5.0.0
+
+# Error tracking (optional)
+sentry-sdk>=1.40.0
+
+# API documentation
+drf-spectacular>=0.26.0

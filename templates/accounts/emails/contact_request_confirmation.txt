@@ -1,0 +1,8 @@
+Bonjour,
+
+Votre demande concernant "{{ listing.title }}" a bien ete transmise au proprietaire sur {{ platform_name }}.
+
+Vous retrouverez l annonce ici :
+{{ listing_url }}
+
+L equipe {{ platform_name }}

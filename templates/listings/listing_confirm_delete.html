@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block title %}Supprimer l'annonce — YalazAgence{% endblock %}
+
+{% block content %}
+<div class="error-prem-page">
+    <div class="error-prem-card" style="border-color:rgba(153,27,27,0.15);">
+        <div class="error-prem-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="30" height="30"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>
+        </div>
+        <h1 class="error-prem-title">Supprimer l'annonce</h1>
+        <p class="error-prem-desc">
+            Vous allez supprimer définitivement <strong style="color:var(--ink);">{{ listing.title }}</strong> de votre espace. Cette action est irréversible.
+        </p>
+        <form method="post" class="error-prem-actions">
+            {% csrf_token %}
+            <button class="btn-hero-prim" type="submit" style="background:var(--danger);color:#fff;">Supprimer définitivement</button>
+            <a href="{% url 'dashboard' %}" class="btn-hero-sec" style="border-color:var(--border);color:var(--muted);">Annuler</a>
+        </form>
+    </div>
+</div>
+{% endblock %}

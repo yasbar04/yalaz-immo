@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+{% block title %}Modifier mon profil — YalazAgence{% endblock %}
+
+{% block content %}
+
+<section class="prem-hero">
+    <div class="container prem-hero-inner">
+        <span class="eyebrow">Mon espace</span>
+        <h1>Modifier mon profil</h1>
+        <p class="prem-hero-sub">Mettez à jour vos informations personnelles, votre photo et votre biographie.</p>
+    </div>
+</section>
+
+<div class="container" style="padding-bottom:4rem;max-width:800px;">
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        {% if form.non_field_errors %}
+            <div class="cform-alert cform-alert-error" style="margin-bottom:1.5rem;">{% for e in form.non_field_errors %}{{ e }}{% endfor %}</div>
+        {% endif %}
+
+        <!-- Personal info -->
+        <div class="admin-panel-card" style="margin-bottom:1.5rem;">
+            <div class="admin-panel-head">
+                <h2>Informations personnelles</h2>
+            </div>
+            <div style="padding:1.75rem;">
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.125rem;">
+                    <div class="filter-prem-field">
+                        {{ form.first_name.label_tag }}
+                        {{ form.first_name }}
+                        {% if form.first_name.errors %}<span class="auth-field-error">{{ form.first_name.errors.0 }}</span>{% endif %}
+                    </div>
+                    <div class="filter-prem-field">
+                        {{ form.last_name.label_tag }}
+                        {{ form.last_name }}
+                        {% if form.last_name.errors %}<span class="auth-field-error">{{ form.last_name.errors.0 }}</span>{% endif %}
+                    </div>
+                    <div class="filter-prem-field" style="grid-column:1/-1;">
+                        {{ form.email.label_tag }}
+                        {{ form.email }}
+                        {% if form.email.errors %}<span class="auth-field-error">{{ form.email.errors.0 }}</span>{% endif %}
+                    </div>
+                    <div class="filter-prem-field" style="grid-column:1/-1;">
+                        {{ form.phone_number.label_tag }}
+                        {{ form.phone_number }}
+                        {% if form.phone_number.errors %}<span class="auth-field-error">{{ form.phone_number.errors.0 }}</span>{% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Avatar -->
+        <div class="admin-panel-card" style="margin-bottom:1.5rem;">
+            <div class="admin-panel-head">
+                <h2>Photo de profil</h2>
+            </div>
+            <div style="padding:1.75rem;">
+                {% if profile.avatar %}
+                    <div style="display:flex;align-items:center;gap:1.25rem;margin-bottom:1.25rem;padding:1rem;background:var(--bg);border-radius:.875rem;border:1px solid var(--border-light);">
+                        <img src="{{ profile.avatar.url }}" alt="Photo actuelle" style="width:64px;height:64px;border-radius:50%;object-fit:cover;border:2px solid var(--gold);">
+                        <div>
+                            <p style="font-size:.875rem;font-weight:600;color:var(--ink);">Photo actuelle</p>
+                            <p style="font-size:.75rem;color:var(--muted);">Uploadez une nouvelle photo pour la remplacer</p>
+                        </div>
+                    </div>
+                {% endif %}
+                <div class="filter-prem-field">
+                    {{ form.avatar.label_tag }}
+                    {{ form.avatar }}
+                    {% if form.avatar.errors %}<span class="auth-field-error">{{ form.avatar.errors.0 }}</span>{% endif %}
+                    <small style="font-size:.75rem;color:var(--muted);">Format : JPG, PNG. Taille max : 5 MB</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bio -->
+        <div class="admin-panel-card" style="margin-bottom:2rem;">
+            <div class="admin-panel-head">
+                <h2>Biographie</h2>
+            </div>
+            <div style="padding:1.75rem;">
+                <div class="filter-prem-field">
+                    {{ form.bio.label_tag }}
+                    {{ form.bio }}
+                    {% if form.bio.errors %}<span class="auth-field-error">{{ form.bio.errors.0 }}</span>{% endif %}
+                    <small style="font-size:.75rem;color:var(--muted);">Maximum 500 caractères</small>
+                </div>
+            </div>
+        </div>
+
+        <div style="display:flex;gap:.75rem;">
+            <button type="submit" class="btn-hero-prim">Sauvegarder les modifications</button>
+            <a href="{% url 'profile' %}" class="btn-hero-sec" style="border-color:var(--border);color:var(--muted);">Annuler</a>
+        </div>
+    </form>
+</div>
+
+{% endblock %}

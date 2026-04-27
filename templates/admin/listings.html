@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+{% block title %}Gérer les annonces — Admin | YalazAgence{% endblock %}
+
+{% block content %}
+
+<div class="admin-prem-header">
+    <div class="container admin-header-inner">
+        <div>
+            <a href="{% url 'admin_dashboard' %}" class="admin-back-pill">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><path d="M15 18l-6-6 6-6"/></svg>
+                Dashboard
+            </a>
+            <span class="eyebrow" style="display:block;margin-top:.5rem;">Administration</span>
+            <h1>Gestion des annonces</h1>
+        </div>
+    </div>
+</div>
+
+<div class="container" style="padding-bottom:4rem;">
+
+    <!-- Filter tabs -->
+    <div class="admin-filter-bar">
+        <a href="{% url 'admin_listings' %}" class="admin-filter-tab {% if not current_status %}is-active{% endif %}">Toutes</a>
+        {% for value, label in status_choices %}
+            <a href="?status={{ value }}" class="admin-filter-tab {% if current_status == value %}is-active{% endif %}">{{ label }}</a>
+        {% endfor %}
+    </div>
+
+    {% if listings %}
+        <div class="admin-table-wrap">
+            <table class="admin-prem-table">
+                <thead>
+                    <tr>
+                        <th>Titre</th>
+                        <th>Propriétaire</th>
+                        <th>Prix</th>
+                        <th>Ville</th>
+                        <th>Statut</th>
+                        <th>Vues</th>
+                        <th>Date</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for listing in listings %}
+                        <tr>
+                            <td><strong>{{ listing.title|truncatewords:6 }}</strong></td>
+                            <td>{{ listing.owner.username }}</td>
+                            <td class="td-gold">{{ listing.price|floatformat:0 }} MAD</td>
+                            <td>{{ listing.city }}</td>
+                            <td>
+                                {% if listing.status == 'published' %}
+                                    <span class="pill pill-success">{{ listing.get_status_display }}</span>
+                                {% elif listing.status == 'pending' %}
+                                    <span class="pill pill-warning">{{ listing.get_status_display }}</span>
+                                {% else %}
+                                    <span class="pill pill-danger">{{ listing.get_status_display }}</span>
+                                {% endif %}
+                            </td>
+                            <td class="td-muted">{{ listing.views_count }}</td>
+                            <td class="td-muted">{{ listing.created_at|date:"d M Y" }}</td>
+                            <td>
+                                <a href="{% url 'admin_listing_detail' listing.pk %}" class="admin-table-action">Voir</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="dash-empty" style="margin-top:2rem;">
+            <div class="dash-empty-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="28" height="28"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+            </div>
+            <h3>Aucune annonce trouvée</h3>
+            <p>Aucune annonce ne correspond aux filtres sélectionnés.</p>
+        </div>
+    {% endif %}
+
+</div>
+{% endblock %}

@@ -1,0 +1,366 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}YalazAgence | Agence Immobilière Professionnelle{% endblock %}
+
+{% block content %}
+
+<!-- ═══ HERO ═══ -->
+<section class="hero-section">
+    <div class="hero-container">
+        <div class="hero-content">
+            <p class="eyebrow">Agence immobilière de confiance</p>
+            <h1>Votre partenaire en <em>immobilier</em></h1>
+            <p>
+                Bienvenue chez YalazAgence. Que vous souhaitiez acheter, vendre, louer ou estimer votre bien,
+                nos experts vous accompagnent à chaque étape avec professionnalisme et transparence.
+            </p>
+
+            <div class="hero-cta-group">
+                <a href="{% url 'buy' %}" class="btn btn-primary">Acheter un bien</a>
+                <a href="{% url 'sell' %}" class="btn btn-secondary">Vendre</a>
+                <a href="{% url 'rent' %}" class="btn btn-secondary">Louer</a>
+                <a href="{% url 'estimate' %}" class="btn btn-secondary">Estimer</a>
+            </div>
+
+            <div class="hero-stats">
+                <div class="stat-item">
+                    <strong>{{ featured_listings|length }}+</strong>
+                    <span>Propriétés premium</span>
+                </div>
+                <div class="stat-item">
+                    <strong>100%</strong>
+                    <span>Professionnel</span>
+                </div>
+                <div class="stat-item">
+                    <strong>Sécurisé</strong>
+                    <span>Données confidentielles</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Search Card -->
+        <div class="hero-image">
+            <div class="hero-search-card">
+                <p class="hero-search-title">Rechercher un bien</p>
+
+                <div class="hero-search-tabs">
+                    <a href="{% url 'buy' %}" class="hero-tab active">Acheter</a>
+                    <a href="{% url 'rent' %}" class="hero-tab">Louer</a>
+                    <a href="{% url 'estimate' %}" class="hero-tab">Estimer</a>
+                </div>
+
+                <form method="get" action="{% url 'listing_list' %}" class="hero-search-field">
+                    <input
+                        type="text"
+                        name="search"
+                        placeholder="Titre, quartier, ville..."
+                        autocomplete="off"
+                    >
+                    <select name="listing_type">
+                        <option value="">Type d'offre</option>
+                        <option value="sale">Vente</option>
+                        <option value="rent">Location</option>
+                    </select>
+                    <select name="property_type">
+                        <option value="">Type de bien</option>
+                        <option value="apartment">Appartement</option>
+                        <option value="house">Maison / Villa</option>
+                        <option value="land">Terrain</option>
+                        <option value="commercial">Commercial</option>
+                    </select>
+                    <button type="submit" class="btn btn-primary">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+                        </svg>
+                        Rechercher
+                    </button>
+                </form>
+
+                <p style="font-size:0.7rem;color:rgba(255,255,255,0.35);text-align:center;letter-spacing:0.06em;text-transform:uppercase;">
+                    Consultez <a href="{% url 'listing_list' %}" style="color:rgba(201,169,110,0.6);">toutes les annonces</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ═══ SERVICES ═══ -->
+<section class="services-section">
+    <div class="section-shell">
+        <div class="services-header" data-reveal>
+            <p class="eyebrow">Nos services</p>
+            <h2>Que souhaitez-vous faire ?</h2>
+        </div>
+
+        <div class="services-grid">
+            <a href="{% url 'buy' %}" class="service-card" data-reveal>
+                <div class="service-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>
+                        <polyline points="9 22 9 12 15 12 15 22"/>
+                    </svg>
+                </div>
+                <h3>Acheter</h3>
+                <p>Découvrez nos propriétés sélectionnées et trouvez votre bien idéal avec l'aide de nos experts.</p>
+            </a>
+
+            <a href="{% url 'rent' %}" class="service-card" data-reveal>
+                <div class="service-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/>
+                        <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
+                        <line x1="12" y1="22.08" x2="12" y2="12"/>
+                    </svg>
+                </div>
+                <h3>Louer</h3>
+                <p>Explorez nos locations exclusives adaptées à vos besoins et votre budget.</p>
+            </a>
+
+            <a href="{% url 'sell' %}" class="service-card" data-reveal>
+                <div class="service-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <line x1="12" y1="1" x2="12" y2="23"/>
+                        <path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/>
+                    </svg>
+                </div>
+                <h3>Vendre</h3>
+                <p>Vendez votre propriété rapidement au meilleur prix avec notre expertise du marché.</p>
+            </a>
+
+            <a href="{% url 'estimate' %}" class="service-card" data-reveal>
+                <div class="service-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <line x1="18" y1="20" x2="18" y2="10"/>
+                        <line x1="12" y1="20" x2="12" y2="4"/>
+                        <line x1="6"  y1="20" x2="6"  y2="14"/>
+                        <line x1="2"  y1="20" x2="22" y2="20"/>
+                    </svg>
+                </div>
+                <h3>Estimer</h3>
+                <p>Obtenez une estimation précise et gratuite de la valeur de votre bien immobilier.</p>
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- ═══ FEATURED LISTINGS ═══ -->
+<section class="listings-section">
+    <div class="section-header" data-reveal>
+        <div class="section-header-content">
+            <p class="eyebrow">Nos biens actuels</p>
+            <h2>Propriétés premium en vedette</h2>
+        </div>
+        <a href="{% url 'listing_list' %}" class="btn btn-primary">Voir toutes les annonces</a>
+    </div>
+
+    {% if featured_listings %}
+        <div class="listing-grid">
+            {% for listing in featured_listings %}
+                <article class="listing-card" data-reveal>
+                    <a href="{% url 'listing_detail' listing.pk %}">
+                        <div class="listing-image-wrapper">
+                            {% if listing.image %}
+                                <img src="{{ listing.image.url }}" alt="{{ listing.title }}" loading="lazy">
+                            {% else %}
+                                <div class="placeholder">Pas de photo</div>
+                            {% endif %}
+                            {% if listing.is_featured %}
+                                <span class="listing-badge">En vedette</span>
+                            {% endif %}
+                        </div>
+
+                        <div class="listing-content">
+                            <h3>{{ listing.title }}</h3>
+
+                            <div class="listing-location">
+                                <span>{{ listing.city }}</span>
+                                {% if listing.district %}
+                                    <span>•</span>
+                                    <span>{{ listing.district }}</span>
+                                {% endif %}
+                            </div>
+
+                            <div class="listing-specs">
+                                <div class="spec-item">
+                                    <strong>{{ listing.surface_area }}</strong>
+                                    <small>m²</small>
+                                </div>
+                                <div class="spec-item">
+                                    <strong>{{ listing.bedrooms }}</strong>
+                                    <small>chambre{{ listing.bedrooms|pluralize }}</small>
+                                </div>
+                                <div class="spec-item">
+                                    <strong>{{ listing.get_listing_type_display }}</strong>
+                                </div>
+                            </div>
+
+                            <div class="listing-footer">
+                                <small class="meta-copy">{{ listing.views_count }} vue{{ listing.views_count|pluralize }}</small>
+                                <span class="listing-contact-cta">Demander le prix →</span>
+                            </div>
+                        </div>
+                    </a>
+                </article>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="section-shell">
+            <div class="empty-state-panel" data-reveal>
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="color:var(--gold-pale);margin:0 auto var(--sp-4)" aria-hidden="true">
+                    <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>
+                    <polyline points="9 22 9 12 15 12 15 22"/>
+                </svg>
+                <h3>Propriétés actuellement disponibles</h3>
+                <p>Découvrez nos annonces en consultant nos sections Acheter ou Louer.</p>
+                <a href="{% url 'listing_list' %}" class="btn btn-primary">Parcourir les annonces</a>
+            </div>
+        </div>
+    {% endif %}
+</section>
+
+<!-- ═══ LEAD CAPTURE ═══ -->
+<section class="lead-section">
+    <div class="lead-shell">
+        <div class="lead-copy">
+            <p class="eyebrow">Votre projet nous tient à cœur</p>
+            <h2>Laissez-nous vous rappeler</h2>
+            <p>
+                Vous avez un projet immobilier mais ne savez pas par où commencer ?
+                Partagez vos coordonnées et un expert YalazAgence vous recontacte
+                sous 24 à 48h pour vous guider.
+            </p>
+
+            <div class="lead-trusts">
+                <div class="lead-trust-item">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <polyline points="20 6 9 17 4 12"/>
+                    </svg>
+                    <span>Estimation et premier conseil gratuits</span>
+                </div>
+                <div class="lead-trust-item">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <polyline points="20 6 9 17 4 12"/>
+                    </svg>
+                    <span>Aucun engagement — répondez juste à l'appel</span>
+                </div>
+                <div class="lead-trust-item">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <polyline points="20 6 9 17 4 12"/>
+                    </svg>
+                    <span>Vos données restent strictement confidentielles</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="lead-card">
+            <div class="lead-card-badge">Réponse garantie 24–48h</div>
+
+            <div id="lead-form-wrap">
+                <div class="lead-card-title">
+                    <h3>Être recontacté par un expert</h3>
+                    <p>Remplissez ce formulaire en 30 secondes</p>
+                </div>
+
+                <form class="lead-form" id="leadForm" onsubmit="handleLeadSubmit(event)">
+                    <div class="lead-field">
+                        <label for="lead-name">Prénom</label>
+                        <input type="text" id="lead-name" name="first_name" placeholder="Votre prénom" required>
+                    </div>
+                    <div class="lead-field">
+                        <label for="lead-phone">Téléphone</label>
+                        <input type="tel" id="lead-phone" name="phone" placeholder="+212 6 XX XX XX XX" required>
+                    </div>
+                    <div class="lead-field">
+                        <label for="lead-project">Votre projet</label>
+                        <select id="lead-project" name="project_type" required>
+                            <option value="">Choisir votre projet…</option>
+                            <option value="buy">J'achète un bien</option>
+                            <option value="sell">Je vends un bien</option>
+                            <option value="rent">Je cherche une location</option>
+                            <option value="estimate">Je veux une estimation</option>
+                            <option value="invest">Je veux investir</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="lead-submit-btn">
+                        Être recontacté gratuitement
+                    </button>
+                    <p class="lead-privacy">En soumettant ce formulaire vous acceptez d'être contacté par notre équipe.</p>
+                </form>
+            </div>
+
+            <div class="lead-success" id="leadSuccess">
+                <div class="lead-success-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <polyline points="20 6 9 17 4 12"/>
+                    </svg>
+                </div>
+                <h3>Merci !</h3>
+                <p>Votre demande a bien été enregistrée. Un expert YalazAgence vous contactera dans les <strong>24 à 48 heures</strong>.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ═══ FEATURES ═══ -->
+<section class="features-section">
+    <div class="section-shell">
+        <div class="features-header" data-reveal>
+            <p class="eyebrow">Pourquoi YalazAgence</p>
+            <h2>Une expérience immobilière pensée pour être simple et efficace</h2>
+        </div>
+
+        <div class="features-grid">
+            <article class="feature-card" data-reveal>
+                <span class="feature-number">01</span>
+                <h3>Annonces complètes</h3>
+                <p>
+                    Toutes les informations essentielles : type de bien, surface, localisation,
+                    caractéristiques et galerie photos professionnelles pour chaque propriété.
+                </p>
+            </article>
+            <article class="feature-card" data-reveal>
+                <span class="feature-number">02</span>
+                <h3>Contact facilité</h3>
+                <p>
+                    Prenez contact directement avec notre équipe d'experts pour discuter
+                    de votre projet immobilier et obtenir des conseils personnalisés.
+                </p>
+            </article>
+            <article class="feature-card" data-reveal>
+                <span class="feature-number">03</span>
+                <h3>Expertise reconnue</h3>
+                <p>
+                    Nos professionnels expérimentés vous conseillent pour trouver
+                    la meilleure solution immobilière adaptée à vos besoins et votre budget.
+                </p>
+            </article>
+        </div>
+    </div>
+</section>
+
+<!-- ═══ CTA ═══ -->
+<section class="cta-shell" style="padding-bottom: var(--sp-16);">
+    <div class="cta-section" data-reveal>
+        <p class="eyebrow cta-eyebrow">Prêt à agir ?</p>
+        <h2>Commençons votre projet immobilier dès aujourd'hui</h2>
+        <p>
+            Qu'il s'agisse d'acheter, vendre, louer ou estimer, notre équipe est prête à vous aider
+            et à vous accompagner vers la réussite de votre projet.
+        </p>
+        <div class="cta-actions">
+            <a href="{% url 'buy' %}" class="btn">Acheter un bien</a>
+            <a href="{% url 'sell' %}" class="btn">Vendre votre bien</a>
+        </div>
+    </div>
+</section>
+
+<script>
+function handleLeadSubmit(e) {
+    e.preventDefault();
+    document.getElementById('lead-form-wrap').style.display = 'none';
+    document.getElementById('leadSuccess').style.display = 'block';
+}
+</script>
+
+{% endblock %}

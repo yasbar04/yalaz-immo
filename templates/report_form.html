@@ -1,0 +1,91 @@
+{% extends 'base.html' %}
+{% block title %}Signaler un contenu — YalazAgence{% endblock %}
+
+{% block content %}
+<div class="auth-split" style="min-height:calc(100vh - 5.25rem);">
+
+    <!-- LEFT -->
+    <div class="auth-split-left">
+        <div class="auth-left-inner">
+            <div class="auth-left-logo">
+                {% load static %}
+                {% get_media_prefix as MEDIA_PREFIX %}
+                <span class="brand-mark"><img src="{{ MEDIA_PREFIX }}front/logo_yalaz.png" alt="Logo" width="44" height="44"></span>
+                <span class="auth-left-logo-name">Yalaz</span>
+            </div>
+            <h2 class="auth-left-heading">Signaler<br><em>un contenu</em></h2>
+            <p class="auth-left-sub">Votre signalement aide à maintenir une plateforme fiable pour tous les utilisateurs et propriétaires.</p>
+
+            {% if listing %}
+                <div style="background:rgba(201,169,110,0.08);border:1px solid rgba(201,169,110,0.18);border-radius:1rem;padding:1.25rem 1.5rem;margin-top:2rem;">
+                    <span class="eyebrow" style="color:var(--gold);display:block;margin-bottom:.4rem;">Annonce signalée</span>
+                    <strong style="color:#fff;font-size:.95rem;">{{ listing.title }}</strong>
+                    <p style="color:rgba(255,255,255,.4);font-size:.8rem;margin:.25rem 0 0;">{{ listing.city }} — {{ listing.price|floatformat:0 }} MAD</p>
+                </div>
+            {% endif %}
+
+            {% if reported_user %}
+                <div style="background:rgba(201,169,110,0.08);border:1px solid rgba(201,169,110,0.18);border-radius:1rem;padding:1.25rem 1.5rem;margin-top:2rem;">
+                    <span class="eyebrow" style="color:var(--gold);display:block;margin-bottom:.4rem;">Utilisateur signalé</span>
+                    <strong style="color:#fff;font-size:.95rem;">{{ reported_user.username }}</strong>
+                    <p style="color:rgba(255,255,255,.4);font-size:.8rem;margin:.25rem 0 0;">{{ reported_user.email }}</p>
+                </div>
+            {% endif %}
+
+            <div class="auth-left-benefits" style="margin-top:2.5rem;">
+                <div class="auth-benefit">
+                    <div class="auth-benefit-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" width="16" height="16"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+                    <div class="auth-benefit-text">
+                        <strong>Traitement rapide</strong>
+                        <span>Notre équipe examine chaque signalement</span>
+                    </div>
+                </div>
+                <div class="auth-benefit">
+                    <div class="auth-benefit-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" width="16" height="16"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
+                    <div class="auth-benefit-text">
+                        <strong>Confidentialité</strong>
+                        <span>Votre identité est protégée</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- RIGHT -->
+    <div class="auth-split-right">
+        <div class="auth-right-card">
+            <div class="auth-card-head">
+                <span class="eyebrow">Modération</span>
+                <h2>Décrire le problème</h2>
+                <p>Un signalement précis permet un traitement plus rapide par l'équipe de modération.</p>
+            </div>
+
+            <form method="post" class="auth-form-grid">
+                {% csrf_token %}
+                <div class="auth-field">
+                    <label for="report_type">Type de signalement *</label>
+                    <select name="report_type" id="report_type" required>
+                        <option value="">Choisissez une raison</option>
+                        {% for value, label in report_types %}
+                            <option value="{{ value }}">{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="auth-field">
+                    <label for="reason">Description *</label>
+                    <textarea name="reason" id="reason" rows="7" required placeholder="Expliquez le problème constaté : annonce trompeuse, contenu dupliqué, prix incohérent, informations fausses…"></textarea>
+                </div>
+                <button type="submit" class="auth-submit-btn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                    Envoyer le signalement
+                </button>
+            </form>
+
+            <div class="auth-links">
+                <a href="javascript:history.back()">← Annuler</a>
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

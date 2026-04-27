@@ -1,0 +1,449 @@
+{% extends 'base.html' %}
+{% block title %}{{ page_title }} | Yalaz{% endblock %}
+
+{% block content %}
+
+<section class="prem-hero">
+    <div class="container prem-hero-inner">
+        <span class="eyebrow">Gestion d'annonce</span>
+        <h1>{{ page_title }}</h1>
+        <p class="prem-hero-sub">{{ page_intro }}</p>
+    </div>
+</section>
+
+<div class="container" style="padding-bottom:4rem;max-width:960px;">
+
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        {% if form.non_field_errors %}
+            <div class="cform-alert cform-alert-error" style="margin-bottom:1.5rem;">{% for e in form.non_field_errors %}<p>{{ e }}</p>{% endfor %}</div>
+        {% endif %}
+
+        <!-- Informations principales -->
+        <div class="admin-panel-card" style="margin-bottom:1.5rem;">
+            <div class="admin-panel-head">
+                <div>
+                    <h2>Informations principales</h2>
+                    <p style="font-size:.82rem;color:var(--muted);margin:.2rem 0 0;">Renseignez les éléments qui permettent d'identifier rapidement le bien.</p>
+                </div>
+            </div>
+            <div style="padding:1.75rem;display:flex;flex-direction:column;gap:1.125rem;">
+                <div class="filter-prem-field">
+                    <label for="{{ form.title.id_for_label }}">{{ form.title.label }}</label>
+                    {{ form.title }}
+                    {% if form.title.errors %}<span class="auth-field-error">{{ form.title.errors.0 }}</span>{% endif %}
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.125rem;">
+                    <div class="filter-prem-field">
+                        <label for="{{ form.property_type.id_for_label }}">{{ form.property_type.label }}</label>
+                        {{ form.property_type }}
+                        {% if form.property_type.errors %}<span class="auth-field-error">{{ form.property_type.errors.0 }}</span>{% endif %}
+                    </div>
+                    <div class="filter-prem-field">
+                        <label for="{{ form.listing_type.id_for_label }}">{{ form.listing_type.label }}</label>
+                        {{ form.listing_type }}
+                        {% if form.listing_type.errors %}<span class="auth-field-error">{{ form.listing_type.errors.0 }}</span>{% endif %}
+                    </div>
+                    <div class="filter-prem-field">
+                        <label for="{{ form.city.id_for_label }}">{{ form.city.label }}</label>
+                        {{ form.city }}
+                        {% if form.city.errors %}<span class="auth-field-error">{{ form.city.errors.0 }}</span>{% endif %}
+                    </div>
+                    <div class="filter-prem-field">
+                        <label for="{{ form.district.id_for_label }}">{{ form.district.label }}</label>
+                        {{ form.district }}
+                        {% if form.district.errors %}<span class="auth-field-error">{{ form.district.errors.0 }}</span>{% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Photo de couverture -->
+        <div class="admin-panel-card" style="margin-bottom:1.5rem;">
+            <div class="admin-panel-head">
+                <h2>Photo de couverture</h2>
+            </div>
+            <div style="padding:1.75rem;">
+                <div class="filter-prem-field">
+                    <label for="{{ form.image.id_for_label }}">{{ form.image.label }}</label>
+                    {{ form.image }}
+                    {% if form.image.errors %}<span class="auth-field-error">{{ form.image.errors.0 }}</span>{% endif %}
+                    <small style="font-size:.73rem;color:var(--muted);">Sélectionnez une belle photo qui sera affichée en première position dans les annonces.</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- Prix et caractéristiques -->
+        <div class="admin-panel-card" style="margin-bottom:1.5rem;">
+            <div class="admin-panel-head">
+                <div>
+                    <h2>Prix et caractéristiques</h2>
+                    <p style="font-size:.82rem;color:var(--muted);margin:.2rem 0 0;">Affichez des informations claires pour faciliter la comparaison entre biens.</p>
+                </div>
+            </div>
+            <div style="padding:1.75rem;">
+                <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:1.125rem;">
+                    <div class="filter-prem-field">
+                        <label for="{{ form.price.id_for_label }}">{{ form.price.label }}</label>
+                        {{ form.price }}
+                        {% if form.price.errors %}<span class="auth-field-error">{{ form.price.errors.0 }}</span>{% endif %}
+                    </div>
+                    <div class="filter-prem-field">
+                        <label for="{{ form.surface_area.id_for_label }}">{{ form.surface_area.label }}</label>
+                        {{ form.surface_area }}
+                        {% if form.surface_area.errors %}<span class="auth-field-error">{{ form.surface_area.errors.0 }}</span>{% endif %}
+                        {% if form.surface_area.help_text %}<small style="font-size:.73rem;color:var(--muted);">{{ form.surface_area.help_text }}</small>{% endif %}
+                    </div>
+                    <div class="filter-prem-field">
+                        <label for="{{ form.bedrooms.id_for_label }}">{{ form.bedrooms.label }}</label>
+                        {{ form.bedrooms }}
+                        {% if form.bedrooms.errors %}<span class="auth-field-error">{{ form.bedrooms.errors.0 }}</span>{% endif %}
+                    </div>
+                    <div class="filter-prem-field">
+                        <label for="{{ form.bathrooms.id_for_label }}">{{ form.bathrooms.label }}</label>
+                        {{ form.bathrooms }}
+                        {% if form.bathrooms.errors %}<span class="auth-field-error">{{ form.bathrooms.errors.0 }}</span>{% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Équipements -->
+        <div class="admin-panel-card" style="margin-bottom:1.5rem;">
+            <div class="admin-panel-head">
+                <div>
+                    <h2>Équipements et services</h2>
+                    <p style="font-size:.82rem;color:var(--muted);margin:.2rem 0 0;">Sélectionnez tous les équipements disponibles dans le bien.</p>
+                </div>
+            </div>
+            <div style="padding:1.75rem;">
+                <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:.75rem;">
+                    <label class="lform-check">{{ form.kitchen_equipped }}<span>{{ form.kitchen_equipped.label }}</span></label>
+                    <label class="lform-check">{{ form.swimming_pool }}<span>{{ form.swimming_pool.label }}</span></label>
+                    <label class="lform-check">{{ form.garden }}<span>{{ form.garden.label }}</span></label>
+                    <label class="lform-check">{{ form.garage }}<span>{{ form.garage.label }}</span></label>
+                    <label class="lform-check">{{ form.parking }}<span>{{ form.parking.label }}</span></label>
+                    <label class="lform-check">{{ form.terrace }}<span>{{ form.terrace.label }}</span></label>
+                    <label class="lform-check">{{ form.balcony }}<span>{{ form.balcony.label }}</span></label>
+                    <label class="lform-check">{{ form.air_conditioning }}<span>{{ form.air_conditioning.label }}</span></label>
+                    <label class="lform-check">{{ form.furnished }}<span>{{ form.furnished.label }}</span></label>
+                    <label class="lform-check">{{ form.security }}<span>{{ form.security.label }}</span></label>
+                </div>
+            </div>
+        </div>
+
+        <!-- Description -->
+        <div class="admin-panel-card" style="margin-bottom:1.5rem;">
+            <div class="admin-panel-head">
+                <h2>Description du bien</h2>
+            </div>
+            <div style="padding:1.75rem;">
+                <div class="filter-prem-field">
+                    <label for="{{ form.description.id_for_label }}">{{ form.description.label }}</label>
+                    {{ form.description }}
+                    {% if form.description.errors %}<span class="auth-field-error">{{ form.description.errors.0 }}</span>{% endif %}
+                    <small style="font-size:.73rem;color:var(--muted);">Précisez les points forts du bien, son environnement et les informations utiles avant une visite.</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- Coordonnées de contact -->
+        <div class="admin-panel-card" style="margin-bottom:1.5rem;">
+            <div class="admin-panel-head">
+                <div>
+                    <h2>Coordonnées de contact</h2>
+                    <p style="font-size:.82rem;color:var(--muted);margin:.2rem 0 0;">Affichez uniquement les canaux que vous souhaitez rendre visibles sur l'annonce.</p>
+                </div>
+            </div>
+            <div style="padding:1.75rem;">
+                <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:1.125rem;">
+                    <div class="filter-prem-field">
+                        <label for="{{ form.owner_email.id_for_label }}">{{ form.owner_email.label }}</label>
+                        {{ form.owner_email }}
+                        {% if form.owner_email.errors %}<span class="auth-field-error">{{ form.owner_email.errors.0 }}</span>{% endif %}
+                        {% if form.owner_email.help_text %}<small style="font-size:.73rem;color:var(--muted);">{{ form.owner_email.help_text }}</small>{% endif %}
+                    </div>
+                    <div class="filter-prem-field">
+                        <label for="{{ form.owner_phone.id_for_label }}">{{ form.owner_phone.label }}</label>
+                        {{ form.owner_phone }}
+                        {% if form.owner_phone.errors %}<span class="auth-field-error">{{ form.owner_phone.errors.0 }}</span>{% endif %}
+                        {% if form.owner_phone.help_text %}<small style="font-size:.73rem;color:var(--muted);">{{ form.owner_phone.help_text }}</small>{% endif %}
+                    </div>
+                    <div class="filter-prem-field">
+                        <label for="{{ form.owner_whatsapp.id_for_label }}">{{ form.owner_whatsapp.label }}</label>
+                        {{ form.owner_whatsapp }}
+                        {% if form.owner_whatsapp.errors %}<span class="auth-field-error">{{ form.owner_whatsapp.errors.0 }}</span>{% endif %}
+                        {% if form.owner_whatsapp.help_text %}<small style="font-size:.73rem;color:var(--muted);">{{ form.owner_whatsapp.help_text }}</small>{% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Photos supplémentaires -->
+        {% if formset %}
+            <div class="admin-panel-card" style="margin-bottom:1.5rem;">
+                <div class="admin-panel-head">
+                    <div>
+                        <h2>Photos supplémentaires</h2>
+                        <p style="font-size:.82rem;color:var(--muted);margin:.2rem 0 0;">Glissez vos photos ici. Vous pourrez les réordonner en les faisant glisser dans la galerie.</p>
+                    </div>
+                </div>
+                <div style="padding:1.75rem;">
+                    <div class="drag-drop-zone" id="dropZone">
+                        <div class="drag-drop-content">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="1.5" width="40" height="40"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                            <p class="drag-drop-title">Glissez vos photos ici</p>
+                            <p class="drag-drop-text">ou <strong>cliquez</strong> pour les sélectionner</p>
+                        </div>
+                        <input type="file" id="bulkFileInput" multiple accept="image/*" hidden>
+                    </div>
+
+                    <div id="imagesGallery" class="images-gallery" style="display: none;">
+                        <div class="gallery-items" id="galleryItems"></div>
+                    </div>
+
+                    {{ formset.management_form }}
+
+                    {% if formset.non_form_errors %}
+                        <div class="cform-alert cform-alert-error" style="margin-top:1rem;">
+                            <strong>Erreurs du formset :</strong>
+                            {% for error in formset.non_form_errors %}<p>{{ error }}</p>{% endfor %}
+                        </div>
+                    {% endif %}
+
+                    <div id="imageFormList" style="display: none;">
+                        {% for form_image in formset %}
+                            <article class="image-card" data-form-index="{{ forloop.counter0 }}">
+                                {% if form_image.non_field_errors %}
+                                    <div class="cform-alert cform-alert-error">
+                                        {% for error in form_image.non_field_errors %}<p>{{ error }}</p>{% endfor %}
+                                    </div>
+                                {% endif %}
+                                {% for hidden in form_image.hidden_fields %}{{ hidden }}{% endfor %}
+                                {{ form_image.image }}
+                                {{ form_image.alt_text }}
+                                <input type="hidden" name="{{ form_image.order.name }}" value="{{ forloop.counter0 }}" />
+                                {{ form_image.DELETE }}
+                                {% if form_image.image.errors %}<div class="auth-field-error">{{ form_image.image.errors }}</div>{% endif %}
+                            </article>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+
+        <!-- Actions -->
+        <div style="display:flex;gap:.75rem;">
+            <button type="submit" class="btn-hero-prim">{{ submit_label }}</button>
+            <a href="{% url 'dashboard' %}" class="btn-hero-sec" style="border-color:var(--border);color:var(--muted);">Annuler</a>
+        </div>
+    </form>
+
+    <script>
+        // ===== DISTRICTS DYNAMIQUES =====
+        const citySelect = document.getElementById('id_city');
+        const districtSelect = document.getElementById('id_district');
+
+        async function updateDistricts() {
+            const city = citySelect.value;
+            if (!city) {
+                districtSelect.innerHTML = '<option value="">-- Sélectionner une ville d\'abord --</option>';
+                return;
+            }
+            try {
+                const response = await fetch(`/listings/api/all-districts/?city=${encodeURIComponent(city)}`);
+                const data = await response.json();
+                const currentValue = districtSelect.value;
+                let html = '<option value="">-- Aucun quartier spécifique --</option>';
+                if (data.districts && data.districts.length > 0) {
+                    data.districts.forEach(district => {
+                        const selected = district === currentValue ? 'selected' : '';
+                        html += `<option value="${district}" ${selected}>${district}</option>`;
+                    });
+                } else {
+                    html += '<option value="">Aucun quartier disponible pour cette ville</option>';
+                }
+                districtSelect.innerHTML = html;
+            } catch (error) {
+                console.error('Erreur:', error);
+                districtSelect.innerHTML = '<option value="">Erreur</option>';
+            }
+        }
+        if (citySelect) {
+            citySelect.addEventListener('change', updateDistricts);
+            if (citySelect.value) updateDistricts();
+        }
+
+        // ===== GALLERY MANAGEMENT =====
+        let uploadedImages = [];
+        const dropZone = document.getElementById('dropZone');
+        const fileInput = document.getElementById('bulkFileInput');
+        const gallery = document.getElementById('imagesGallery');
+        const galleryItems = document.getElementById('galleryItems');
+        const imageFormList = document.getElementById('imageFormList');
+
+        if (dropZone && fileInput && gallery && galleryItems && imageFormList) {
+            dropZone.addEventListener('click', () => fileInput.click());
+
+            fileInput.addEventListener('change', (e) => handleNewFiles(e.target.files));
+
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                dropZone.addEventListener(eventName, preventDefaults, false);
+            });
+
+            function preventDefaults(e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+
+            ['dragenter', 'dragover'].forEach(eventName => {
+                dropZone.addEventListener(eventName, () => dropZone.classList.add('drag-over'), false);
+            });
+
+            ['dragleave', 'drop'].forEach(eventName => {
+                dropZone.addEventListener(eventName, () => dropZone.classList.remove('drag-over'), false);
+            });
+
+            dropZone.addEventListener('drop', (e) => {
+                handleNewFiles(e.dataTransfer.files);
+            }, false);
+
+            function handleNewFiles(files) {
+                Array.from(files).forEach(file => {
+                    if (file.type.startsWith('image/')) {
+                        const reader = new FileReader();
+                        reader.onload = (e) => {
+                            uploadedImages.push({
+                                file: file,
+                                dataUrl: e.target.result,
+                                id: Date.now() + Math.random()
+                            });
+                            renderGallery();
+                        };
+                        reader.readAsDataURL(file);
+                    }
+                });
+                fileInput.value = '';
+            }
+
+            function renderGallery() {
+                galleryItems.innerHTML = '';
+                uploadedImages.forEach((img, idx) => {
+                    const item = document.createElement('div');
+                    item.className = 'gallery-item';
+                    item.draggable = true;
+                    item.dataset.imgId = img.id;
+
+                    const wrapper = document.createElement('div');
+                    wrapper.className = 'gallery-image-wrapper';
+
+                    const imgEl = document.createElement('img');
+                    imgEl.src = img.dataUrl;
+                    imgEl.alt = 'Photo';
+                    wrapper.appendChild(imgEl);
+
+                    const removeBtn = document.createElement('button');
+                    removeBtn.type = 'button';
+                    removeBtn.className = 'btn-remove-image';
+                    removeBtn.title = 'Supprimer';
+                    removeBtn.textContent = '×';
+                    removeBtn.onclick = function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        uploadedImages = uploadedImages.filter(image => image.id !== img.id);
+                        renderGallery();
+                    };
+                    wrapper.appendChild(removeBtn);
+                    item.appendChild(wrapper);
+
+                    const orderSpan = document.createElement('span');
+                    orderSpan.className = 'gallery-order';
+                    orderSpan.textContent = idx + 1;
+                    item.appendChild(orderSpan);
+
+                    item.addEventListener('dragstart', (e) => {
+                        e.dataTransfer.effectAllowed = 'move';
+                        item.classList.add('dragging');
+                    });
+
+                    item.addEventListener('dragend', () => {
+                        item.classList.remove('dragging');
+                    });
+
+                    item.addEventListener('dragover', (e) => {
+                        e.preventDefault();
+                        e.dataTransfer.dropEffect = 'move';
+                        if (item !== document.querySelector('.gallery-item.dragging')) {
+                            item.classList.add('drag-over');
+                        }
+                    });
+
+                    item.addEventListener('dragleave', () => {
+                        item.classList.remove('drag-over');
+                    });
+
+                    item.addEventListener('drop', (e) => {
+                        e.preventDefault();
+                        item.classList.remove('drag-over');
+                        const draggedItem = document.querySelector('.gallery-item.dragging');
+                        if (draggedItem && draggedItem !== item) {
+                            const draggedIdx = Array.from(galleryItems.children).indexOf(draggedItem);
+                            const targetIdx = Array.from(galleryItems.children).indexOf(item);
+                            [uploadedImages[draggedIdx], uploadedImages[targetIdx]] = [uploadedImages[targetIdx], uploadedImages[draggedIdx]];
+                            renderGallery();
+                        }
+                    });
+
+                    galleryItems.appendChild(item);
+                });
+
+                gallery.style.display = uploadedImages.length > 0 ? 'block' : 'none';
+            }
+
+            // Before form submit, prepare FormData with images
+            document.querySelector('form').addEventListener('submit', function(e) {
+                const form = e.target;
+
+                if (uploadedImages.length === 0) {
+                    return;
+                }
+
+                e.preventDefault();
+
+                const formData = new FormData(form);
+
+                const totalFormsInput = formData.get('images-TOTAL_FORMS');
+                const newTotal = Math.max(uploadedImages.length, 1);
+                formData.set('images-TOTAL_FORMS', newTotal);
+
+                uploadedImages.forEach((img, idx) => {
+                    if (img.file) {
+                        formData.set(`images-${idx}-image`, img.file);
+                        formData.set(`images-${idx}-order`, idx);
+                    }
+                });
+
+                fetch(form.action, {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => {
+                    if (response.redirected) {
+                        window.location.href = response.url;
+                    } else if (response.ok) {
+                        window.location.href = '/accounts/dashboard/';
+                    } else {
+                        return response.text().then(text => {
+                            alert('Erreur serveur. Vérifiez la console (F12).');
+                        });
+                    }
+                })
+                .catch(error => {
+                    alert('Erreur : ' + error.message);
+                });
+            });
+        }
+    </script>
+</div>
+{% endblock %}

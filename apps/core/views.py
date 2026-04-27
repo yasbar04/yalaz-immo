@@ -1,0 +1,381 @@
+import csv
+import json
+from datetime import timedelta
+from pathlib import Path
+
+from django.contrib import messages
+from django.contrib.auth import get_user_model
+from django.contrib.auth.mixins import UserPassesTestMixin
+from django.contrib.auth.decorators import user_passes_test
+from django.db.models import Q, Sum
+from django.http import JsonResponse
+from django.shortcuts import render, redirect
+from django.urls import reverse_lazy
+from django.utils import timezone
+from django.views.generic import CreateView, DeleteView, DetailView, ListView, UpdateView
+from django.core.mail import send_mail
+from django.conf import settings
+from apps.listings.models import Listing
+from .forms import FinancialTransactionForm
+from .models import ContactMessage, FinancialTransaction
+
+User = get_user_model()
+
+# Chemin vers le CSV des prix immobiliers
+_CSV_PATH = Path(settings.BASE_DIR) / 'données_estimation' / 'real_estate_prices.csv'
+
+
+def _load_price_data():
+    """
+    Lit le CSV et retourne un dict structuré :
+    {
+      "Casablanca": [
+        {"district": "Val Fleuri", "apt": 13297, "villa": 9271},
+        {"district": "Ain Diab",   "apt": 24520, "villa": 10191},
+        ...
+      ],
+      ...
+    }
+    Les valeurs "-" sont stockées comme None.
+    """
+    data = {}
+    try:
+        with open(_CSV_PATH, encoding='utf-8') as f:
+            for row in csv.DictReader(f):
+                city = row['city'].strip()
+                district = row['district'].strip()
+
+                def parse(val):
+                    v = val.strip() if val else '-'
+                    try:
+                        return int(float(v))
+                    except (ValueError, TypeError):
+                        return None
+
+                apt = parse(row.get('apartment_price_per_m2', '-'))
+                villa = parse(row.get('villa_price_per_m2', '-'))
+
+                if city not in data:
+                    data[city] = []
+                data[city].append({
+                    'district': district,
+                    'apt': apt,
+                    'villa': villa,
+                })
+    except FileNotFoundError:
+        pass
+    return data
+
+
+def is_staff_user(user):
+    return user.is_authenticated and user.is_staff
+
+
+def home(request):
+    featured_listings = (
+        Listing.objects.filter(status=Listing.Status.PUBLISHED)
+        .prefetch_related('images')
+        .order_by('-is_featured', '-created_at')[:6]
+    )
+    context = {
+        'featured_listings': featured_listings,
+    }
+    return render(request, 'core/home.html', context)
+
+
+def about(request):
+    context = {}
+    return render(request, 'core/about.html', context)
+
+
+def buy(request):
+    listings = Listing.objects.filter(
+        status=Listing.Status.PUBLISHED,
+        listing_type=Listing.ListingType.SALE,
+    ).prefetch_related('images').order_by('-created_at')
+
+    context = {
+        'listings': listings,
+        'page_title': 'Acheter',
+    }
+    return render(request, 'core/buy.html', context)
+
+
+def rent(request):
+    listings = Listing.objects.filter(
+        status=Listing.Status.PUBLISHED,
+        listing_type=Listing.ListingType.RENT,
+    ).prefetch_related('images').order_by('-created_at')
+
+    context = {
+        'listings': listings,
+        'page_title': 'Louer',
+    }
+    return render(request, 'core/rent.html', context)
+
+
+def estimate(request):
+    price_data = _load_price_data()
+    context = {
+        'page_title': 'Estimer votre bien',
+        'price_data_json': json.dumps(price_data, ensure_ascii=False),
+        'cities': sorted(price_data.keys()),
+    }
+    return render(request, 'core/estimate.html', context)
+
+
+def sell(request):
+    context = {
+        'page_title': 'Vendre votre bien',
+    }
+    return render(request, 'core/sell.html', context)
+
+
+def contact(request):
+    if request.method == 'POST':
+        name = request.POST.get('name', '').strip()
+        email = request.POST.get('email', '').strip()
+        phone = request.POST.get('phone', '').strip()
+        subject = request.POST.get('subject', '')
+        message_text = request.POST.get('message', '').strip()
+
+        if not all([name, email, phone, subject, message_text]):
+            messages.error(request, 'Tous les champs sont obligatoires.')
+            return redirect('contact')
+
+        x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+        ip = x_forwarded_for.split(',')[0] if x_forwarded_for else request.META.get('REMOTE_ADDR')
+
+        contact_msg = ContactMessage.objects.create(
+            name=name,
+            email=email,
+            phone=phone,
+            subject=subject,
+            message=message_text,
+            ip_address=ip
+        )
+
+        try:
+            subject_display = dict(ContactMessage.SUBJECT_CHOICES).get(subject, 'Autre')
+            admin_email = settings.DEFAULT_FROM_EMAIL or 'admin@yalazagence.ma'
+
+            email_body = f"""
+Nouveau message de contact de YalazAgence:
+
+Nom: {name}
+Email: {email}
+Téléphone: {phone}
+Sujet: {subject_display}
+
+Message:
+{message_text}
+
+---
+Message ID: {contact_msg.id}
+Adresse IP: {ip}
+            """
+
+            send_mail(
+                f'Nouveau message de contact - {subject_display}',
+                email_body,
+                settings.DEFAULT_FROM_EMAIL or 'contact@yalazagence.ma',
+                [admin_email],
+                fail_silently=True,
+            )
+        except Exception as e:
+            print(f"Error sending email: {e}")
+
+        messages.success(request, 'Votre message a été envoyé avec succès. Nous vous recontacterons bientôt!')
+        return redirect('contact')
+
+    context = {
+        'page_title': 'Nous Contacter',
+    }
+    return render(request, 'core/contact.html', context)
+
+
+class StaffRequiredMixin(UserPassesTestMixin):
+    def test_func(self):
+        return is_staff_user(self.request.user)
+
+
+def financial_queryset(request):
+    queryset = FinancialTransaction.objects.select_related(
+        'created_by',
+        'assigned_to',
+        'listing',
+    )
+
+    type_filter = request.GET.get('type', '').strip()
+    status_filter = request.GET.get('status', '').strip()
+    category_filter = request.GET.get('category', '').strip()
+    listing_filter = request.GET.get('listing', '').strip()
+    staff_filter = request.GET.get('staff', '').strip()
+
+    if type_filter:
+        queryset = queryset.filter(type=type_filter)
+    if status_filter:
+        queryset = queryset.filter(status=status_filter)
+    if category_filter:
+        queryset = queryset.filter(category=category_filter)
+    if listing_filter:
+        queryset = queryset.filter(listing_id=listing_filter)
+    if staff_filter:
+        queryset = queryset.filter(assigned_to_id=staff_filter)
+
+    return queryset
+
+
+def _compute_summary(queryset):
+    completed = queryset.filter(status='completed')
+    total_entries = completed.filter(type='entry').aggregate(total=Sum('amount'))['total'] or 0
+    total_exits = completed.filter(type='exit').aggregate(total=Sum('amount'))['total'] or 0
+    total_commissions = completed.filter(
+        type='entry',
+        category__in=['commission_vente', 'commission_location']
+    ).aggregate(total=Sum('amount'))['total'] or 0
+    return {
+        'total_entries': total_entries,
+        'total_exits': total_exits,
+        'balance': total_entries - total_exits,
+        'total_commissions': total_commissions,
+    }
+
+
+@user_passes_test(is_staff_user)
+def financial_dashboard(request):
+    date_filter = request.GET.get('date_range', '30')
+    try:
+        days = int(date_filter)
+    except ValueError:
+        days = 30
+
+    start_date = timezone.localdate() - timedelta(days=days)
+    transactions = financial_queryset(request).filter(transaction_date__gte=start_date)
+    summary = _compute_summary(transactions)
+
+    context = {
+        'transactions': transactions[:10],
+        'total_count': transactions.count(),
+        'date_filter': str(days),
+        'type_filter': request.GET.get('type', '').strip(),
+        'status_filter': request.GET.get('status', '').strip(),
+        **summary,
+    }
+    return render(request, 'admin/financial_dashboard.html', context)
+
+
+@user_passes_test(is_staff_user)
+def financial_stats_api(request):
+    transactions = financial_queryset(request)
+    summary = _compute_summary(transactions)
+    return JsonResponse({
+        'total_entries': float(summary['total_entries']),
+        'total_exits': float(summary['total_exits']),
+        'balance': float(summary['balance']),
+        'total_commissions': float(summary['total_commissions']),
+        'total_count': transactions.count(),
+    })
+
+
+class FinancialTransactionListView(StaffRequiredMixin, ListView):
+    model = FinancialTransaction
+    template_name = 'admin/financial_transactions_list.html'
+    context_object_name = 'transactions'
+    paginate_by = 20
+
+    def get_queryset(self):
+        queryset = financial_queryset(self.request)
+        search = self.request.GET.get('search', '').strip()
+        date_from = self.request.GET.get('date_from', '').strip()
+        date_to = self.request.GET.get('date_to', '').strip()
+
+        if search:
+            queryset = queryset.filter(
+                Q(description__icontains=search)
+                | Q(created_by__first_name__icontains=search)
+                | Q(created_by__last_name__icontains=search)
+                | Q(assigned_to__first_name__icontains=search)
+                | Q(assigned_to__last_name__icontains=search)
+                | Q(listing__title__icontains=search)
+            )
+        if date_from:
+            queryset = queryset.filter(transaction_date__gte=date_from)
+        if date_to:
+            queryset = queryset.filter(transaction_date__lte=date_to)
+
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        full_qs = self.get_queryset()
+        summary = _compute_summary(full_qs)
+
+        context.update({
+            'search': self.request.GET.get('search', '').strip(),
+            'type_filter': self.request.GET.get('type', '').strip(),
+            'status_filter': self.request.GET.get('status', '').strip(),
+            'category_filter': self.request.GET.get('category', '').strip(),
+            'listing_filter': self.request.GET.get('listing', '').strip(),
+            'staff_filter': self.request.GET.get('staff', '').strip(),
+            'date_from': self.request.GET.get('date_from', '').strip(),
+            'date_to': self.request.GET.get('date_to', '').strip(),
+            'listings': Listing.objects.filter(status='published').order_by('title'),
+            'staff_members': User.objects.filter(is_staff=True).order_by('first_name', 'last_name'),
+            'category_choices': FinancialTransaction.CATEGORY_CHOICES,
+            **summary,
+        })
+        return context
+
+
+class FinancialTransactionCreateView(StaffRequiredMixin, CreateView):
+    model = FinancialTransaction
+    form_class = FinancialTransactionForm
+    template_name = 'admin/financial_transaction_form.html'
+    success_url = reverse_lazy('financial_transactions_list')
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['user'] = self.request.user
+        return kwargs
+
+    def form_valid(self, form):
+        form.instance.created_by = self.request.user
+        messages.success(self.request, 'Transaction créée avec succès.')
+        return super().form_valid(form)
+
+
+class FinancialTransactionUpdateView(StaffRequiredMixin, UpdateView):
+    model = FinancialTransaction
+    form_class = FinancialTransactionForm
+    template_name = 'admin/financial_transaction_form.html'
+    success_url = reverse_lazy('financial_transactions_list')
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['user'] = self.request.user
+        return kwargs
+
+    def form_valid(self, form):
+        messages.success(self.request, 'Transaction mise à jour avec succès.')
+        return super().form_valid(form)
+
+
+class FinancialTransactionDetailView(StaffRequiredMixin, DetailView):
+    model = FinancialTransaction
+    template_name = 'admin/financial_transaction_detail.html'
+    context_object_name = 'transaction'
+
+
+class FinancialTransactionDeleteView(StaffRequiredMixin, DeleteView):
+    model = FinancialTransaction
+    template_name = 'admin/financial_transaction_confirm_delete.html'
+    success_url = reverse_lazy('financial_transactions_list')
+
+    def form_valid(self, form):
+        messages.success(self.request, 'Transaction supprimée avec succès.')
+        return super().form_valid(form)
+
+
+def csrf_failure(request, reason=''):
+    return render(request, '403.html', {'reason': reason}, status=403)

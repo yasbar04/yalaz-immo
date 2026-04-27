@@ -1,0 +1,129 @@
+{% extends 'base.html' %}
+{% block title %}{{ user.username }} — Admin | YalazAgence{% endblock %}
+
+{% block content %}
+
+<div class="admin-prem-header">
+    <div class="container admin-header-inner">
+        <div>
+            <a href="{% url 'admin_users' %}" class="admin-back-pill">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><path d="M15 18l-6-6 6-6"/></svg>
+                Utilisateurs
+            </a>
+            <span class="eyebrow" style="display:block;margin-top:.5rem;">Détail utilisateur</span>
+            <h1>{{ user.username }}</h1>
+            <p class="meta-copy">{{ user.email }}</p>
+        </div>
+    </div>
+</div>
+
+<div class="container" style="padding-bottom:4rem;">
+    <div class="admin-user-panel">
+
+        <!-- Identity -->
+        <div class="admin-user-identity">
+            <div class="admin-user-avatar-lg">
+                {% if user.profile.avatar %}
+                    <img src="{{ user.profile.avatar.url }}" alt="{{ user.username }}">
+                {% else %}
+                    {{ user.username|slice:":1"|upper }}
+                {% endif %}
+            </div>
+            <div>
+                <h2>{{ user.get_full_name|default:user.username }}</h2>
+                <p class="meta-copy">@{{ user.username }}</p>
+                <div style="margin-top:.5rem;">
+                    {% if is_admin_user %}
+                        <span class="pill pill-gold">Administrateur</span>
+                    {% else %}
+                        <span class="pill">Utilisateur</span>
+                    {% endif %}
+                    {% if user.is_active %}
+                        <span class="pill pill-success">Actif</span>
+                    {% else %}
+                        <span class="pill pill-danger">Inactif</span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Info grid -->
+        <div class="admin-info-grid">
+            <div class="profile-detail-item">
+                <span>Nom complet</span>
+                <strong>{{ user.get_full_name|default:"—" }}</strong>
+            </div>
+            <div class="profile-detail-item">
+                <span>Email</span>
+                <strong>{{ user.email }}</strong>
+            </div>
+            <div class="profile-detail-item">
+                <span>Inscription</span>
+                <strong>{{ user.date_joined|date:"d M Y H:i" }}</strong>
+            </div>
+            <div class="profile-detail-item">
+                <span>Annonces</span>
+                <strong style="color:var(--gold-dark);font-size:1.5rem;">{{ user_listings.count }}</strong>
+            </div>
+            <div class="profile-detail-item">
+                <span>Signalements</span>
+                <strong style="color:var(--gold-dark);font-size:1.5rem;">{{ user_reports_count }}</strong>
+            </div>
+        </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="admin-actions-panel">
+        <h3>Actions admin</h3>
+        <form method="post" class="admin-actions-grid">
+            {% csrf_token %}
+            {% if is_admin_user %}
+                <button type="submit" name="action" value="remove_admin" class="admin-action-btn-prem is-warn" onclick="return confirm('Retirer les droits admin ?');">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" width="16" height="16"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/><line x1="8" y1="15" x2="16" y2="15"/></svg>
+                    Retirer les droits admin
+                </button>
+            {% else %}
+                <button type="submit" name="action" value="make_admin" class="admin-action-btn-prem" onclick="return confirm('Promouvoir en admin ?');">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" width="16" height="16"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                    Promouvoir en admin
+                </button>
+            {% endif %}
+            <button type="submit" name="action" value="delete" class="admin-action-btn-prem is-danger" onclick="return confirm('Supprimer définitivement cet utilisateur ?');">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" width="16" height="16"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>
+                Supprimer l'utilisateur
+            </button>
+        </form>
+    </div>
+
+    {% if user_listings %}
+        <div class="admin-panel-card" style="margin-top:2rem;">
+            <div class="admin-panel-head">
+                <h2>Annonces de cet utilisateur</h2>
+                <span class="meta-copy">{{ user_listings.count }} annonce{{ user_listings.count|pluralize }}</span>
+            </div>
+            <div class="admin-prem-list">
+                {% for listing in user_listings %}
+                    <div class="admin-prem-item">
+                        <div class="admin-item-body">
+                            <a href="{% url 'admin_listing_detail' listing.pk %}" class="admin-item-title">{{ listing.title|truncatewords:8 }}</a>
+                            <div class="admin-item-meta">
+                                <span>{{ listing.price|floatformat:0 }} MAD</span>
+                                <span>{{ listing.city }}</span>
+                                <span>{{ listing.views_count }} vues</span>
+                            </div>
+                        </div>
+                        {% if listing.status == 'published' %}
+                            <span class="pill pill-success">{{ listing.get_status_display }}</span>
+                        {% elif listing.status == 'pending' %}
+                            <span class="pill pill-warning">{{ listing.get_status_display }}</span>
+                        {% else %}
+                            <span class="pill pill-danger">{{ listing.get_status_display }}</span>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
+
+</div>
+{% endblock %}

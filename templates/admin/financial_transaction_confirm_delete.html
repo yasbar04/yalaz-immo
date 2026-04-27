@@ -1,0 +1,159 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Supprimer Transaction - Yalaz Agence{% endblock %}
+
+{% block content %}
+<div class="container" style="padding-top: var(--sp-8); padding-bottom: var(--sp-16); max-width: 600px;">
+    
+    <!-- Icône Alerte -->
+    <div style="text-align: center; margin-bottom: var(--sp-8);">
+        <div style="width: 80px; height: 80px; background: rgba(239, 68, 68, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto var(--sp-6); font-size: 2rem;">
+            ⚠️
+        </div>
+        <h1 style="font-size: 1.8rem; margin: 0 0 var(--sp-2) 0; font-weight: 700; color: var(--text);">Supprimer la Transaction ?</h1>
+        <p style="color: var(--muted); margin: 0;">Cette action est irréversible</p>
+    </div>
+
+    <!-- Détails de la Transaction -->
+    <div class="card" style="margin-bottom: var(--sp-8); padding: var(--sp-8);">
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-6); margin-bottom: var(--sp-8);">
+            
+            <div>
+                <p style="color: var(--muted); font-size: var(--text-xs); margin: 0 0 var(--sp-1) 0; font-weight: 500; text-transform: uppercase;">Type</p>
+                <p style="color: var(--text); margin: 0; font-weight: 600; font-size: 1.1rem;">{{ object.get_type_display }}</p>
+            </div>
+            
+            <div>
+                <p style="color: var(--muted); font-size: var(--text-xs); margin: 0 0 var(--sp-1) 0; font-weight: 500; text-transform: uppercase;">Montant</p>
+                <p style="color: {% if object.type in 'income,commission' %}var(--success){% else %}var(--danger){% endif %}; margin: 0; font-weight: 700; font-size: 1.2rem;">
+                    {% if object.type in 'income,commission' %}+{% else %}−{% endif %} {{ object.amount|floatformat:2 }} DH
+                </p>
+            </div>
+
+        </div>
+
+        <div style="border-top: 1px solid var(--border-color); padding-top: var(--sp-6);">
+            <p style="color: var(--muted); font-size: var(--text-xs); margin: 0 0 var(--sp-2) 0; font-weight: 500; text-transform: uppercase;">Description</p>
+            <p style="color: var(--text); margin: 0; font-weight: 500;">{{ object.description }}</p>
+            {% if object.category %}
+            <p style="color: var(--muted); font-size: var(--text-sm); margin: var(--sp-2) 0 0;">Catégorie: {{ object.category }}</p>
+            {% endif %}
+        </div>
+
+    </div>
+
+    <!-- Avertissement -->
+    <div style="background: rgba(239, 68, 68, 0.05); border: 1px solid var(--danger-light); border-radius: var(--r-lg); padding: var(--sp-6); margin-bottom: var(--sp-8);">
+        <p style="color: var(--danger); margin: 0; font-weight: 600; display: flex; align-items: center; gap: var(--sp-2);">
+            <span style="font-size: 1.2rem;">⚠️</span>
+            Cette transaction sera définitivement supprimée
+        </p>
+        <p style="color: var(--danger); margin: var(--sp-2) 0 0; font-size: var(--text-sm); opacity: 0.8;">
+            Cette action ne peut pas être annulée. Assurez-vous que vous avez sauvegardé les informations importantes ailleurs si nécessaire.
+        </p>
+    </div>
+
+    <!-- Formulaire de Suppression -->
+    <form method="post" style="margin-bottom: var(--sp-6);">
+        {% csrf_token %}
+        
+        <div style="display: flex; gap: var(--sp-4); flex-direction: column;">
+            <p style="color: var(--muted); font-size: var(--text-sm); margin: 0;">
+                Tapez "<strong>SUPPRIMER</strong>" pour confirmer :
+            </p>
+            <input type="text" id="confirm-input" placeholder="SUPPRIMER" style="padding: var(--sp-3) var(--sp-4); border: 1px solid var(--border-color); border-radius: var(--r-md); font-size: var(--text-sm); font-family: monospace; font-weight: 600; letter-spacing: 2px;">
+        </div>
+
+        <div style="display: flex; gap: var(--sp-4); margin-top: var(--sp-8); justify-content: flex-end;">
+            <a href="{% url 'financial_transaction_detail' object.pk %}" class="btn btn-ghost" style="border: 1px solid var(--border-color);">
+                Annuler
+            </a>
+            <button type="submit" id="delete-btn" class="btn btn-danger" disabled>
+                🗑️ Supprimer Définitivement
+            </button>
+        </div>
+    </form>
+
+    <!-- Info de Créateur -->
+    <div style="background: var(--bg-sand); border-radius: var(--r-md); padding: var(--sp-4); font-size: var(--text-xs); color: var(--muted);">
+        <p style="margin: 0;">
+            <strong>Créée par:</strong> {{ object.created_by.get_full_name|default:object.created_by.username }}<br/>
+            <strong>Date:</strong> {{ object.created_at|date:"d/m/Y à H:i" }}
+        </p>
+    </div>
+
+</div>
+
+<style>
+    .card {
+        background: white;
+        border: 1px solid var(--border-color);
+        border-radius: var(--r-xl);
+        box-shadow: var(--shadow-sm);
+    }
+    
+    .btn {
+        display: inline-block;
+        padding: var(--sp-3) var(--sp-6);
+        border-radius: var(--r-md);
+        text-decoration: none;
+        font-weight: 500;
+        cursor: pointer;
+        border: none;
+        transition: all 0.2s;
+    }
+    
+    .btn-ghost {
+        background: transparent;
+        color: var(--muted);
+    }
+    
+    .btn-ghost:hover {
+        background: var(--bg-sand);
+        color: var(--text);
+    }
+
+    .btn-danger {
+        background: var(--danger);
+        color: white;
+    }
+
+    .btn-danger:hover:not(:disabled) {
+        background: var(--danger-dark, #dc2626);
+        box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+    }
+
+    .btn-danger:disabled {
+        background: var(--muted);
+        cursor: not-allowed;
+        opacity: 0.5;
+    }
+    
+    input {
+        width: 100%;
+        font-color: var(--text);
+    }
+    
+    input:focus {
+        outline: none;
+        border-color: var(--gold-dark);
+        box-shadow: 0 0 0 3px rgba(217, 119, 6, 0.1);
+    }
+</style>
+
+<script>
+    const confirmInput = document.getElementById('confirm-input');
+    const deleteBtn = document.getElementById('delete-btn');
+
+    confirmInput.addEventListener('input', function() {
+        deleteBtn.disabled = this.value !== 'SUPPRIMER';
+        if (this.value === 'SUPPRIMER') {
+            deleteBtn.style.opacity = '1';
+        } else {
+            deleteBtn.style.opacity = '0.5';
+        }
+    });
+</script>
+{% endblock %}

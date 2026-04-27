@@ -1,0 +1,14 @@
+Bonjour {{ user.first_name|default:user.username }},
+
+Bienvenue sur {{ platform_name }}.
+
+Pour confirmer votre adresse email, cliquez sur ce lien :
+{{ verification_url }}
+
+Code de verification email : {{ email_code }}
+
+Le lien et le code expirent dans {{ code_ttl_minutes }} minutes.
+
+Si vous n etes pas a l origine de cette inscription, vous pouvez ignorer ce message.
+
+L equipe {{ platform_name }}

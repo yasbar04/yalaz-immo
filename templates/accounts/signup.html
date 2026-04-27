@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+{% block title %}Créer un compte — YalazAgence{% endblock %}
+
+{% block content %}
+<div class="auth-split">
+
+    <!-- LEFT PANEL -->
+    <div class="auth-split-left">
+        <div class="auth-left-inner">
+            <div class="auth-left-logo">
+                {% load static %}
+                {% get_media_prefix as MEDIA_PREFIX %}
+                <span class="brand-mark"><img src="{{ MEDIA_PREFIX }}front/logo_yalaz.png" alt="Logo" width="44" height="44"></span>
+                <span class="auth-left-logo-name">Yalaz</span>
+            </div>
+            <h2 class="auth-left-heading">Votre espace<br><em>immobilier personnel</em></h2>
+            <p class="auth-left-sub">Créez votre compte en quelques minutes et accédez à tous les outils pour publier, suivre et gérer vos biens immobiliers au Maroc.</p>
+            <div class="auth-left-benefits">
+                <div class="auth-benefit">
+                    <div class="auth-benefit-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" width="16" height="16"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
+                    <div class="auth-benefit-text">
+                        <strong>Publiez vos biens</strong>
+                        <span>Photos, galerie, description — tout en un seul espace</span>
+                    </div>
+                </div>
+                <div class="auth-benefit">
+                    <div class="auth-benefit-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" width="16" height="16"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></div>
+                    <div class="auth-benefit-text">
+                        <strong>Suivez vos vues</strong>
+                        <span>Statistiques détaillées pour chaque annonce publiée</span>
+                    </div>
+                </div>
+                <div class="auth-benefit">
+                    <div class="auth-benefit-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" width="16" height="16"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+                    <div class="auth-benefit-text">
+                        <strong>Compte sécurisé</strong>
+                        <span>Vérification email + SMS pour une identité fiable</span>
+                    </div>
+                </div>
+            </div>
+            <div class="auth-left-stats">
+                <div class="auth-left-stat"><strong>+500</strong><span>Biens publiés</span></div>
+                <div class="auth-left-stat"><strong>2 min</strong><span>Pour créer</span></div>
+                <div class="auth-left-stat"><strong>100%</strong><span>Gratuit</span></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- RIGHT PANEL -->
+    <div class="auth-split-right">
+        <div class="auth-right-card">
+            <div class="auth-card-head">
+                <span class="eyebrow">Bienvenue</span>
+                <h2>Créer un compte</h2>
+                <p>Renseignez vos informations. Un lien email et un code SMS seront envoyés pour activer le compte.</p>
+            </div>
+
+            <form method="post" class="auth-form-grid">
+                {% csrf_token %}
+                {% if form.non_field_errors %}
+                    <div class="cform-alert cform-alert-error">{% for e in form.non_field_errors %}{{ e }}{% endfor %}</div>
+                {% endif %}
+                {% for field in form %}
+                    <div class="auth-field{% if field.html_name == 'email' or field.html_name == 'password1' or field.html_name == 'password2' %} auth-field-full{% endif %}">
+                        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                        {{ field }}
+                        {% if field.help_text %}<small class="auth-field-hint">{{ field.help_text|safe }}</small>{% endif %}
+                        {% if field.errors %}<div class="auth-field-errors">{% for e in field.errors %}<span class="auth-field-error">{{ e }}</span>{% endfor %}</div>{% endif %}
+                    </div>
+                {% endfor %}
+                <button type="submit" class="auth-submit-btn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><polyline points="17 11 19 13 23 9"/></svg>
+                    Créer mon compte
+                </button>
+            </form>
+
+            <div class="auth-links">
+                <a href="{% url 'login' %}">Déjà un compte ? <strong>Se connecter</strong></a>
+                <a href="{% url 'recover_verification' %}">Compte non activé ? <strong>Retrouver mes confirmations</strong></a>
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

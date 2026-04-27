@@ -1,0 +1,103 @@
+{% extends 'base.html' %}
+{% block title %}Contacter {{ listing.owner.username }} — YalazAgence{% endblock %}
+
+{% block content %}
+<div class="auth-split" style="min-height:calc(100vh - 5.25rem);">
+
+    <!-- LEFT: Listing info -->
+    <div class="auth-split-left">
+        <div class="auth-left-inner">
+            <div class="auth-left-logo">
+                {% load static %}
+                {% get_media_prefix as MEDIA_PREFIX %}
+                <span class="brand-mark"><img src="{{ MEDIA_PREFIX }}front/logo_yalaz.png" alt="Logo" width="44" height="44"></span>
+                <span class="auth-left-logo-name">Yalaz</span>
+            </div>
+            <span class="eyebrow" style="color:var(--gold);display:block;margin-bottom:.5rem;">Contact propriétaire</span>
+            <h2 class="auth-left-heading" style="font-size:clamp(1.4rem,2.5vw,2rem);">{{ listing.title }}</h2>
+            <p class="auth-left-sub">{{ listing.city }}{% if listing.district %} — {{ listing.district }}{% endif %}</p>
+            <div class="auth-left-stats" style="margin-top:2rem;padding-top:1.5rem;">
+                <div class="auth-left-stat">
+                    <strong>{{ listing.price|floatformat:0 }}</strong>
+                    <span>MAD</span>
+                </div>
+                <div class="auth-left-stat">
+                    <strong>{{ listing.surface_area }}</strong>
+                    <span>m²</span>
+                </div>
+                <div class="auth-left-stat">
+                    <strong>{{ listing.bedrooms }}</strong>
+                    <span>ch.</span>
+                </div>
+            </div>
+            {% if listing.owner_email or listing.owner_phone or listing.owner_whatsapp %}
+                <div class="auth-left-benefits" style="margin-top:2.5rem;">
+                    {% if listing.owner_email %}
+                        <div class="auth-benefit">
+                            <div class="auth-benefit-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" width="16" height="16"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div>
+                            <div class="auth-benefit-text">
+                                <strong>Email direct</strong>
+                                <a href="mailto:{{ listing.owner_email }}" style="color:rgba(255,255,255,.5);font-size:.78rem;">{{ listing.owner_email }}</a>
+                            </div>
+                        </div>
+                    {% endif %}
+                    {% if listing.owner_phone %}
+                        <div class="auth-benefit">
+                            <div class="auth-benefit-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" width="16" height="16"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.13 11.5 19.79 19.79 0 0 1 1.06 2.84 2 2 0 0 1 3 .66h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.09 8.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21 16z"/></svg></div>
+                            <div class="auth-benefit-text">
+                                <strong>Téléphone</strong>
+                                <a href="tel:{{ listing.owner_phone }}" style="color:rgba(255,255,255,.5);font-size:.78rem;">{{ listing.owner_phone }}</a>
+                            </div>
+                        </div>
+                    {% endif %}
+                    {% if listing.owner_whatsapp %}
+                        <div class="auth-benefit">
+                            <div class="auth-benefit-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" width="16" height="16"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
+                            <div class="auth-benefit-text">
+                                <strong>WhatsApp</strong>
+                                <a href="https://wa.me/{{ listing.owner_whatsapp|slice:'1:' }}" target="_blank" rel="noopener" style="color:rgba(255,255,255,.5);font-size:.78rem;">{{ listing.owner_whatsapp }}</a>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- RIGHT: Form -->
+    <div class="auth-split-right">
+        <div class="auth-right-card">
+            <div class="auth-card-head">
+                <span class="eyebrow">Votre message</span>
+                <h2>Envoyer une demande</h2>
+                <p>Vos coordonnées sont transmises avec ce message afin que le propriétaire puisse vous recontacter.</p>
+            </div>
+
+            <form method="post" class="auth-form-grid">
+                {% csrf_token %}
+                <div class="auth-field">
+                    <label for="email">Email *</label>
+                    <input type="email" id="email" name="email" required value="{% if existing_contact %}{{ existing_contact.email }}{% else %}{{ user.email }}{% endif %}" placeholder="votre@email.com">
+                </div>
+                <div class="auth-field">
+                    <label for="phone">Téléphone</label>
+                    <input type="tel" id="phone" name="phone" value="{% if existing_contact %}{{ existing_contact.phone }}{% endif %}" placeholder="+212 6 12 34 56 78">
+                </div>
+                <div class="auth-field">
+                    <label for="message">Message *</label>
+                    <textarea id="message" name="message" rows="6" required placeholder="Bonjour, votre annonce m'intéresse. Je souhaite connaître les disponibilités et organiser une visite.">{% if existing_contact %}{{ existing_contact.message }}{% endif %}</textarea>
+                </div>
+                <button class="auth-submit-btn" type="submit">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                    {% if existing_contact %}Mettre à jour ma demande{% else %}Envoyer ma demande{% endif %}
+                </button>
+            </form>
+
+            <div class="auth-links">
+                <a href="{{ listing.get_absolute_url }}">← Retour à l'annonce</a>
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

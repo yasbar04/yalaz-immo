@@ -1,0 +1,42 @@
+.venv/
+__pycache__/
+*.pyc
+db.sqlite3
+.env
+.env.local
+.env.*.local
+media/
+staticfiles/
+logs/
+/ssl/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# OS
+Thumbs.db
+.DS_Store
+
+# Python
+*.egg-info/
+dist/
+build/
+*.egg
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Temporary files
+*.log
+hs_err_*.log
+replay_*.log
+
+# Docker
+docker-compose.override.yml

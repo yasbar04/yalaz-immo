@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% block title %}Accès restreint — YalazAgence{% endblock %}
+
+{% block content %}
+<div class="error-prem-page">
+    <div class="error-prem-card" style="max-width:600px;">
+        <div class="error-prem-code">Beta</div>
+        <div class="error-prem-icon" style="background:rgba(201,169,110,0.08);border-color:rgba(201,169,110,0.18);color:var(--gold);">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="30" height="30"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        </div>
+        <p class="eyebrow" style="color:var(--gold);margin-bottom:.5rem;">Accès restreint</p>
+        <h1 class="error-prem-title">Plateforme en phase bêta</h1>
+        <p class="error-prem-desc">
+            Cette plateforme est actuellement réservée à notre équipe d'administrateurs.<br>
+            Pour toute demande d'accès, contactez l'équipe Yalaz.
+        </p>
+
+        <div style="background:var(--bg);border:1px solid var(--border-light);border-radius:1rem;padding:1.5rem 1.75rem;text-align:left;margin-bottom:2rem;">
+            <p style="font-size:.78rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:1rem;">YalazAgence vous permet de :</p>
+            <ul style="list-style:none;padding:0;display:flex;flex-direction:column;gap:.875rem;">
+                <li style="display:flex;align-items:center;gap:.875rem;font-size:.875rem;color:var(--text);">
+                    <span style="width:28px;height:28px;border-radius:50%;background:rgba(201,169,110,0.1);border:1px solid rgba(201,169,110,0.2);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2.5" width="13" height="13"><polyline points="20 6 9 17 4 12"/></svg>
+                    </span>
+                    Centraliser et gérer votre portefeuille de propriétés
+                </li>
+                <li style="display:flex;align-items:center;gap:.875rem;font-size:.875rem;color:var(--text);">
+                    <span style="width:28px;height:28px;border-radius:50%;background:rgba(201,169,110,0.1);border:1px solid rgba(201,169,110,0.2);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2.5" width="13" height="13"><polyline points="20 6 9 17 4 12"/></svg>
+                    </span>
+                    Gérer les demandes de contact et de visite
+                </li>
+                <li style="display:flex;align-items:center;gap:.875rem;font-size:.875rem;color:var(--text);">
+                    <span style="width:28px;height:28px;border-radius:50%;background:rgba(201,169,110,0.1);border:1px solid rgba(201,169,110,0.2);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2.5" width="13" height="13"><polyline points="20 6 9 17 4 12"/></svg>
+                    </span>
+                    Suivre les statistiques et performances de vos annonces
+                </li>
+            </ul>
+        </div>
+
+        <div class="error-prem-actions">
+            <a href="{% url 'home' %}" class="btn-hero-prim">Retour à l'accueil</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

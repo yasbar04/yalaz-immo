@@ -1,0 +1,241 @@
+{% extends 'base.html' %}
+{% block title %}Mon profil — YalazAgence{% endblock %}
+
+{% block content %}
+
+<!-- Profile Hero -->
+<section class="profile-prem-hero">
+    <div class="container">
+        <div class="profile-prem-identity">
+            {% if profile.avatar %}
+                <img src="{{ profile.avatar.url }}" alt="{{ user.username }}" class="profile-prem-avatar">
+            {% else %}
+                <div class="profile-prem-avatar profile-prem-avatar-fallback">{{ user.username|slice:":1"|upper }}</div>
+            {% endif %}
+            <div class="profile-prem-info">
+                <span class="eyebrow">Espace personnel</span>
+                <h1>{{ user.get_full_name|default:user.username }}</h1>
+                <p>@{{ user.username }} · Membre depuis {{ user.date_joined|date:"d/m/Y" }}</p>
+                <div class="profile-prem-actions">
+                    <a href="{% url 'profile_edit' %}" class="btn-hero-prim">Modifier mon profil</a>
+                    <a href="{% url 'dashboard' %}" class="btn-hero-sec">Mon espace</a>
+                </div>
+            </div>
+            <div class="profile-prem-completion">
+                <strong>{{ completion_percent }}%</strong>
+                <span>Profil complété</span>
+                <div class="profile-progress-track">
+                    <span class="profile-progress-fill" style="width:{{ completion_percent }}%;"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="container" style="padding-bottom:4rem;">
+    <div class="profile-prem-layout">
+
+        <!-- MAIN -->
+        <div class="profile-prem-main">
+
+            <!-- Bio -->
+            <div class="profile-prem-card">
+                <div class="profile-prem-card-head">
+                    <div>
+                        <span class="eyebrow">Présentation</span>
+                        <h2>À propos</h2>
+                    </div>
+                    <a href="{% url 'profile_edit' %}" class="profile-prem-edit-link">Mettre à jour</a>
+                </div>
+                {% if profile.bio %}
+                    <p class="profile-prem-bio">{{ profile.bio }}</p>
+                {% else %}
+                    <div class="dash-empty" style="padding:1.5rem;border-radius:.75rem;background:var(--surface);">
+                        <h3 style="font-size:1rem;">Ajoutez une biographie</h3>
+                        <p style="font-size:.875rem;">Quelques lignes pour renforcer votre crédibilité auprès des acheteurs.</p>
+                        <a href="{% url 'profile_edit' %}" class="btn-hero-prim" style="display:inline-flex;margin-top:.75rem;font-size:.8rem;padding:.5rem 1rem;">Compléter mon profil</a>
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Recent listings -->
+            <div class="profile-prem-card">
+                <div class="profile-prem-card-head">
+                    <div>
+                        <span class="eyebrow">Activité récente</span>
+                        <h2>Mes annonces</h2>
+                    </div>
+                    <a href="{% url 'dashboard' %}" class="profile-prem-edit-link">Tout voir →</a>
+                </div>
+                {% if recent_listings %}
+                    <div style="display:flex;flex-direction:column;gap:.75rem;">
+                        {% for listing in recent_listings %}
+                            <div class="profile-activity-row">
+                                <div class="profile-activity-thumb">
+                                    {% if listing.image %}
+                                        <img src="{{ listing.image.url }}" alt="{{ listing.title }}">
+                                    {% else %}
+                                        <span>{{ listing.city|slice:":2"|upper }}</span>
+                                    {% endif %}
+                                </div>
+                                <div class="profile-activity-body">
+                                    <div class="listing-badges">
+                                        <span class="pill status-{{ listing.status }}">{{ listing.get_status_display }}</span>
+                                        <span class="pill">{{ listing.get_property_type_display }}</span>
+                                    </div>
+                                    <h4><a href="{{ listing.get_absolute_url }}">{{ listing.title }}</a></h4>
+                                    <div class="profile-activity-meta">
+                                        <span>{{ listing.price|floatformat:0 }} MAD</span>
+                                        <span>{{ listing.surface_area }} m²</span>
+                                        <span>{{ listing.views_count }} vue{{ listing.views_count|pluralize }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="meta-copy" style="text-align:center;padding:1.5rem 0;">Aucune annonce pour le moment.</p>
+                {% endif %}
+            </div>
+
+            <!-- Recent favorites -->
+            <div class="profile-prem-card">
+                <div class="profile-prem-card-head">
+                    <div>
+                        <span class="eyebrow">Sélection personnelle</span>
+                        <h2>Favoris récents</h2>
+                    </div>
+                    <a href="{% url 'favorites' %}" class="profile-prem-edit-link">Mes favoris →</a>
+                </div>
+                {% if recent_favorites %}
+                    <div style="display:flex;flex-direction:column;gap:.75rem;">
+                        {% for favorite in recent_favorites %}
+                            {% with listing=favorite.listing %}
+                                <div class="profile-activity-row">
+                                    <div class="profile-activity-thumb">
+                                        {% if listing.image %}
+                                            <img src="{{ listing.image.url }}" alt="{{ listing.title }}">
+                                        {% else %}
+                                            <span>{{ listing.city|slice:":2"|upper }}</span>
+                                        {% endif %}
+                                    </div>
+                                    <div class="profile-activity-body">
+                                        <div class="listing-badges">
+                                            <span class="pill">{{ listing.get_property_type_display }}</span>
+                                            <span class="pill pill-mint">{{ listing.get_listing_type_display }}</span>
+                                        </div>
+                                        <h4><a href="{% url 'listing_detail' listing.pk %}">{{ listing.title }}</a></h4>
+                                        <div class="profile-activity-meta">
+                                            <span>{{ listing.price|floatformat:0 }} MAD</span>
+                                            <span>{{ listing.surface_area }} m²</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endwith %}
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="meta-copy" style="text-align:center;padding:1.5rem 0;">Aucun favori pour le moment.</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- SIDEBAR -->
+        <aside class="profile-prem-sidebar">
+
+            <!-- Stats -->
+            <div class="profile-prem-card">
+                <span class="eyebrow">Statistiques</span>
+                <div class="profile-prem-stats">
+                    <div class="profile-prem-stat">
+                        <strong>{{ listings_count }}</strong>
+                        <span>Annonces</span>
+                        <small>{{ published_count }} en ligne</small>
+                    </div>
+                    <div class="profile-prem-stat">
+                        <strong>{{ total_views }}</strong>
+                        <span>Vues</span>
+                        <small>cumulées</small>
+                    </div>
+                    <div class="profile-prem-stat">
+                        <strong>{{ favorites_count }}</strong>
+                        <span>Favoris</span>
+                        <small>sauvegardés</small>
+                    </div>
+                    <div class="profile-prem-stat">
+                        <strong>{{ contacts_received }}</strong>
+                        <span>Demandes</span>
+                        <small>reçues</small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Coordinates -->
+            <div class="profile-prem-card">
+                <div class="profile-prem-card-head">
+                    <div>
+                        <span class="eyebrow">Coordonnées</span>
+                        <h3>Informations</h3>
+                    </div>
+                </div>
+                <div class="profile-detail-list">
+                    <div class="profile-detail-item">
+                        <span>Nom complet</span>
+                        <strong>{{ user.get_full_name|default:"À renseigner" }}</strong>
+                    </div>
+                    <div class="profile-detail-item">
+                        <span>Email</span>
+                        <strong>{{ user.email|default:"À renseigner" }}</strong>
+                    </div>
+                    <div class="profile-detail-item">
+                        <span>Téléphone</span>
+                        <strong>{{ profile.phone_number|default:"À renseigner" }}</strong>
+                    </div>
+                    <div class="profile-detail-item">
+                        <span>Nom d'utilisateur</span>
+                        <strong>@{{ user.username }}</strong>
+                    </div>
+                    <div class="profile-detail-item">
+                        <span>Mise à jour</span>
+                        <strong>{{ profile.updated_at|date:"d/m/Y" }}</strong>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Completion -->
+            <div class="profile-prem-card">
+                <div class="profile-prem-card-head">
+                    <div>
+                        <span class="eyebrow">Qualité</span>
+                        <h3>Finition du profil</h3>
+                    </div>
+                </div>
+                <div class="profile-progress-track" style="margin:.75rem 0;">
+                    <span class="profile-progress-fill" style="width:{{ completion_percent }}%;"></span>
+                </div>
+                {% if missing_profile_items %}
+                    <ul class="profile-checklist">
+                        {% for item in missing_profile_items %}
+                            <li>{{ item }}</li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p class="meta-copy" style="color:var(--gold-dark);font-weight:600;">Profil complet</p>
+                {% endif %}
+            </div>
+
+            <!-- Quick actions -->
+            <div class="profile-prem-card">
+                <span class="eyebrow" style="display:block;margin-bottom:1rem;">Actions rapides</span>
+                <div style="display:flex;flex-direction:column;gap:.5rem;">
+                    <a href="{% url 'profile_edit' %}" class="dash-action-btn-edit" style="border-radius:.5rem;padding:.6rem .9rem;font-size:.85rem;">Modifier le profil</a>
+                    <a href="{% url 'favorites' %}" class="dash-action-btn-view" style="border-radius:.5rem;padding:.6rem .9rem;font-size:.85rem;">Mes favoris</a>
+                    <a href="{% url 'dashboard' %}" class="dash-action-btn-view" style="border-radius:.5rem;padding:.6rem .9rem;font-size:.85rem;">Mon espace</a>
+                </div>
+            </div>
+
+        </aside>
+    </div>
+</div>
+
+{% endblock %}

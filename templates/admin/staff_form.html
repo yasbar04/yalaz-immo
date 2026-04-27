@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+{% block title %}{{ page_title }} — Admin | YalazAgence{% endblock %}
+
+{% block content %}
+
+<div class="admin-prem-header">
+    <div class="container admin-header-inner">
+        <div>
+            <a href="{% url 'admin_staff_list' %}" class="admin-back-pill">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><path d="M15 18l-6-6 6-6"/></svg>
+                Liste staff
+            </a>
+            <span class="eyebrow" style="display:block;margin-top:.5rem;">Administration</span>
+            <h1>{{ page_title }}</h1>
+        </div>
+    </div>
+</div>
+
+<div class="container" style="padding-bottom:4rem;">
+    <div style="max-width:640px;">
+        <div class="admin-panel-card">
+            <div class="admin-panel-head">
+                <h2>Informations du compte</h2>
+            </div>
+            <div style="padding:1.75rem;">
+                <form method="post">
+                    {% csrf_token %}
+
+                    {% if form.non_field_errors %}
+                        <div class="cform-alert cform-alert-error" style="margin-bottom:1.5rem;">{% for e in form.non_field_errors %}{{ e }}{% endfor %}</div>
+                    {% endif %}
+
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.125rem;margin-bottom:1.5rem;">
+                        <div class="filter-prem-field" style="grid-column:1/-1;">
+                            <label for="{{ form.username.id_for_label }}">Nom d'utilisateur *</label>
+                            {{ form.username }}
+                            {% if form.username.errors %}<span class="auth-field-error">{{ form.username.errors.0 }}</span>{% endif %}
+                        </div>
+                        <div class="filter-prem-field">
+                            <label for="{{ form.first_name.id_for_label }}">Prénom</label>
+                            {{ form.first_name }}
+                            {% if form.first_name.errors %}<span class="auth-field-error">{{ form.first_name.errors.0 }}</span>{% endif %}
+                        </div>
+                        <div class="filter-prem-field">
+                            <label for="{{ form.last_name.id_for_label }}">Nom</label>
+                            {{ form.last_name }}
+                            {% if form.last_name.errors %}<span class="auth-field-error">{{ form.last_name.errors.0 }}</span>{% endif %}
+                        </div>
+                        <div class="filter-prem-field" style="grid-column:1/-1;">
+                            <label for="{{ form.email.id_for_label }}">Email</label>
+                            {{ form.email }}
+                            {% if form.email.errors %}<span class="auth-field-error">{{ form.email.errors.0 }}</span>{% endif %}
+                        </div>
+                        <div class="filter-prem-field">
+                            <label for="{{ form.password.id_for_label }}">Mot de passe</label>
+                            {{ form.password }}
+                            {% if form.password.help_text %}<small style="font-size:.75rem;color:var(--muted);">{{ form.password.help_text }}</small>{% endif %}
+                            {% if form.password.errors %}<span class="auth-field-error">{{ form.password.errors.0 }}</span>{% endif %}
+                        </div>
+                        <div class="filter-prem-field">
+                            <label for="{{ form.password_confirm.id_for_label }}">Confirmer le mot de passe</label>
+                            {{ form.password_confirm }}
+                            {% if form.password_confirm.errors %}<span class="auth-field-error">{{ form.password_confirm.errors.0 }}</span>{% endif %}
+                        </div>
+                    </div>
+
+                    <div style="display:flex;gap:.75rem;">
+                        <button type="submit" class="btn-hero-prim">{{ submit_label }}</button>
+                        <a href="{% url 'admin_staff_list' %}" class="btn-hero-sec" style="border-color:var(--border);color:var(--muted);">Annuler</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

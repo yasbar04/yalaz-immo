@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+{% block title %}Vendre votre bien — YalazAgence{% endblock %}
+{% block og_title %}Vendre votre bien avec YalazAgence{% endblock %}
+{% block meta_description %}Vendez votre propriété au meilleur prix. Nos experts vous accompagnent à chaque étape pour une vente rapide et sécurisée.{% endblock %}
+
+{% block content %}
+
+<section class="prem-hero">
+    <div class="container prem-hero-inner">
+        <span class="eyebrow">Service de vente professionnel</span>
+        <h1>Vendez votre bien immobilier<br>au meilleur prix</h1>
+        <p class="prem-hero-sub">Confiez votre vente à des professionnels expérimentés. Estimation gratuite, visibilité maximale, accompagnement complet.</p>
+        <div class="prem-hero-meta">
+            <a href="{% url 'estimate' %}" class="btn-hero-prim">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15"><path d="M3 3v18h18"/><polyline points="9 9 13 5 17 9 21 5"/></svg>
+                Estimer gratuitement
+            </a>
+            <a href="{% url 'contact' %}" class="btn-hero-sec">Parler à un expert</a>
+        </div>
+    </div>
+</section>
+
+<div class="container">
+
+    <div class="section-head-centered" style="margin-bottom:2.5rem;">
+        <span class="eyebrow">Pourquoi nous choisir</span>
+        <h2>6 raisons de confier votre vente à YalazAgence</h2>
+    </div>
+
+    <div class="sell-prem-features" style="margin-bottom:4rem;">
+        <div class="sell-feature-card">
+            <div class="sell-feature-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" width="22" height="22"><path d="M3 3v18h18"/><polyline points="9 9 13 5 17 9 21 5"/></svg>
+            </div>
+            <h3>Expertise du Marché</h3>
+            <p>Nos agents connaissent parfaitement le marché immobilier local et vous aident à fixer le juste prix pour maximiser votre vente.</p>
+        </div>
+        <div class="sell-feature-card">
+            <div class="sell-feature-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" width="22" height="22"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+            </div>
+            <h3>Visibilité Maximale</h3>
+            <p>Votre bien est présenté sur tous nos canaux pour atteindre le maximum d'acheteurs qualifiés et réduire les délais de vente.</p>
+        </div>
+        <div class="sell-feature-card">
+            <div class="sell-feature-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" width="22" height="22"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            </div>
+            <h3>Gestion Complète</h3>
+            <p>Du marketing à la finalisation, nous gérons chaque étape du processus de vente avec professionnalisme et efficacité.</p>
+        </div>
+        <div class="sell-feature-card">
+            <div class="sell-feature-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" width="22" height="22"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            </div>
+            <h3>Confidentialité Garantie</h3>
+            <p>Nous traitons votre vente avec discrétion et confidentialité à chaque étape, protégeant vos informations personnelles.</p>
+        </div>
+        <div class="sell-feature-card">
+            <div class="sell-feature-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" width="22" height="22"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+            </div>
+            <h3>Suivi Transparent</h3>
+            <p>Restez informé en temps réel sur l'avancement de votre vente, les visites programmées et les offres reçues.</p>
+        </div>
+        <div class="sell-feature-card">
+            <div class="sell-feature-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" width="22" height="22"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            </div>
+            <h3>Support Légal</h3>
+            <p>Nous vous conseillons sur les documents légaux et fiscaux nécessaires, assurant une transaction sécurisée et conforme.</p>
+        </div>
+    </div>
+
+    <div class="about-contact-section" style="margin-bottom:3rem;">
+        <div>
+            <h2>Prêt à vendre votre bien&nbsp;?</h2>
+            <p>Commencez par une estimation gratuite de votre propriété, puis nos experts prennent en charge le reste pour obtenir le meilleur prix.</p>
+        </div>
+        <div class="about-contact-actions">
+            <a href="{% url 'estimate' %}" class="btn-hero-prim">Estimer gratuitement</a>
+            <a href="{% url 'contact' %}" class="btn-hero-sec">Contacter un expert</a>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

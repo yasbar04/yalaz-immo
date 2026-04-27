@@ -1,0 +1,277 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% get_media_prefix as MEDIA_PREFIX %}
+    <title>{% block title %}YalazAgence | Agence Immobilière Professionnelle{% endblock %}</title>
+    <meta name="description" content="{% block meta_description %}YalazAgence, votre agence immobilière de confiance. Acheter, vendre, louer ou estimer votre bien immobilier avec des professionnels.{% endblock %}">
+    <meta name="geo.placename" content="Maroc">
+    <meta name="geo.position" content="31.7917;-7.0926">
+    <meta name="ICBM" content="31.7917,-7.0926">
+    <meta name="language" content="fr-MA">
+    <link rel="canonical" href="{% block canonical_url %}{{ request.build_absolute_uri }}{% endblock %}">
+    <link rel="alternate" hreflang="fr-MA" href="{{ request.build_absolute_uri }}">
+    <link rel="icon" type="image/png" href="{{ MEDIA_PREFIX }}front/logo_yalaz.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="{% block og_type %}website{% endblock %}">
+    <meta property="og:url" content="{{ request.build_absolute_uri }}">
+    <meta property="og:title" content="{% block og_title %}YalazAgence | Agence Immobilière Professionnelle{% endblock %}">
+    <meta property="og:description" content="{% block og_description %}YalazAgence, votre agence immobilière de confiance. Acheter, vendre, louer ou estimer votre bien immobilier avec des professionnels.{% endblock %}">
+    <meta property="og:image" content="{{ MEDIA_PREFIX }}front/logo_yalaz.png">
+    <meta property="og:locale" content="fr_MA">
+    
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="{% block twitter_title %}YalazAgence | Agence Immobilière Professionnelle{% endblock %}">
+    <meta name="twitter:description" content="{% block twitter_description %}YalazAgence, votre agence immobilière de confiance. Acheter, vendre, louer ou estimer votre bien immobilier avec des professionnels.{% endblock %}">
+    <meta name="twitter:image" content="{{ MEDIA_PREFIX }}front/logo_yalaz.png">
+    
+    <!-- Additional SEO Meta Tags -->
+    <meta name="keywords" content="{% block seo_keywords %}immobilier maroc, acheter bien maroc, louer maroc, vendre propriete maroc, agence immobiliere maroc, estimation immobiliere maroc{% endblock %}">
+    <meta name="author" content="YalazAgence">
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+    <meta name="google-site-verification" content="REPLACE_WITH_GOOGLE_GSC_CODE">
+    <meta name="msvalidate.01" content="REPLACE_WITH_BING_WEBMASTER_CODE">
+    <link rel="home" href="{% url 'home' %}">
+    
+    <!-- JSON-LD Structured Data -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "LocalBusiness",
+        "name": "YalazAgence",
+        "description": "Agence immobilière professionnelle au Maroc. Acheter, vendre, louer ou estimer votre bien immobilier.",
+        "url": "{% url 'home' %}",
+        "image": "{{ MEDIA_PREFIX }}front/logo_yalaz.png",
+        "telephone": "+212xxx",
+        "email": "contact@yalazagence.ma",
+        "address": {
+            "@type": "PostalAddress",
+            "addressCountry": "MA",
+            "addressRegion": "Maroc"
+        },
+        "areaServed": {
+            "@type": "Country",
+            "name": "Maroc"
+        },
+        "priceRange": "$$$",
+        "ratingValue": 4.8,
+        "aggregateRating": {
+            "@type": "AggregateRating",
+            "ratingValue": "4.8",
+            "reviewCount": "50"
+        },
+        "sameAs": [
+            "https://www.facebook.com/yalazagence",
+            "https://www.instagram.com/yalazagence"
+        ]
+    }
+    </script>
+    
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "name": "YalazAgence",
+        "url": "{% url 'home' %}",
+        "logo": "{{ MEDIA_PREFIX }}front/logo_yalaz.png",
+        "description": "Plateforme immobilière pour acheter, vendre, louer ou estimer des propriétés au Maroc",
+        "contactPoint": {
+            "@type": "ContactPoint",
+            "contactType": "Customer Service",
+            "availableLanguage": ["fr", "ar"]
+        },
+        "address": {
+            "@type": "PostalAddress",
+            "addressCountry": "MA"
+        },
+        "sameAs": [
+            "https://www.facebook.com/yalazagence",
+            "https://www.instagram.com/yalazagence"
+        ]
+    }
+    </script>
+    
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "YalazAgence",
+        "url": "{% url 'home' %}",
+        "searchAction": {
+            "@type": "SearchAction",
+            "target": {
+                "@type": "EntryPoint",
+                "urlTemplate": "{% url 'listing_list' %}?search={search_term_string}"
+            }
+        }
+    }
+    </script>
+</head>
+<body class="{% block body_class %}{% endblock %}">
+    <div class="site-backdrop" aria-hidden="true">
+        <span class="backdrop-orb orb-coral"></span>
+        <span class="backdrop-orb orb-mint"></span>
+        <span class="backdrop-grid"></span>
+    </div>
+
+    <header class="site-header" id="site-header">
+        <div class="nav-shell">
+            <a href="{% url 'home' %}" class="brand nav-brand" aria-label="YalazAgence - Retour à l'accueil">
+                <span class="brand-mark">
+                    <img src="{{ MEDIA_PREFIX }}front/logo_yalaz.png" alt="Logo Yalaz" width="40" height="40">
+                </span>
+                <span class="brand-name">Yalaz</span>
+            </a>
+
+            <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav" data-nav-toggle aria-label="Ouvrir le menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+
+            <div class="nav-panel" id="site-nav" data-nav-panel>
+                <nav class="nav-links" aria-label="Navigation principale">
+                    <a href="{% url 'home' %}">Accueil</a>
+                    <a href="{% url 'about' %}">À Propos</a>
+                    <a href="{% url 'buy' %}">Acheter</a>
+                    <a href="{% url 'rent' %}">Louer</a>
+                    <a href="{% url 'estimate' %}">Estimer</a>
+                    <a href="{% url 'sell' %}">Vendre</a>
+                    {% if user.is_authenticated and user.is_staff %}
+                        <a href="{% url 'admin_dashboard' %}" class="admin-link">Back-office</a>
+                    {% endif %}
+                </nav>
+
+                <div class="nav-actions">
+                    {% if not user.is_authenticated %}
+                        <a href="{% url 'login' %}" class="nav-login-btn">Connexion</a>
+                    {% endif %}
+                    <a href="{% url 'contact' %}" class="nav-contact-btn">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="13" height="13" aria-hidden="true">
+                            <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.13 11.5 19.79 19.79 0 0 1 1.06 2.84 2 2 0 0 1 3 .66h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.09 8.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21 16z"/>
+                        </svg>
+                        Nous Contacter
+                    </a>
+                    {% if user.is_authenticated %}
+                        <div class="user-menu-wrapper">
+                            {% with profile=user.profile %}
+                                <button class="user-menu-button" type="button" aria-expanded="false" aria-haspopup="true" data-user-menu-toggle>
+                                    {% if profile.avatar %}
+                                        <img src="{{ profile.avatar.url }}" alt="{{ user.username }}" class="user-avatar">
+                                    {% else %}
+                                        <div class="user-avatar placeholder">{{ user.username|slice:":1"|upper }}</div>
+                                    {% endif %}
+                                    <span class="user-name">{{ user.get_full_name|default:user.username }}</span>
+                                    <svg class="user-menu-icon" width="14" height="14" viewBox="0 0 16 16" fill="none">
+                                        <path d="M4 6L8 10L12 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                </button>
+
+                                <div class="user-menu-dropdown" data-user-menu-dropdown>
+                                    <div class="user-menu-header">
+                                        {% if profile.avatar %}
+                                            <img src="{{ profile.avatar.url }}" alt="{{ user.username }}" class="dropdown-avatar">
+                                        {% else %}
+                                            <div class="dropdown-avatar placeholder">{{ user.username|slice:":1"|upper }}</div>
+                                        {% endif %}
+                                        <div class="user-info">
+                                            <p class="user-fullname">{{ user.get_full_name|default:user.username }}</p>
+                                            <p class="user-email">{{ user.email }}</p>
+                                        </div>
+                                    </div>
+
+                                    <nav class="user-menu-nav">
+                                        <a href="{% url 'profile' %}" class="user-menu-link">
+                                            <span>Mon profil</span>
+                                        </a>
+                                        <a href="{% url 'favorites' %}" class="user-menu-link">
+                                            <span>Mes favoris</span>
+                                        </a>
+                                        <a href="{% url 'dashboard' %}" class="user-menu-link">
+                                            <span>Mon espace</span>
+                                        </a>
+                                        {% if user.is_staff or user.is_superuser %}
+                                            <a href="{% url 'admin_dashboard' %}" class="user-menu-link admin-link">
+                                                <span>Back-office</span>
+                                            </a>
+                                        {% endif %}
+                                    </nav>
+
+                                    <div class="user-menu-footer">
+                                        <form method="post" action="{% url 'logout' %}">
+                                            {% csrf_token %}
+                                            <button type="submit" class="user-menu-logout">Se déconnecter</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            {% endwith %}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="site-main">
+        {% if messages %}
+            <div class="container flash-stack">
+                {% for message in messages %}
+                    <div class="flash flash-{{ message.tags|default:'info' }}" data-reveal>
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-shell">
+                <div class="footer-brand">
+                    <span class="brand-mark">
+                        <img src="{{ MEDIA_PREFIX }}front/logo_yalaz.png" alt="Logo Yalaz" width="40" height="40">
+                    </span>
+                    <div class="footer-brand-text">
+                        <strong>YalazAgence</strong>
+                        <p>Votre partenaire immobilier de confiance au Maroc — achat, vente, location et estimation.</p>
+                    </div>
+                </div>
+
+                <div class="footer-col">
+                    <h4>Navigation</h4>
+                    <div class="footer-col-links">
+                        <a href="{% url 'home' %}">Accueil</a>
+                        <a href="{% url 'about' %}">À propos</a>
+                        <a href="{% url 'listing_list' %}">Annonces</a>
+                        <a href="{% url 'contact' %}">Contact</a>
+                    </div>
+                </div>
+
+                <div class="footer-col">
+                    <h4>Services</h4>
+                    <div class="footer-col-links">
+                        <a href="{% url 'buy' %}">Acheter</a>
+                        <a href="{% url 'rent' %}">Louer</a>
+                        <a href="{% url 'sell' %}">Vendre</a>
+                        <a href="{% url 'estimate' %}">Estimer</a>
+                    </div>
+                </div>
+            </div>
+            <p class="footer-note">© 2026 YalazAgence — Agence immobilière professionnelle au Maroc.</p>
+        </div>
+    </footer>
+
+    <script src="{% static 'js/app.js' %}"></script>
+    {% block extra_scripts %}{% endblock %}
+</body>
+</html>

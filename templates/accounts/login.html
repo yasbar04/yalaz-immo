@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+{% block title %}Connexion — YalazAgence{% endblock %}
+
+{% block content %}
+<div class="auth-split">
+
+    <!-- LEFT PANEL -->
+    <div class="auth-split-left">
+        <div class="auth-left-inner">
+            <div class="auth-left-logo">
+                {% load static %}
+                {% get_media_prefix as MEDIA_PREFIX %}
+                <span class="brand-mark"><img src="{{ MEDIA_PREFIX }}front/logo_yalaz.png" alt="Logo" width="44" height="44"></span>
+                <span class="auth-left-logo-name">Yalaz</span>
+            </div>
+            <h2 class="auth-left-heading">Retrouvez votre<br><em>espace professionnel</em></h2>
+            <p class="auth-left-sub">Gérez vos annonces, suivez vos contacts et accédez à tous vos outils depuis un seul espace sécurisé.</p>
+            <div class="auth-left-benefits">
+                <div class="auth-benefit">
+                    <div class="auth-benefit-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" width="16" height="16"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
+                    <div class="auth-benefit-text">
+                        <strong>Gérez vos annonces</strong>
+                        <span>Ajoutez, modifiez et suivez vos biens en temps réel</span>
+                    </div>
+                </div>
+                <div class="auth-benefit">
+                    <div class="auth-benefit-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" width="16" height="16"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
+                    <div class="auth-benefit-text">
+                        <strong>Suivez vos contacts</strong>
+                        <span>Consultez les messages reçus par annonce</span>
+                    </div>
+                </div>
+                <div class="auth-benefit">
+                    <div class="auth-benefit-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" width="16" height="16"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></div>
+                    <div class="auth-benefit-text">
+                        <strong>Analysez vos vues</strong>
+                        <span>Statistiques détaillées pour chaque bien publié</span>
+                    </div>
+                </div>
+            </div>
+            <div class="auth-left-stats">
+                <div class="auth-left-stat"><strong>+500</strong><span>Biens publiés</span></div>
+                <div class="auth-left-stat"><strong>98%</strong><span>Satisfaction</span></div>
+                <div class="auth-left-stat"><strong>10 ans</strong><span>D'expertise</span></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- RIGHT PANEL -->
+    <div class="auth-split-right">
+        <div class="auth-right-card">
+            <div class="auth-card-head">
+                <span class="eyebrow">Bon retour</span>
+                <h2>Se connecter</h2>
+                <p>Accédez à votre espace YalazAgence pour gérer vos annonces.</p>
+            </div>
+
+            <form method="post" class="auth-form-grid">
+                {% csrf_token %}
+                {% if form.non_field_errors %}
+                    <div class="cform-alert cform-alert-error">{% for e in form.non_field_errors %}{{ e }}{% endfor %}</div>
+                {% endif %}
+                {% for field in form %}
+                    <div class="auth-field">
+                        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                        {{ field }}
+                        {% if field.errors %}<div class="auth-field-errors">{% for e in field.errors %}<span class="auth-field-error">{{ e }}</span>{% endfor %}</div>{% endif %}
+                    </div>
+                {% endfor %}
+                <button type="submit" class="auth-submit-btn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+                    Se connecter
+                </button>
+            </form>
+
+            <div class="auth-links">
+                <a href="{% url 'signup' %}">Pas encore de compte ? <strong>Créer un compte</strong></a>
+                <a href="{% url 'recover_verification' %}">Compte non activé ? <strong>Retrouver mes confirmations</strong></a>
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

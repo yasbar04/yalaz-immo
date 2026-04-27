@@ -1,0 +1,221 @@
+{% extends 'base.html' %}
+
+{% block title %}Annonces Immobilières Maroc | Acheter, Vendre, Louer | YalazAgence{% endblock %}
+{% block seo_keywords %}annonces immobilier maroc, acheter bien maroc, louer appartement maroc, vendre propriete maroc, agence immobiliere, listings maroc{% endblock %}
+{% block meta_description %}{{ listings.paginator.count }} annonces immobilières au Maroc. Trouvez des biens à acheter, vendre ou louer avec des filtres avancés sur YalazAgence.{% endblock %}
+{% block og_title %}Annonces Immobilières au Maroc | YalazAgence{% endblock %}
+{% block og_description %}Explorez {{ listings.paginator.count }} propriétés à acheter, vendre ou louer au Maroc. Filtres par ville, prix, type de bien et bien plus.{% endblock %}
+
+{% block content %}
+
+<section class="prem-hero">
+    <div class="container prem-hero-inner">
+        <span class="eyebrow">Catalogue immobilier</span>
+        <h1>Toutes nos annonces</h1>
+        <p class="prem-hero-sub">{{ listings.paginator.count }} bien{{ listings.paginator.count|pluralize }} disponible{{ listings.paginator.count|pluralize }} — filtrez, comparez et trouvez votre propriété idéale au Maroc.</p>
+    </div>
+</section>
+
+<div class="container" style="padding-bottom:4rem;">
+
+    <!-- Filter Panel -->
+    <form method="get" class="filter-prem-panel">
+        <div class="filter-prem-main">
+            <div class="filter-prem-search">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                <input type="text" name="search" value="{{ filters.search }}" placeholder="Titre, quartier, ville…">
+            </div>
+            <button type="button" class="filter-prem-toggle" data-filter-toggle aria-expanded="false" aria-controls="catalog-filters">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15"><line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="11" y1="18" x2="13" y2="18"/></svg>
+                Filtres
+            </button>
+            <button type="submit" class="btn-hero-prim" style="height:2.75rem;padding:0 1.5rem;font-size:.875rem;">Rechercher</button>
+        </div>
+
+        <div class="filter-prem-advanced" id="catalog-filters" data-filter-panel hidden>
+            <div class="filter-prem-grid">
+                <div class="filter-prem-field">
+                    <label for="city">Ville</label>
+                    <select id="city" name="city">
+                        <option value="">Toutes les villes</option>
+                        {% for city_name in available_cities %}
+                            <option value="{{ city_name }}" {% if filters.city == city_name %}selected{% endif %}>{{ city_name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="filter-prem-field">
+                    <label for="district">Quartier</label>
+                    <select id="district" name="district" data-selected="{{ filters.district }}">
+                        <option value="">Tous les quartiers</option>
+                        {% if filters.city and available_districts %}
+                            {% for district in available_districts %}
+                                <option value="{{ district }}" {% if filters.district == district %}selected{% endif %}>{{ district }}</option>
+                            {% endfor %}
+                        {% endif %}
+                    </select>
+                </div>
+                <div class="filter-prem-field">
+                    <label for="property_type">Type de bien</label>
+                    <select name="property_type" id="property_type">
+                        <option value="">Tous</option>
+                        {% for value, label in property_types %}
+                            <option value="{{ value }}" {% if filters.property_type == value %}selected{% endif %}>{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="filter-prem-field">
+                    <label for="listing_type">Type d'offre</label>
+                    <select name="listing_type" id="listing_type">
+                        <option value="">Toutes</option>
+                        {% for value, label in listing_types %}
+                            <option value="{{ value }}" {% if filters.listing_type == value %}selected{% endif %}>{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="filter-prem-field">
+                    <label for="min_price">Prix minimum</label>
+                    <input type="number" id="min_price" name="min_price" value="{{ filters.min_price }}" min="0" placeholder="0">
+                </div>
+                <div class="filter-prem-field">
+                    <label for="max_price">Prix maximum</label>
+                    <input type="number" id="max_price" name="max_price" value="{{ filters.max_price }}" min="0" placeholder="1 000 000">
+                </div>
+                <div class="filter-prem-field">
+                    <label for="min_bedrooms">Chambres min.</label>
+                    <input type="number" id="min_bedrooms" name="min_bedrooms" value="{{ filters.min_bedrooms }}" min="0" placeholder="2">
+                </div>
+                <div class="filter-prem-field">
+                    <label for="min_bathrooms">Sdb min.</label>
+                    <input type="number" id="min_bathrooms" name="min_bathrooms" value="{{ filters.min_bathrooms }}" min="0" placeholder="1">
+                </div>
+            </div>
+
+            <div style="margin-top:1.25rem;">
+                <p class="eyebrow" style="margin-bottom:.75rem;">Équipements</p>
+                <div class="filter-amenities-grid">
+                    {% for name, label in  amenity_fields %}
+                        <label class="filter-amenity-label">
+                            <input type="checkbox" class="filter-amenity-check" name="{{ name }}" {% if filters|default:'' %}{% if name in filters and filters|default:'' %}checked{% endif %}{% endif %}
+                            {% if filters.kitchen_equipped == "on" and name == "kitchen_equipped" %}checked{% endif %}
+                            {% if filters.swimming_pool == "on" and name == "swimming_pool" %}checked{% endif %}
+                            {% if filters.garden == "on" and name == "garden" %}checked{% endif %}
+                            {% if filters.garage == "on" and name == "garage" %}checked{% endif %}
+                            {% if filters.parking == "on" and name == "parking" %}checked{% endif %}
+                            {% if filters.terrace == "on" and name == "terrace" %}checked{% endif %}
+                            {% if filters.balcony == "on" and name == "balcony" %}checked{% endif %}
+                            {% if filters.air_conditioning == "on" and name == "air_conditioning" %}checked{% endif %}
+                            {% if filters.furnished == "on" and name == "furnished" %}checked{% endif %}
+                            {% if filters.security == "on" and name == "security" %}checked{% endif %}
+                            >
+                            {{ label }}
+                        </label>
+                    {% empty %}
+                        <label class="filter-amenity-label"><input type="checkbox" class="filter-amenity-check" name="kitchen_equipped" {% if filters.kitchen_equipped == "on" %}checked{% endif %}> Cuisine équipée</label>
+                        <label class="filter-amenity-label"><input type="checkbox" class="filter-amenity-check" name="swimming_pool" {% if filters.swimming_pool == "on" %}checked{% endif %}> Piscine</label>
+                        <label class="filter-amenity-label"><input type="checkbox" class="filter-amenity-check" name="garden" {% if filters.garden == "on" %}checked{% endif %}> Jardin</label>
+                        <label class="filter-amenity-label"><input type="checkbox" class="filter-amenity-check" name="garage" {% if filters.garage == "on" %}checked{% endif %}> Garage</label>
+                        <label class="filter-amenity-label"><input type="checkbox" class="filter-amenity-check" name="parking" {% if filters.parking == "on" %}checked{% endif %}> Parking</label>
+                        <label class="filter-amenity-label"><input type="checkbox" class="filter-amenity-check" name="terrace" {% if filters.terrace == "on" %}checked{% endif %}> Terrasse</label>
+                        <label class="filter-amenity-label"><input type="checkbox" class="filter-amenity-check" name="balcony" {% if filters.balcony == "on" %}checked{% endif %}> Balcon</label>
+                        <label class="filter-amenity-label"><input type="checkbox" class="filter-amenity-check" name="air_conditioning" {% if filters.air_conditioning == "on" %}checked{% endif %}> Climatisation</label>
+                        <label class="filter-amenity-label"><input type="checkbox" class="filter-amenity-check" name="furnished" {% if filters.furnished == "on" %}checked{% endif %}> Meublé</label>
+                        <label class="filter-amenity-label"><input type="checkbox" class="filter-amenity-check" name="security" {% if filters.security == "on" %}checked{% endif %}> Gardiennage</label>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="result-toolbar-prem" style="margin-top:1.25rem;">
+                <a href="{% url 'listing_list' %}" class="btn-hero-sec" style="font-size:.8rem;padding:.5rem 1rem;">Effacer les filtres</a>
+                <button class="btn-hero-prim" type="submit" style="font-size:.8rem;padding:.5rem 1.25rem;">Appliquer</button>
+            </div>
+        </div>
+    </form>
+
+    <!-- Sort bar -->
+    <div class="result-toolbar-prem" style="margin:1.25rem 0;">
+        <div class="result-count">
+            {% if listings %}
+                <strong>{{ listings.paginator.count }}</strong> bien{{ listings.paginator.count|pluralize }} trouvé{{ listings.paginator.count|pluralize }}
+            {% endif %}
+        </div>
+        <div class="sort-select-wrap">
+            <form method="get" class="sort-form">
+                <select name="sort" id="sort" class="sort-select" onchange="this.form.submit()">
+                    <option value="-created_at" {% if filters.sort == "-created_at" %}selected{% endif %}>Plus récents</option>
+                    <option value="created_at" {% if filters.sort == "created_at" %}selected{% endif %}>Plus anciens</option>
+                    <option value="-price" {% if filters.sort == "-price" %}selected{% endif %}>Prix décroissant</option>
+                    <option value="price" {% if filters.sort == "price" %}selected{% endif %}>Prix croissant</option>
+                </select>
+                {% for k, v in request.GET.items %}
+                    {% if k != 'sort' %}
+                        <input type="hidden" name="{{ k }}" value="{{ v }}">
+                    {% endif %}
+                {% endfor %}
+            </form>
+        </div>
+    </div>
+
+    {% if listings %}
+        <div class="listing-grid">
+            {% for listing in listings %}
+                <article class="listing-card" data-reveal>
+                    <a href="{{ listing.get_absolute_url }}">
+                        <div class="listing-image-wrapper">
+                            {% if listing.image %}
+                                <img src="{{ listing.image.url }}" alt="{{ listing.title }}" loading="lazy">
+                            {% else %}
+                                <div class="placeholder">Visuel indisponible</div>
+                            {% endif %}
+                            {% if listing.is_featured %}<span class="listing-badge">En vedette</span>{% endif %}
+                        </div>
+                        <div class="listing-content">
+                            <div class="listing-badges">
+                                <span class="pill pill-mint">{{ listing.get_listing_type_display }}</span>
+                                <span class="pill">{{ listing.get_property_type_display }}</span>
+                            </div>
+                            <h3>{{ listing.title }}</h3>
+                            <div class="listing-location">
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                                <span>{{ listing.city }}</span>{% if listing.district %}<span>•</span><span>{{ listing.district }}</span>{% endif %}
+                            </div>
+                            <div class="listing-specs">
+                                <div class="spec-item"><strong>{{ listing.surface_area }}</strong><small>m²</small></div>
+                                <div class="spec-item"><strong>{{ listing.bedrooms }}</strong><small>ch.</small></div>
+                                <div class="spec-item"><strong>{{ listing.bathrooms }}</strong><small>sdb</small></div>
+                            </div>
+                            <div class="listing-footer">
+                                <strong class="listing-price">{{ listing.price|floatformat:0 }} MAD</strong>
+                                <small class="meta-copy">{{ listing.views_count }} vues</small>
+                            </div>
+                        </div>
+                    </a>
+                </article>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="dash-empty">
+            <div class="dash-empty-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="28" height="28"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            </div>
+            <h3>Aucun bien ne correspond à votre recherche</h3>
+            <p>Essayez une autre ville, un budget plus large ou retirez certains filtres.</p>
+            <a href="{% url 'listing_list' %}" class="btn-hero-prim" style="display:inline-flex;margin-top:1rem;">Voir toutes les annonces</a>
+        </div>
+    {% endif %}
+
+    {% if listings.has_other_pages %}
+        <div class="pagination" style="display:flex;gap:.5rem;justify-content:center;margin-top:2.5rem;flex-wrap:wrap;">
+            {% if listings.has_previous %}
+                <a href="?page=1{% for k, v in request.GET.items %}{% if k != 'page' %}&{{ k }}={{ v }}{% endif %}{% endfor %}" class="btn-hero-sec" style="font-size:.8rem;padding:.5rem 1rem;">Première</a>
+                <a href="?page={{ listings.previous_page_number }}{% for k, v in request.GET.items %}{% if k != 'page' %}&{{ k }}={{ v }}{% endif %}{% endfor %}" class="btn-hero-sec" style="font-size:.8rem;padding:.5rem 1rem;">Précédente</a>
+            {% endif %}
+            <span class="meta-copy" style="display:flex;align-items:center;padding:0 .75rem;">Page {{ listings.number }} / {{ listings.paginator.num_pages }}</span>
+            {% if listings.has_next %}
+                <a href="?page={{ listings.next_page_number }}{% for k, v in request.GET.items %}{% if k != 'page' %}&{{ k }}={{ v }}{% endif %}{% endfor %}" class="btn-hero-prim" style="font-size:.8rem;padding:.5rem 1rem;">Suivante</a>
+                <a href="?page={{ listings.paginator.num_pages }}{% for k, v in request.GET.items %}{% if k != 'page' %}&{{ k }}={{ v }}{% endif %}{% endfor %}" class="btn-hero-sec" style="font-size:.8rem;padding:.5rem 1rem;">Dernière</a>
+            {% endif %}
+        </div>
+    {% endif %}
+
+</div>
+{% endblock %}

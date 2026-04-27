@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+{% block title %}Acheter un bien — YalazAgence{% endblock %}
+{% block og_title %}Acheter un bien | YalazAgence Maroc{% endblock %}
+{% block meta_description %}Découvrez notre sélection de propriétés à vendre au Maroc. Appartements, villas, riads — trouvez le bien idéal avec YalazAgence.{% endblock %}
+
+{% block content %}
+
+<section class="prem-hero">
+    <div class="container prem-hero-inner">
+        <span class="eyebrow">Sélection exclusive</span>
+        <h1>Acheter votre bien immobilier</h1>
+        <p class="prem-hero-sub">Découvrez notre portefeuille de propriétés à la vente partout au Maroc, sélectionnées par nos experts.</p>
+    </div>
+</section>
+
+<div class="container">
+    <div class="listings-intro-bar">
+        <div class="listing-count">
+            {% if listings %}
+                <strong>{{ listings|length }}</strong> bien{{ listings|length|pluralize }} disponible{{ listings|length|pluralize }} à l'achat
+            {% else %}
+                Annonces mises à jour régulièrement
+            {% endif %}
+        </div>
+        <div class="listings-cta-row">
+            <a href="{% url 'listing_list' %}" class="btn btn-secondary">Toutes les annonces</a>
+            <a href="{% url 'contact' %}" class="btn btn-primary">Nous contacter</a>
+        </div>
+    </div>
+
+    {% if listings %}
+        <div class="listing-grid" style="margin-bottom:3rem;">
+            {% for listing in listings %}
+                <article class="listing-card" data-reveal>
+                    <a href="{% url 'listing_detail' listing.pk %}">
+                        <div class="listing-image-wrapper">
+                            {% if listing.image %}
+                                <img src="{{ listing.image.url }}" alt="{{ listing.title }}" loading="lazy">
+                            {% else %}
+                                <div class="placeholder">Pas de photo</div>
+                            {% endif %}
+                            {% if listing.is_featured %}<span class="listing-badge">En vedette</span>{% endif %}
+                        </div>
+                        <div class="listing-content">
+                            <h3>{{ listing.title }}</h3>
+                            <div class="listing-location">
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                                <span>{{ listing.city }}</span>{% if listing.district %}<span>•</span><span>{{ listing.district }}</span>{% endif %}
+                            </div>
+                            <div class="listing-specs">
+                                <div class="spec-item"><strong>{{ listing.surface_area }}</strong><small>m²</small></div>
+                                <div class="spec-item"><strong>{{ listing.bedrooms }}</strong><small>ch.</small></div>
+                                <div class="spec-item"><strong>Vente</strong></div>
+                            </div>
+                            <div class="listing-footer">
+                                <small class="meta-copy">{{ listing.views_count }} vue{{ listing.views_count|pluralize }}</small>
+                                <span class="listing-contact-cta">Prix sur demande →</span>
+                            </div>
+                        </div>
+                    </a>
+                </article>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="dash-empty" style="margin-bottom:3rem;" data-reveal>
+            <div class="dash-empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="28" height="28"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
+            <h3>Aucun bien disponible à l'achat pour le moment</h3>
+            <p>Nos propriétés sont mises à jour régulièrement. Revenez bientôt ou contactez-nous pour une recherche personnalisée.</p>
+            <a href="{% url 'contact' %}" class="btn-hero-prim" style="display:inline-flex;align-items:center;gap:.5rem;margin-top:.5rem;">Nous décrire votre projet</a>
+        </div>
+    {% endif %}
+
+    <div class="about-contact-section" style="margin-bottom:3rem;">
+        <div>
+            <h2>Vous ne trouvez pas le bien idéal&nbsp;?</h2>
+            <p>Décrivez-nous votre projet et nos experts vous proposeront une sélection sur mesure correspondant à vos critères.</p>
+        </div>
+        <div class="about-contact-actions">
+            <a href="{% url 'contact' %}" class="btn-hero-prim">Parler à un expert</a>
+            <a href="{% url 'estimate' %}" class="btn-hero-sec">Estimer mon budget</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

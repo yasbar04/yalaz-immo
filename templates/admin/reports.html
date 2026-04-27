@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+{% block title %}Signalements — Admin | YalazAgence{% endblock %}
+
+{% block content %}
+
+<div class="admin-prem-header">
+    <div class="container admin-header-inner">
+        <div>
+            <a href="{% url 'admin_dashboard' %}" class="admin-back-pill">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><path d="M15 18l-6-6 6-6"/></svg>
+                Dashboard
+            </a>
+            <span class="eyebrow" style="display:block;margin-top:.5rem;">Administration</span>
+            <h1>Gestion des signalements</h1>
+        </div>
+    </div>
+</div>
+
+<div class="container" style="padding-bottom:4rem;">
+
+    <div class="admin-filter-bar">
+        <a href="{% url 'admin_reports' %}" class="admin-filter-tab {% if not current_status %}is-active{% endif %}">Tous</a>
+        {% for value, label in status_choices %}
+            <a href="?status={{ value }}" class="admin-filter-tab {% if current_status == value %}is-active{% endif %}">{{ label }}</a>
+        {% endfor %}
+    </div>
+
+    {% if reports %}
+        <div class="admin-reports-prem-grid">
+            {% for report in reports %}
+                <div class="report-prem-card">
+                    <div class="report-prem-card-head">
+                        <div>
+                            <h3>{{ report.get_report_type_display }}</h3>
+                            <p class="report-prem-date">{{ report.created_at|date:"d M Y H:i" }}</p>
+                        </div>
+                        {% if report.status == 'pending' %}
+                            <span class="pill pill-warning">{{ report.get_status_display }}</span>
+                        {% elif report.status == 'resolved' %}
+                            <span class="pill pill-success">{{ report.get_status_display }}</span>
+                        {% else %}
+                            <span class="pill">{{ report.get_status_display }}</span>
+                        {% endif %}
+                    </div>
+
+                    <div class="report-prem-body">
+                        <div class="report-prem-row">
+                            <span class="report-prem-label">Signalé par</span>
+                            <span class="report-prem-val">{{ report.reporter.username }} — {{ report.reporter.email }}</span>
+                        </div>
+                        {% if report.listing %}
+                            <div class="report-prem-row">
+                                <span class="report-prem-label">Annonce</span>
+                                <a href="{% url 'admin_listing_detail' report.listing.pk %}" class="report-prem-val" style="color:var(--gold-dark);text-decoration:none;">{{ report.listing.title|truncatewords:6 }}</a>
+                            </div>
+                        {% endif %}
+                        {% if report.reported_user %}
+                            <div class="report-prem-row">
+                                <span class="report-prem-label">Utilisateur visé</span>
+                                <a href="{% url 'admin_user_detail' report.reported_user.id %}" class="report-prem-val" style="color:var(--gold-dark);text-decoration:none;">{{ report.reported_user.username }}</a>
+                            </div>
+                        {% endif %}
+                        <div class="report-prem-reason">{{ report.reason|truncatewords:20 }}</div>
+                        {% if report.admin_note %}
+                            <div class="report-prem-row" style="margin-top:.5rem;">
+                                <span class="report-prem-label">Note admin</span>
+                                <span class="report-prem-val">{{ report.admin_note }}</span>
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="report-prem-footer">
+                        <a href="{% url 'admin_report_detail' report.id %}" class="btn-hero-prim" style="font-size:.8rem;padding:.5rem 1rem;">Examiner</a>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="dash-empty" style="margin-top:2rem;">
+            <div class="dash-empty-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="28" height="28"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+            </div>
+            <h3>{% if current_status == 'pending' %}Aucun signalement en attente{% else %}Aucun signalement trouvé{% endif %}</h3>
+            <p>La file est vide pour le filtre sélectionné.</p>
+        </div>
+    {% endif %}
+
+</div>
+{% endblock %}

@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+
+{% block title %}Vendre votre bien | YalazAgence{% endblock %}
+{% block og_title %}Vendre votre bien avec YalazAgence{% endblock %}
+{% block meta_description %}Vendez votre propriété avec YalazAgence. Nos experts vous accompagnent pour tirer le meilleur prix de votre bien.{% endblock %}
+{% block og_description %}Vendez votre propriété facilement avec YalazAgence.{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="page-header">
+        <p class="eyebrow">Service de vente professionnel</p>
+        <h1>Vendre Votre Bien Immobilier</h1>
+        <p class="lead">Confiez votre vente à des professionnels expérimentés pour le meilleur prix</p>
+    </div>
+
+    <div class="sell-intro">
+        <div class="sell-intro-text">
+            <h2>Pourquoi choisir YalazAgence ?</h2>
+            <p>Nos experts travaillent pour faire valoir votre bien et vous garantir les meilleures conditions de vente au Maroc.</p>
+        </div>
+        <a href="{% url 'estimate' %}" class="btn btn-primary">Estimer votre bien gratuitement</a>
+    </div>
+
+    <div class="features-grid" data-reveal>
+        <div class="feature-card">
+            <div class="feature-icon">📊</div>
+            <h3>Expertise du Marché</h3>
+            <p>Nos agents connaissent parfaitement le marché immobilier local et vous aident à fixer le juste prix.</p>
+        </div>
+        
+        <div class="feature-card">
+            <div class="feature-icon">📸</div>
+            <h3>Visibilité Maximale</h3>
+            <p>Votre bien est présenté sur tous nos canaux pour atteindre le maximum d'acheteurs potentiels.</p>
+        </div>
+        
+        <div class="feature-card">
+            <div class="feature-icon">✋</div>
+            <h3>Gestion Complète</h3>
+            <p>Du marketing à la finalisation, nous gérons chaque étape du processus de vente avec professionnalisme.</p>
+        </div>
+        
+        <div class="feature-card">
+            <div class="feature-icon">🔒</div>
+            <h3>Confidentialité Garantie</h3>
+            <p>Nous traitons votre vente avec discrétion et confidentialité à chaque étape du processus.</p>
+        </div>
+        
+        <div class="feature-card">
+            <div class="feature-icon">📈</div>
+            <h3>Suivi Transparent</h3>
+            <p>Restez informé en temps réel sur l'avancement de votre vente et les offres reçues.</p>
+        </div>
+        
+        <div class="feature-card">
+            <div class="feature-icon">⚖️</div>
+            <h3>Support Légal</h3>
+            <p>Nous vous conseillons sur les documents légaux et fiscaux nécessaires à votre vente.</p>
+        </div>
+    </div>
+</div>
+
+<div class="cta-shell" style="padding: var(--sp-12) var(--sp-6) var(--sp-16);">
+    <div class="cta-section" data-reveal>
+        <p class="eyebrow cta-eyebrow">Prêt à vendre ?</p>
+        <h2>Lancez votre vente en quelques minutes</h2>
+        <p>Notre processus est simple et transparent. Nous vous guidons à travers chaque étape pour obtenir le meilleur prix de votre propriété.</p>
+        <div class="cta-actions">
+            <a href="{% url 'estimate' %}" class="btn">Estimer gratuitement</a>
+            <a href="{% url 'contact' %}" class="btn btn-secondary">Contacter un expert</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

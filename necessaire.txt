@@ -1,0 +1,26 @@
+//L'admin doit avoir un controle sur tout
+//l'admin peut mettre des bien en avant
+//l'admin peut supprimer des biens
+//l'admin peut supprimer des utilisateurs
+//l'admin peut ajouter des admins
+//l'admin peut supprimer des admins
+//l'admin peut voir les statistiques de la plateforme
+//l'admin peut gérer les catégories de biens
+//l'admin peut gérer les commentaires et avis des utilisateurs
+//l'admin peut gérer les signalements de contenu inapproprié
+//l'admin peut gérer les promotions et les offres spéciales
+//l'admin peut gérer les paramètres de la plateforme
+//l'admin peut gérer les notifications et les alertes pour les utilisateurs
+//L'utilisateur doit pouvoir créer un compte
+//L'utilisateur doit pouvoir se connecter à son compte
+//L'utilisateur doit pouvoir rechercher des biens
+//L'utilisateur doit pouvoir filtrer les résultats de recherche
+//L'utilisateur doit pouvoir voir les détails d'un bien
+//L'utilisateur doit pouvoir ajouter des biens à sa liste de favoris
+//Dans la recherche il doit y avoir le nombre de chambre et de salle de bain
+//Il doit y avoir une selection de la ville
+//Il doit y avoir une selection du quartier selon la ville
+//L'utilisateur doit pouvoir contacter le propriétaire d'un bien
+//L'utlisateur doit pouvoir signaler un bien ou un utilisateur
+// L'utilisateur doit pouvoir modifier le bien qu'il a deposer 
+//Celui qui depose son bien son numero de telephone ou son adresse mail ou son numero whatsaap doivent apparaitre dans la partie contacter le propriétaire selon ce qu'il a choisit d'afficheer meme les 3 s'il veut mais obliger un des 3
