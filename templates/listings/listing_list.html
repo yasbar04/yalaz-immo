@@ -163,9 +163,15 @@
 
     <!-- Sort bar -->
     <div class="result-toolbar-prem" style="margin:1.25rem 0;">
-        <div class="result-count">
+        <div class="result-count" style="display:flex;align-items:center;gap:1rem;flex-wrap:wrap;">
             {% if listings %}
                 <strong>{{ listings.paginator.count }}</strong> bien{{ listings.paginator.count|pluralize }} trouvé{{ listings.paginator.count|pluralize }}
+            {% endif %}
+            {% if user.is_staff %}
+            <a href="{% url 'listing_create' %}" class="btn-staff-create">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                Nouvelle annonce
+            </a>
             {% endif %}
         </div>
         <div class="sort-select-wrap">
