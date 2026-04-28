@@ -476,5 +476,47 @@ def admin_seller_request_detail(request, request_id):
     return render(request, 'admin/seller_request_detail.html', context)
 
 
+@staff_required
+def admin_contact_messages(request):
+    status_filter = request.GET.get('status', '')
+    qs = ContactMessage.objects.all()
+
+    if status_filter == 'unread':
+        qs = qs.filter(is_read=False)
+    elif status_filter == 'read':
+        qs = qs.filter(is_read=True)
+
+    context = {
+        'contact_messages': qs,
+        'current_status': status_filter,
+        'unread_count': ContactMessage.objects.filter(is_read=False).count(),
+    }
+    return render(request, 'admin/contact_messages.html', context)
+
+
+@staff_required
+def admin_contact_message_detail(request, message_id):
+    contact_msg = get_object_or_404(ContactMessage, id=message_id)
+
+    if not contact_msg.is_read:
+        contact_msg.is_read = True
+        contact_msg.save(update_fields=['is_read'])
+
+    if request.method == 'POST':
+        action = request.POST.get('action')
+        if action == 'mark_unread':
+            contact_msg.is_read = False
+            contact_msg.save(update_fields=['is_read'])
+            messages.success(request, 'Message marqué comme non lu.')
+        elif action == 'delete':
+            contact_msg.delete()
+            messages.success(request, 'Message supprimé.')
+            return redirect('admin_contact_messages')
+        return redirect('admin_contact_message_detail', message_id=contact_msg.id)
+
+    context = {'contact_msg': contact_msg}
+    return render(request, 'admin/contact_message_detail.html', context)
+
+
 def csrf_failure(request, reason=''):
     return render(request, '403.html', {'reason': reason}, status=403)

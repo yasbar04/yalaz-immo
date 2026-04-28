@@ -9,8 +9,7 @@
         <div class="auth-left-inner">
             <div class="auth-left-logo">
                 {% load static %}
-                {% get_media_prefix as MEDIA_PREFIX %}
-                <span class="brand-mark"><img src="{{ MEDIA_PREFIX }}front/logo_yalaz.png" alt="Logo" width="44" height="44"></span>
+                <span class="brand-mark"><img src="{% static 'images/logo_yalaz.png' %}" alt="Logo YalazAgence" width="44" height="44"></span>
                 <span class="auth-left-logo-name">Yalaz</span>
             </div>
             <h2 class="auth-left-heading">Retrouvez votre<br><em>espace professionnel</em></h2>

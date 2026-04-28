@@ -6510,3 +6510,196 @@ tbody tr:hover td { background: var(--gold-mist); }
     .profile-prem-sidebar { order: -1; }
     .verify-status-cards { grid-template-columns: 1fr; }
 }
+
+/* ═══════════════════════════════════════════════════
+   MOBILE UX — Admin & Global responsive improvements
+   ═══════════════════════════════════════════════════ */
+
+/* Admin dashboard 2-col grid → 1-col on mobile */
+.admin-dash-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+}
+
+/* Admin header on mobile */
+@media (max-width: 640px) {
+    .admin-prem-header { padding: 1.25rem 0 1rem; margin-bottom: 1.5rem; }
+    .admin-header-inner { flex-direction: column; align-items: flex-start; gap: .75rem; }
+    .admin-header-inner > div:last-child { width: 100%; display: flex; gap: .5rem; flex-wrap: wrap; }
+    .admin-header-inner > div:last-child a,
+    .admin-header-inner > div:last-child button { flex: 1; min-width: 120px; justify-content: center; font-size: .8rem; padding: .5rem .75rem; }
+    .admin-prem-header h1 { font-size: 1.5rem; }
+
+    /* Admin stats — 2 col then 1 col */
+    .admin-stats-4 { grid-template-columns: 1fr 1fr; gap: .75rem; margin-bottom: 1.5rem; }
+    .admin-stat-prem { padding: 1rem 1rem; gap: .75rem; }
+    .admin-stat-icon-wrap { width: 36px; height: 36px; border-radius: 8px; }
+    .admin-stat-body strong { font-size: 1.5rem; }
+
+    /* Admin main 2-col grid → 1-col */
+    .admin-dash-grid { grid-template-columns: 1fr; gap: 1rem; }
+
+    /* Quick actions grid → 1-col */
+    .admin-quick-grid { grid-template-columns: 1fr; gap: .5rem; }
+    .admin-quick-btn { padding: .75rem 1rem; gap: .625rem; font-size: .82rem; }
+
+    /* Admin panel card */
+    .admin-panel-card { border-radius: .875rem; }
+    .admin-panel-head { padding: .875rem 1rem; }
+    .admin-panel-head h2 { font-size: .875rem; }
+    .admin-prem-item { padding: .75rem .875rem; gap: .75rem; }
+
+    /* User stat row */
+    .admin-stat-prem[style*="max-width:280px"] { max-width: 100% !important; }
+
+    /* Transactions header buttons */
+    .admin-header-inner .btn-hero-sec,
+    .admin-header-inner .btn-hero-prim { font-size: .78rem; padding: .5rem .875rem; }
+
+    /* Admin table responsive */
+    .admin-prem-table { font-size: .78rem; }
+    .admin-prem-table th, .admin-prem-table td { padding: .625rem .5rem; }
+}
+
+@media (max-width: 400px) {
+    .admin-stats-4 { grid-template-columns: 1fr; }
+    .admin-stat-body strong { font-size: 1.35rem; }
+}
+
+/* ── Navigation mobile improvements ── */
+@media (max-width: 768px) {
+    /* Header height reduction */
+    .site-header { padding: .875rem 0; }
+    .nav-shell { padding: 0 1rem; }
+
+    /* Hero sections */
+    .prem-hero { padding: 2rem 0 1.75rem; margin-bottom: 2.5rem; }
+    .prem-hero-inner h1 { font-size: clamp(1.6rem, 5vw, 2.25rem); }
+    .prem-hero-sub { font-size: .875rem; }
+
+    /* Contact hero */
+    .contact-hero { padding: 3rem 0 0; }
+    .contact-hero-content h1 { font-size: clamp(1.75rem, 7vw, 2.5rem); }
+    .contact-stats-bar { margin-top: 1.5rem; }
+    .contact-stats-grid { gap: 0; }
+
+    /* Listing cards */
+    .listing-card { border-radius: .875rem; }
+
+    /* Footer */
+    .footer-shell { gap: 1.5rem; }
+
+    /* General container padding */
+    .container { padding-left: 1rem; padding-right: 1rem; }
+
+    /* Sell page */
+    .sell-prem-header h1 { font-size: clamp(1.6rem, 5vw, 2rem); }
+}
+
+/* ── Forms mobile ── */
+@media (max-width: 640px) {
+    /* Auth pages */
+    .auth-right-card { padding: 1.75rem 1.25rem; border-radius: 1rem; }
+    .auth-card-head h2 { font-size: 1.375rem; }
+    .auth-submit-btn { padding: .875rem 1rem; }
+    .auth-split-right { padding: 1rem; display: flex; align-items: center; }
+
+    /* Contact form */
+    .cform-card { padding: 1.5rem 1.125rem; }
+    .cform-grid { grid-template-columns: 1fr; }
+    .cfield-full { grid-column: 1; }
+
+    /* Sell form */
+    .sell-form-card { padding: 1.5rem 1.125rem; border-radius: .875rem; }
+
+    /* Estimate */
+    .estimate-grid { grid-template-columns: 1fr; }
+    .result-box { padding: 2rem 1.25rem; }
+
+    /* Pagination */
+    .pagination { gap: .375rem; }
+    .pagination a, .pagination span { font-size: .75rem !important; padding: .4rem .625rem !important; }
+
+    /* Filter panel */
+    .filter-prem-grid { grid-template-columns: 1fr 1fr; }
+    .filter-prem-main { gap: .5rem; }
+
+    /* Listing detail */
+    .detail-prem-price { font-size: 1.375rem; }
+    .detail-prem-metrics { grid-template-columns: repeat(3, 1fr); }
+    .detail-prem-metric { padding: .75rem .5rem; }
+    .detail-prem-metric strong { font-size: 1rem; }
+
+    /* Admin contact detail 2-col grid */
+    [style*="grid-template-columns:1fr 320px"] { grid-template-columns: 1fr !important; }
+    [style*="grid-template-columns: 1fr 320px"] { grid-template-columns: 1fr !important; }
+}
+
+/* ── Listing grid mobile ── */
+@media (max-width: 520px) {
+    .listing-grid { grid-template-columns: 1fr; gap: 1rem; }
+    .listing-card .listing-content { padding: 1rem; }
+    .listing-specs { gap: .75rem; }
+    .spec-item strong { font-size: .9rem; }
+    .listing-footer { flex-direction: column; gap: .25rem; align-items: flex-start; }
+    .listing-price { font-size: .95rem; }
+
+    /* Filter amenities */
+    .filter-amenities-grid { grid-template-columns: 1fr 1fr; }
+    .filter-amenity-label { font-size: .78rem; }
+
+    /* Filter panel */
+    .filter-prem-grid { grid-template-columns: 1fr; }
+    .filter-prem-search input { font-size: .875rem; }
+}
+
+/* ── About page mobile ── */
+@media (max-width: 640px) {
+    .about-hero-content h1 { font-size: clamp(1.75rem, 7vw, 2.5rem); }
+    .about-stats-bar { flex-direction: column; gap: .875rem; }
+    .about-stat { border: none; padding: .5rem 0; }
+    .about-services-grid { grid-template-columns: 1fr; gap: 1rem; }
+    .about-team-grid { grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .about-contact-section { flex-direction: column; }
+    .about-contact-actions { flex-direction: column; width: 100%; }
+    .about-contact-actions a { width: 100%; justify-content: center; }
+}
+
+/* ── Buy/Rent pages mobile ── */
+@media (max-width: 640px) {
+    .listings-intro-bar { flex-direction: column; gap: .875rem; align-items: flex-start; }
+    .listings-cta-row { width: 100%; flex-direction: column; gap: .5rem; }
+    .listings-cta-row a { width: 100%; justify-content: center; }
+}
+
+/* ── Sell page mobile ── */
+@media (max-width: 640px) {
+    .sell-steps { flex-direction: column; gap: .625rem; }
+    .sell-step-connector { display: none; }
+    .sell-amenities-grid { grid-template-columns: repeat(2, 1fr); gap: .5rem; }
+    .drag-drop-zone { padding: 2rem 1rem; }
+    .photo-preview-grid { grid-template-columns: repeat(3, 1fr); }
+}
+
+/* ── Scrollable tables ── */
+@media (max-width: 768px) {
+    .admin-table-wrap { overflow-x: auto; }
+    .admin-prem-table { min-width: 600px; }
+    .financial-table-wrap { overflow-x: auto; }
+}
+
+/* ── Touch improvements ── */
+@media (hover: none) and (pointer: coarse) {
+    .listing-card:hover { transform: none; }
+    .btn-hero-prim, .btn-hero-sec,
+    .cform-submit, .auth-submit-btn {
+        min-height: 48px;
+        font-size: .9rem;
+    }
+    .nav-links a { min-height: 44px; display: flex; align-items: center; }
+    .admin-quick-btn { min-height: 52px; }
+    .admin-prem-item { min-height: 52px; }
+    .cmsgs-row { min-height: 60px; }
+    .filter-amenity-label { min-height: 40px; display: flex; align-items: center; }
+}

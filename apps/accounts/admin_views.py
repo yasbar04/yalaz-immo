@@ -49,7 +49,7 @@ def superuser_required(view_func):
 @admin_required
 def admin_dashboard(request):
     """Dashboard admin avec stats"""
-    from apps.core.models import SellerRequest
+    from apps.core.models import SellerRequest, ContactMessage
     last_7_days = now() - timedelta(days=7)
 
     stats = {
@@ -63,12 +63,14 @@ def admin_dashboard(request):
         'total_admins': User.objects.filter(is_superuser=True).count(),
         'new_seller_requests': SellerRequest.objects.filter(status='new').count(),
         'total_seller_requests': SellerRequest.objects.count(),
+        'unread_contact_messages': ContactMessage.objects.filter(is_read=False).count(),
     }
 
     recent_listings = Listing.objects.all()[:10]
     recent_reports = Report.objects.filter(status=Report.Status.PENDING)[:5]
     pending_listings = Listing.objects.filter(status=Listing.Status.PENDING)[:10]
     recent_seller_requests = SellerRequest.objects.filter(status='new').prefetch_related('images')[:5]
+    recent_contact_messages = ContactMessage.objects.filter(is_read=False)[:5]
 
     context = {
         'stats': stats,
@@ -76,6 +78,7 @@ def admin_dashboard(request):
         'recent_reports': recent_reports,
         'pending_listings': pending_listings,
         'recent_seller_requests': recent_seller_requests,
+        'recent_contact_messages': recent_contact_messages,
     }
 
     return render(request, 'admin/dashboard.html', context)
