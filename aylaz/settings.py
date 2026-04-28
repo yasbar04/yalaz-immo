@@ -126,24 +126,18 @@ TEMPLATES = [
 WSGI_APPLICATION = 'aylaz.wsgi.application'
 ASGI_APPLICATION = 'aylaz.asgi.application'
 
-# Database Configuration - PostgreSQL for production, SQLite for development
-DB_ENGINE = os.getenv('DB_ENGINE', 'django.db.backends.sqlite3')
+# Database — dj-database-url (Postgres en prod via DATABASE_URL, SQLite en local)
+import dj_database_url
 
-if DB_ENGINE == 'django.db.backends.postgresql':
+_DATABASE_URL = os.environ.get('DATABASE_URL')
+
+if _DATABASE_URL:
     DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'NAME': os.getenv('DB_NAME', 'aylaz'),
-            'USER': os.getenv('DB_USER', 'aylaz_user'),
-            'PASSWORD': os.getenv('DB_PASSWORD', ''),
-            'HOST': os.getenv('DB_HOST', 'localhost'),
-            'PORT': env_int('DB_PORT', 5432),
-            'ATOMIC_REQUESTS': True,
-            'CONN_MAX_AGE': 600,
-            'OPTIONS': {
-                'connect_timeout': 10,
-            },
-        }
+        'default': dj_database_url.config(
+            default=_DATABASE_URL,
+            conn_max_age=600,
+            ssl_require=not DEBUG,
+        )
     }
 else:
     DATABASES = {
