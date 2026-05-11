@@ -186,14 +186,29 @@
                 <div class="admin-panel-head">
                     <div>
                         <h2>Photos supplémentaires</h2>
-                        <p style="font-size:.82rem;color:var(--muted);margin:.2rem 0 0;">Glissez vos photos ici. Vous pourrez les réordonner en les faisant glisser dans la galerie.</p>
+                        <p style="font-size:.82rem;color:var(--muted);margin:.2rem 0 0;">Ajoutez ou supprimez des photos supplémentaires à l'annonce.</p>
                     </div>
                 </div>
                 <div style="padding:1.75rem;">
+
+                    {% if formset.initial_forms %}
+                    <div style="margin-bottom:1.5rem;">
+                        <p style="font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:.75rem;">Photos enregistrées</p>
+                        <div style="display:flex;flex-wrap:wrap;gap:.75rem;">
+                            {% for img_form in formset.initial_forms %}
+                            <div id="existing-tile-{{ forloop.counter0 }}" style="position:relative;display:inline-block;">
+                                <img src="{{ img_form.instance.image.url }}" alt="{{ img_form.instance.alt_text|default:'Photo' }}" style="width:100px;height:80px;object-fit:cover;border-radius:.5rem;display:block;border:2px solid var(--border-light);">
+                                <button type="button" onclick="removeExistingImage({{ forloop.counter0 }}, this)" title="Supprimer cette photo" style="position:absolute;top:-8px;right:-8px;background:#e53e3e;color:#fff;border:none;border-radius:50%;width:22px;height:22px;cursor:pointer;font-size:15px;line-height:1;display:flex;align-items:center;justify-content:center;padding:0;font-weight:700;">×</button>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+
                     <div class="drag-drop-zone" id="dropZone">
                         <div class="drag-drop-content">
                             <svg viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="1.5" width="40" height="40"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-                            <p class="drag-drop-title">Glissez vos photos ici</p>
+                            <p class="drag-drop-title">Ajouter des photos</p>
                             <p class="drag-drop-text">ou <strong>cliquez</strong> pour les sélectionner</p>
                         </div>
                         <input type="file" id="bulkFileInput" multiple accept="image/*" hidden>
@@ -236,7 +251,11 @@
         <!-- Actions -->
         <div style="display:flex;gap:.75rem;">
             <button type="submit" class="btn-hero-prim">{{ submit_label }}</button>
-            <a href="{% url 'dashboard' %}" class="btn-hero-sec" style="border-color:var(--border);color:var(--muted);">Annuler</a>
+            {% if listing %}
+                <a href="{{ listing.get_absolute_url }}" class="btn-hero-sec" style="border-color:var(--border);color:var(--muted);">Annuler</a>
+            {% else %}
+                <a href="{% url 'admin_listings' %}" class="btn-hero-sec" style="border-color:var(--border);color:var(--muted);">Annuler</a>
+            {% endif %}
         </div>
     </form>
 
@@ -266,8 +285,7 @@
                 }
                 districtSelect.innerHTML = html;
             } catch (error) {
-                console.error('Erreur:', error);
-                districtSelect.innerHTML = '<option value="">Erreur</option>';
+                console.error('Erreur districts:', error);
             }
         }
         if (citySelect) {
@@ -276,6 +294,7 @@
         }
 
         // ===== GALLERY MANAGEMENT =====
+        const INITIAL_FORMS = parseInt(document.querySelector('[name="images-INITIAL_FORMS"]')?.value || '0');
         let uploadedImages = [];
         const dropZone = document.getElementById('dropZone');
         const fileInput = document.getElementById('bulkFileInput');
@@ -283,42 +302,31 @@
         const galleryItems = document.getElementById('galleryItems');
         const imageFormList = document.getElementById('imageFormList');
 
+        // Marquer une photo existante pour suppression
+        function removeExistingImage(idx, btn) {
+            const deleteInput = document.querySelector(`[name="images-${idx}-DELETE"]`);
+            if (deleteInput) deleteInput.checked = true;
+            const tile = document.getElementById(`existing-tile-${idx}`);
+            if (tile) { tile.style.opacity = '0.3'; tile.style.pointerEvents = 'none'; }
+        }
+
         if (dropZone && fileInput && gallery && galleryItems && imageFormList) {
             dropZone.addEventListener('click', () => fileInput.click());
-
             fileInput.addEventListener('change', (e) => handleNewFiles(e.target.files));
 
-            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-                dropZone.addEventListener(eventName, preventDefaults, false);
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(ev => {
+                dropZone.addEventListener(ev, e => { e.preventDefault(); e.stopPropagation(); }, false);
             });
-
-            function preventDefaults(e) {
-                e.preventDefault();
-                e.stopPropagation();
-            }
-
-            ['dragenter', 'dragover'].forEach(eventName => {
-                dropZone.addEventListener(eventName, () => dropZone.classList.add('drag-over'), false);
-            });
-
-            ['dragleave', 'drop'].forEach(eventName => {
-                dropZone.addEventListener(eventName, () => dropZone.classList.remove('drag-over'), false);
-            });
-
-            dropZone.addEventListener('drop', (e) => {
-                handleNewFiles(e.dataTransfer.files);
-            }, false);
+            ['dragenter', 'dragover'].forEach(ev => dropZone.addEventListener(ev, () => dropZone.classList.add('drag-over'), false));
+            ['dragleave', 'drop'].forEach(ev => dropZone.addEventListener(ev, () => dropZone.classList.remove('drag-over'), false));
+            dropZone.addEventListener('drop', (e) => handleNewFiles(e.dataTransfer.files), false);
 
             function handleNewFiles(files) {
                 Array.from(files).forEach(file => {
                     if (file.type.startsWith('image/')) {
                         const reader = new FileReader();
                         reader.onload = (e) => {
-                            uploadedImages.push({
-                                file: file,
-                                dataUrl: e.target.result,
-                                id: Date.now() + Math.random()
-                            });
+                            uploadedImages.push({ file, dataUrl: e.target.result, id: Date.now() + Math.random() });
                             renderGallery();
                         };
                         reader.readAsDataURL(file);
@@ -349,8 +357,7 @@
                     removeBtn.title = 'Supprimer';
                     removeBtn.textContent = '×';
                     removeBtn.onclick = function(e) {
-                        e.preventDefault();
-                        e.stopPropagation();
+                        e.preventDefault(); e.stopPropagation();
                         uploadedImages = uploadedImages.filter(image => image.id !== img.id);
                         renderGallery();
                     };
@@ -362,86 +369,60 @@
                     orderSpan.textContent = idx + 1;
                     item.appendChild(orderSpan);
 
-                    item.addEventListener('dragstart', (e) => {
-                        e.dataTransfer.effectAllowed = 'move';
-                        item.classList.add('dragging');
-                    });
-
-                    item.addEventListener('dragend', () => {
-                        item.classList.remove('dragging');
-                    });
-
+                    item.addEventListener('dragstart', (e) => { e.dataTransfer.effectAllowed = 'move'; item.classList.add('dragging'); });
+                    item.addEventListener('dragend', () => item.classList.remove('dragging'));
                     item.addEventListener('dragover', (e) => {
-                        e.preventDefault();
-                        e.dataTransfer.dropEffect = 'move';
-                        if (item !== document.querySelector('.gallery-item.dragging')) {
-                            item.classList.add('drag-over');
-                        }
+                        e.preventDefault(); e.dataTransfer.dropEffect = 'move';
+                        if (item !== document.querySelector('.gallery-item.dragging')) item.classList.add('drag-over');
                     });
-
-                    item.addEventListener('dragleave', () => {
-                        item.classList.remove('drag-over');
-                    });
-
+                    item.addEventListener('dragleave', () => item.classList.remove('drag-over'));
                     item.addEventListener('drop', (e) => {
-                        e.preventDefault();
-                        item.classList.remove('drag-over');
-                        const draggedItem = document.querySelector('.gallery-item.dragging');
-                        if (draggedItem && draggedItem !== item) {
-                            const draggedIdx = Array.from(galleryItems.children).indexOf(draggedItem);
-                            const targetIdx = Array.from(galleryItems.children).indexOf(item);
-                            [uploadedImages[draggedIdx], uploadedImages[targetIdx]] = [uploadedImages[targetIdx], uploadedImages[draggedIdx]];
+                        e.preventDefault(); item.classList.remove('drag-over');
+                        const dragging = document.querySelector('.gallery-item.dragging');
+                        if (dragging && dragging !== item) {
+                            const a = Array.from(galleryItems.children).indexOf(dragging);
+                            const b = Array.from(galleryItems.children).indexOf(item);
+                            [uploadedImages[a], uploadedImages[b]] = [uploadedImages[b], uploadedImages[a]];
                             renderGallery();
                         }
                     });
 
                     galleryItems.appendChild(item);
                 });
-
                 gallery.style.display = uploadedImages.length > 0 ? 'block' : 'none';
             }
 
-            // Before form submit, prepare FormData with images
             document.querySelector('form').addEventListener('submit', function(e) {
                 const form = e.target;
-
-                if (uploadedImages.length === 0) {
-                    return;
-                }
+                if (uploadedImages.length === 0) return; // submit normal si pas de nouvelles photos
 
                 e.preventDefault();
 
-                const formData = new FormData(form);
-
-                const totalFormsInput = formData.get('images-TOTAL_FORMS');
-                const newTotal = Math.max(uploadedImages.length, 1);
-                formData.set('images-TOTAL_FORMS', newTotal);
-
+                // Injecter les fichiers comme inputs hidden supplémentaires
                 uploadedImages.forEach((img, idx) => {
-                    if (img.file) {
-                        formData.set(`images-${idx}-image`, img.file);
-                        formData.set(`images-${idx}-order`, idx);
-                    }
+                    const formIdx = INITIAL_FORMS + idx;
+
+                    const fi = document.createElement('input');
+                    fi.type = 'file';
+                    fi.name = `images-${formIdx}-image`;
+                    fi.style.display = 'none';
+                    const dt = new DataTransfer();
+                    dt.items.add(img.file);
+                    fi.files = dt.files;
+                    form.appendChild(fi);
+
+                    const oi = document.createElement('input');
+                    oi.type = 'hidden';
+                    oi.name = `images-${formIdx}-order`;
+                    oi.value = formIdx;
+                    form.appendChild(oi);
                 });
 
-                fetch(form.action, {
-                    method: 'POST',
-                    body: formData
-                })
-                .then(response => {
-                    if (response.redirected) {
-                        window.location.href = response.url;
-                    } else if (response.ok) {
-                        window.location.href = '/accounts/dashboard/';
-                    } else {
-                        return response.text().then(text => {
-                            alert('Erreur serveur. Vérifiez la console (F12).');
-                        });
-                    }
-                })
-                .catch(error => {
-                    alert('Erreur : ' + error.message);
-                });
+                // Mettre à jour TOTAL_FORMS
+                const totalInput = document.querySelector('[name="images-TOTAL_FORMS"]');
+                if (totalInput) totalInput.value = INITIAL_FORMS + uploadedImages.length;
+
+                form.submit();
             });
         }
     </script>

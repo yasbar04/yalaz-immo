@@ -330,24 +330,13 @@ def listing_create(request):
                 with transaction.atomic():
                     listing = form.save(commit=False)
                     listing.owner = request.user
-                    listing.status = Listing.Status.PENDING
+                    listing.status = Listing.Status.PUBLISHED
                     listing.save()
                     formset.instance = listing
                     formset.save()
 
-                try:
-                    send_listing_submission_notification(listing)
-                except Exception:
-                    messages.warning(
-                        request,
-                        'Votre annonce a ete enregistree, mais l email de confirmation n a pas pu etre envoye.',
-                    )
-
-                messages.success(
-                    request,
-                    'Votre annonce a bien ete envoyee. Elle sera visible apres validation.',
-                )
-                return redirect('dashboard')
+                messages.success(request, 'L annonce a ete publiee.')
+                return redirect('listing_detail', pk=listing.pk)
             else:
                 # Formset errors
                 print(f"❌ Formset errors: {formset.errors}")
@@ -388,7 +377,6 @@ def listing_edit(request, pk):
     listing = get_object_or_404(
         Listing.objects.prefetch_related('images'),
         pk=pk,
-        owner=request.user,
     )
 
     if not listing.can_edit(request.user):
@@ -408,30 +396,13 @@ def listing_edit(request, pk):
         formset = ListingImageFormSet(request.POST, request.FILES, instance=listing)
 
         if form.is_valid() and formset.is_valid():
-            was_published = listing.status == Listing.Status.PUBLISHED
             with transaction.atomic():
                 updated_listing = form.save(commit=False)
-                # Keep PUBLISHED status if already published, otherwise set to PENDING
-                if listing.status != Listing.Status.PUBLISHED:
-                    updated_listing.status = Listing.Status.PENDING
                 updated_listing.save()
                 formset.instance = updated_listing
                 formset.save()
 
-            if not was_published:
-                try:
-                    send_listing_submission_notification(updated_listing)
-                except Exception:
-                    messages.warning(
-                        request,
-                        'Les modifications sont enregistrees, mais l email de confirmation de remise en validation n a pas pu etre envoye.',
-                    )
-
-            status_text = 'mise a jour appliquee' if listing.status == Listing.Status.PUBLISHED else 'soumise a validation'
-            messages.success(
-                request,
-                f'Les modifications ont ete enregistrees et {status_text}.',
-            )
+            messages.success(request, 'Les modifications ont ete enregistrees.')
             return redirect('listing_detail', pk=listing.pk)
     else:
         form = ListingForm(instance=listing)
@@ -453,7 +424,7 @@ def listing_edit(request, pk):
 
 @admin_only
 def listing_delete(request, pk):
-    listing = get_object_or_404(Listing, pk=pk, owner=request.user)
+    listing = get_object_or_404(Listing, pk=pk)
 
     if not listing.can_delete(request.user):
         return render(

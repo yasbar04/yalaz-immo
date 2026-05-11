@@ -100,11 +100,13 @@ class Listing(models.Model):
     def can_edit(self, user):
         if not getattr(user, 'is_authenticated', False):
             return False
-        return self.owner == user
+        return self.owner == user or user.is_staff or user.is_superuser
 
     def can_delete(self, user):
         if not getattr(user, 'is_authenticated', False):
             return False
+        if user.is_staff or user.is_superuser:
+            return True
         return self.owner == user and self.status != self.Status.PUBLISHED
 
 
