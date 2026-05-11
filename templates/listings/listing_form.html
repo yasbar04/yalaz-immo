@@ -398,31 +398,19 @@
 
                 e.preventDefault();
 
-                // Injecter les fichiers comme inputs hidden supplémentaires
+                const fd = new FormData(form);
+
+                // Remplacer les slots vides par les vrais fichiers
                 uploadedImages.forEach((img, idx) => {
                     const formIdx = INITIAL_FORMS + idx;
-
-                    const fi = document.createElement('input');
-                    fi.type = 'file';
-                    fi.name = `images-${formIdx}-image`;
-                    fi.style.display = 'none';
-                    const dt = new DataTransfer();
-                    dt.items.add(img.file);
-                    fi.files = dt.files;
-                    form.appendChild(fi);
-
-                    const oi = document.createElement('input');
-                    oi.type = 'hidden';
-                    oi.name = `images-${formIdx}-order`;
-                    oi.value = formIdx;
-                    form.appendChild(oi);
+                    fd.set(`images-${formIdx}-image`, img.file, img.file.name);
+                    fd.set(`images-${formIdx}-order`, String(formIdx));
                 });
+                fd.set('images-TOTAL_FORMS', String(INITIAL_FORMS + uploadedImages.length));
 
-                // Mettre à jour TOTAL_FORMS
-                const totalInput = document.querySelector('[name="images-TOTAL_FORMS"]');
-                if (totalInput) totalInput.value = INITIAL_FORMS + uploadedImages.length;
-
-                form.submit();
+                fetch(window.location.href, { method: 'POST', body: fd })
+                    .then(r => { window.location.href = r.redirected ? r.url : window.location.href; })
+                    .catch(err => alert('Erreur upload : ' + err));
             });
         }
     </script>
