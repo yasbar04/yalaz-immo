@@ -181,72 +181,46 @@
         </div>
 
         <!-- Photos supplémentaires -->
-        {% if formset %}
-            <div class="admin-panel-card" style="margin-bottom:1.5rem;">
-                <div class="admin-panel-head">
-                    <div>
-                        <h2>Photos supplémentaires</h2>
-                        <p style="font-size:.82rem;color:var(--muted);margin:.2rem 0 0;">Ajoutez ou supprimez des photos supplémentaires à l'annonce.</p>
-                    </div>
+        <div class="admin-panel-card" style="margin-bottom:1.5rem;">
+            <div class="admin-panel-head">
+                <div>
+                    <h2>Photos supplémentaires</h2>
+                    <p style="font-size:.82rem;color:var(--muted);margin:.2rem 0 0;">Ajoutez ou supprimez des photos supplémentaires à l'annonce.</p>
                 </div>
-                <div style="padding:1.75rem;">
+            </div>
+            <div style="padding:1.75rem;display:flex;flex-direction:column;gap:1.25rem;">
 
-                    {% if formset.initial_forms %}
-                    <div style="margin-bottom:1.5rem;">
-                        <p style="font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:.75rem;">Photos enregistrées</p>
+                {% if listing %}
+                    {% with imgs=listing.images.all %}
+                    {% if imgs %}
+                    <div>
+                        <p style="font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:.75rem;">Photos enregistrées — cliquez × pour supprimer</p>
                         <div style="display:flex;flex-wrap:wrap;gap:.75rem;">
-                            {% for img_form in formset.initial_forms %}
-                            <div id="existing-tile-{{ forloop.counter0 }}" style="position:relative;display:inline-block;">
-                                <img src="{{ img_form.instance.image.url }}" alt="{{ img_form.instance.alt_text|default:'Photo' }}" style="width:100px;height:80px;object-fit:cover;border-radius:.5rem;display:block;border:2px solid var(--border-light);">
-                                <button type="button" onclick="removeExistingImage({{ forloop.counter0 }}, this)" title="Supprimer cette photo" style="position:absolute;top:-8px;right:-8px;background:#e53e3e;color:#fff;border:none;border-radius:50%;width:22px;height:22px;cursor:pointer;font-size:15px;line-height:1;display:flex;align-items:center;justify-content:center;padding:0;font-weight:700;">×</button>
+                            {% for img in imgs %}
+                            <div class="existing-img-tile" id="tile-{{ img.pk }}">
+                                <img src="{{ img.image.url }}" alt="Photo {{ forloop.counter }}" style="width:100px;height:80px;object-fit:cover;border-radius:.5rem;display:block;border:2px solid var(--border-light);">
+                                <label style="position:absolute;top:-8px;right:-8px;cursor:pointer;" title="Supprimer cette photo">
+                                    <input type="checkbox" name="delete_image_{{ img.pk }}" value="1" style="position:absolute;opacity:0;width:0;height:0;" onchange="toggleDeleteTile(this, '{{ img.pk }}')">
+                                    <span class="del-badge">×</span>
+                                </label>
                             </div>
                             {% endfor %}
                         </div>
                     </div>
                     {% endif %}
+                    {% endwith %}
+                {% endif %}
 
-                    <div class="drag-drop-zone" id="dropZone">
-                        <div class="drag-drop-content">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="1.5" width="40" height="40"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-                            <p class="drag-drop-title">Ajouter des photos</p>
-                            <p class="drag-drop-text">ou <strong>cliquez</strong> pour les sélectionner</p>
-                        </div>
-                        <input type="file" id="bulkFileInput" multiple accept="image/*" hidden>
-                    </div>
-
-                    <div id="imagesGallery" class="images-gallery" style="display: none;">
-                        <div class="gallery-items" id="galleryItems"></div>
-                    </div>
-
-                    {{ formset.management_form }}
-
-                    {% if formset.non_form_errors %}
-                        <div class="cform-alert cform-alert-error" style="margin-top:1rem;">
-                            <strong>Erreurs du formset :</strong>
-                            {% for error in formset.non_form_errors %}<p>{{ error }}</p>{% endfor %}
-                        </div>
-                    {% endif %}
-
-                    <div id="imageFormList" style="display: none;">
-                        {% for form_image in formset %}
-                            <article class="image-card" data-form-index="{{ forloop.counter0 }}">
-                                {% if form_image.non_field_errors %}
-                                    <div class="cform-alert cform-alert-error">
-                                        {% for error in form_image.non_field_errors %}<p>{{ error }}</p>{% endfor %}
-                                    </div>
-                                {% endif %}
-                                {% for hidden in form_image.hidden_fields %}{{ hidden }}{% endfor %}
-                                {{ form_image.image }}
-                                {{ form_image.alt_text }}
-                                <input type="hidden" name="{{ form_image.order.name }}" value="{{ forloop.counter0 }}" />
-                                {{ form_image.DELETE }}
-                                {% if form_image.image.errors %}<div class="auth-field-error">{{ form_image.image.errors }}</div>{% endif %}
-                            </article>
-                        {% endfor %}
-                    </div>
+                <div class="filter-prem-field">
+                    <label for="extraImagesInput">Ajouter des photos</label>
+                    <input type="file" name="extra_images" id="extraImagesInput" multiple accept="image/*" class="form-input">
+                    <small style="font-size:.73rem;color:var(--muted);">Sélectionnez une ou plusieurs photos (JPG, PNG, WEBP).</small>
                 </div>
+
+                <div id="extraPreview" style="display:none;flex-wrap:wrap;gap:.75rem;margin-top:.25rem;"></div>
+
             </div>
-        {% endif %}
+        </div>
 
         <!-- Actions -->
         <div style="display:flex;gap:.75rem;">
@@ -293,124 +267,30 @@
             if (citySelect.value) updateDistricts();
         }
 
-        // ===== GALLERY MANAGEMENT =====
-        const INITIAL_FORMS = parseInt(document.querySelector('[name="images-INITIAL_FORMS"]')?.value || '0');
-        let uploadedImages = [];
-        const dropZone = document.getElementById('dropZone');
-        const fileInput = document.getElementById('bulkFileInput');
-        const gallery = document.getElementById('imagesGallery');
-        const galleryItems = document.getElementById('galleryItems');
-        const imageFormList = document.getElementById('imageFormList');
-
-        // Marquer une photo existante pour suppression
-        function removeExistingImage(idx, btn) {
-            const deleteInput = document.querySelector(`[name="images-${idx}-DELETE"]`);
-            if (deleteInput) deleteInput.checked = true;
-            const tile = document.getElementById(`existing-tile-${idx}`);
-            if (tile) { tile.style.opacity = '0.3'; tile.style.pointerEvents = 'none'; }
+        // ===== PREVIEW PHOTOS SÉLECTIONNÉES =====
+        function toggleDeleteTile(checkbox, pk) {
+            const tile = document.getElementById('tile-' + pk);
+            if (tile) tile.style.opacity = checkbox.checked ? '0.3' : '1';
         }
 
-        if (dropZone && fileInput && gallery && galleryItems && imageFormList) {
-            dropZone.addEventListener('click', () => fileInput.click());
-            fileInput.addEventListener('change', (e) => handleNewFiles(e.target.files));
-
-            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(ev => {
-                dropZone.addEventListener(ev, e => { e.preventDefault(); e.stopPropagation(); }, false);
-            });
-            ['dragenter', 'dragover'].forEach(ev => dropZone.addEventListener(ev, () => dropZone.classList.add('drag-over'), false));
-            ['dragleave', 'drop'].forEach(ev => dropZone.addEventListener(ev, () => dropZone.classList.remove('drag-over'), false));
-            dropZone.addEventListener('drop', (e) => handleNewFiles(e.dataTransfer.files), false);
-
-            function handleNewFiles(files) {
-                Array.from(files).forEach(file => {
-                    if (file.type.startsWith('image/')) {
-                        const reader = new FileReader();
-                        reader.onload = (e) => {
-                            uploadedImages.push({ file, dataUrl: e.target.result, id: Date.now() + Math.random() });
-                            renderGallery();
-                        };
-                        reader.readAsDataURL(file);
-                    }
-                });
-                fileInput.value = '';
-            }
-
-            function renderGallery() {
-                galleryItems.innerHTML = '';
-                uploadedImages.forEach((img, idx) => {
-                    const item = document.createElement('div');
-                    item.className = 'gallery-item';
-                    item.draggable = true;
-                    item.dataset.imgId = img.id;
-
-                    const wrapper = document.createElement('div');
-                    wrapper.className = 'gallery-image-wrapper';
-
-                    const imgEl = document.createElement('img');
-                    imgEl.src = img.dataUrl;
-                    imgEl.alt = 'Photo';
-                    wrapper.appendChild(imgEl);
-
-                    const removeBtn = document.createElement('button');
-                    removeBtn.type = 'button';
-                    removeBtn.className = 'btn-remove-image';
-                    removeBtn.title = 'Supprimer';
-                    removeBtn.textContent = '×';
-                    removeBtn.onclick = function(e) {
-                        e.preventDefault(); e.stopPropagation();
-                        uploadedImages = uploadedImages.filter(image => image.id !== img.id);
-                        renderGallery();
+        const extraInput = document.getElementById('extraImagesInput');
+        const extraPreview = document.getElementById('extraPreview');
+        if (extraInput && extraPreview) {
+            extraInput.addEventListener('change', function() {
+                extraPreview.innerHTML = '';
+                if (!this.files.length) { extraPreview.style.display = 'none'; return; }
+                Array.from(this.files).forEach(file => {
+                    if (!file.type.startsWith('image/')) return;
+                    const reader = new FileReader();
+                    reader.onload = e => {
+                        const img = document.createElement('img');
+                        img.src = e.target.result;
+                        img.style.cssText = 'width:100px;height:80px;object-fit:cover;border-radius:.5rem;border:2px solid var(--gold);';
+                        extraPreview.appendChild(img);
+                        extraPreview.style.display = 'flex';
                     };
-                    wrapper.appendChild(removeBtn);
-                    item.appendChild(wrapper);
-
-                    const orderSpan = document.createElement('span');
-                    orderSpan.className = 'gallery-order';
-                    orderSpan.textContent = idx + 1;
-                    item.appendChild(orderSpan);
-
-                    item.addEventListener('dragstart', (e) => { e.dataTransfer.effectAllowed = 'move'; item.classList.add('dragging'); });
-                    item.addEventListener('dragend', () => item.classList.remove('dragging'));
-                    item.addEventListener('dragover', (e) => {
-                        e.preventDefault(); e.dataTransfer.dropEffect = 'move';
-                        if (item !== document.querySelector('.gallery-item.dragging')) item.classList.add('drag-over');
-                    });
-                    item.addEventListener('dragleave', () => item.classList.remove('drag-over'));
-                    item.addEventListener('drop', (e) => {
-                        e.preventDefault(); item.classList.remove('drag-over');
-                        const dragging = document.querySelector('.gallery-item.dragging');
-                        if (dragging && dragging !== item) {
-                            const a = Array.from(galleryItems.children).indexOf(dragging);
-                            const b = Array.from(galleryItems.children).indexOf(item);
-                            [uploadedImages[a], uploadedImages[b]] = [uploadedImages[b], uploadedImages[a]];
-                            renderGallery();
-                        }
-                    });
-
-                    galleryItems.appendChild(item);
+                    reader.readAsDataURL(file);
                 });
-                gallery.style.display = uploadedImages.length > 0 ? 'block' : 'none';
-            }
-
-            document.querySelector('form').addEventListener('submit', function(e) {
-                const form = e.target;
-                if (uploadedImages.length === 0) return; // submit normal si pas de nouvelles photos
-
-                e.preventDefault();
-
-                const fd = new FormData(form);
-
-                // Remplacer les slots vides par les vrais fichiers
-                uploadedImages.forEach((img, idx) => {
-                    const formIdx = INITIAL_FORMS + idx;
-                    fd.set(`images-${formIdx}-image`, img.file, img.file.name);
-                    fd.set(`images-${formIdx}-order`, String(formIdx));
-                });
-                fd.set('images-TOTAL_FORMS', String(INITIAL_FORMS + uploadedImages.length));
-
-                fetch(window.location.href, { method: 'POST', body: fd })
-                    .then(r => { window.location.href = r.redirected ? r.url : window.location.href; })
-                    .catch(err => alert('Erreur upload : ' + err));
             });
         }
     </script>

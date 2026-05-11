@@ -322,52 +322,38 @@ def listing_detail(request, pk):
 def listing_create(request):
     if request.method == 'POST':
         form = ListingForm(request.POST, request.FILES)
-        form.instance.owner = request.user
-        formset = ListingImageFormSet(request.POST, request.FILES, instance=form.instance)
 
         if form.is_valid():
-            if formset.is_valid():
-                with transaction.atomic():
-                    listing = form.save(commit=False)
-                    listing.owner = request.user
-                    listing.status = Listing.Status.PUBLISHED
-                    listing.save()
-                    formset.instance = listing
-                    formset.save()
+            with transaction.atomic():
+                listing = form.save(commit=False)
+                listing.owner = request.user
+                listing.status = Listing.Status.PUBLISHED
+                listing.save()
 
-                messages.success(request, 'L annonce a ete publiee.')
-                return redirect('listing_detail', pk=listing.pk)
-            else:
-                # Formset errors
-                print(f"❌ Formset errors: {formset.errors}")
-                print(f"❌ Formset non-field errors: {formset.non_form_errors()}")
-                for idx, f in enumerate(formset.forms):
-                    if f.errors:
-                        print(f"  Form {idx}: {f.errors}")
-                messages.error(
-                    request,
-                    f'Erreur dans les images: {formset.errors}',
-                )
+                extra_images = request.FILES.getlist('extra_images')
+                for idx, img_file in enumerate(extra_images):
+                    ListingImage.objects.create(
+                        listing=listing,
+                        image=img_file,
+                        order=idx,
+                    )
+
+            messages.success(request, 'L annonce a ete publiee.')
+            return redirect('listing_detail', pk=listing.pk)
         else:
-            # Form errors
-            print(f"❌ Main form errors: {form.errors}")
-            messages.error(
-                request,
-                f'Erreur dans le formulaire: {form.errors}',
-            )
+            messages.error(request, 'Veuillez corriger les erreurs dans le formulaire.')
     else:
         form = ListingForm()
-        formset = ListingImageFormSet(instance=Listing(owner=request.user))
 
     return render(
         request,
         'listings/listing_form.html',
         {
             'form': form,
-            'formset': formset,
+            'formset': None,
             'page_title': 'Publier une annonce',
             'page_intro': 'Renseignez les informations essentielles pour diffuser un bien clair, complet et credible.',
-            'submit_label': 'Envoyer pour validation',
+            'submit_label': 'Publier l\'annonce',
         },
     )
 
@@ -393,20 +379,32 @@ def listing_edit(request, pk):
 
     if request.method == 'POST':
         form = ListingForm(request.POST, request.FILES, instance=listing)
-        formset = ListingImageFormSet(request.POST, request.FILES, instance=listing)
 
-        if form.is_valid() and formset.is_valid():
+        if form.is_valid():
             with transaction.atomic():
-                updated_listing = form.save(commit=False)
-                updated_listing.save()
-                formset.instance = updated_listing
-                formset.save()
+                updated_listing = form.save()
 
-            messages.success(request, 'Les modifications ont ete enregistrees.')
+                # Suppression des images cochées
+                for key in request.POST:
+                    if key.startswith('delete_image_'):
+                        img_id = key.replace('delete_image_', '')
+                        listing.images.filter(pk=img_id).delete()
+
+                # Ajout des nouvelles photos
+                extra_images = request.FILES.getlist('extra_images')
+                existing_count = updated_listing.images.count()
+                for idx, img_file in enumerate(extra_images):
+                    ListingImage.objects.create(
+                        listing=updated_listing,
+                        image=img_file,
+                        order=existing_count + idx,
+                    )
+
+            messages.success(request, 'Les modifications ont été enregistrées.')
             return redirect('listing_detail', pk=listing.pk)
     else:
         form = ListingForm(instance=listing)
-        formset = ListingImageFormSet(instance=listing)
+        formset = None
 
     return render(
         request,
