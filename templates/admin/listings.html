@@ -63,8 +63,9 @@
                             </td>
                             <td class="td-muted">{{ listing.views_count }}</td>
                             <td class="td-muted">{{ listing.created_at|date:"d M Y" }}</td>
-                            <td>
+                            <td style="display:flex;gap:.375rem;align-items:center;">
                                 <a href="{% url 'admin_listing_detail' listing.pk %}" class="admin-table-action">Voir</a>
+                                <a href="{% url 'listing_edit' listing.pk %}" class="admin-table-action">Modifier</a>
                             </td>
                         </tr>
                     {% endfor %}
