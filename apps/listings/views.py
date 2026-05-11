@@ -12,7 +12,7 @@ from apps.accounts.services import (
 )
 
 from .forms import ListingForm, ListingImageFormSet
-from .models import Contact, Favorite, Listing
+from .models import Contact, Favorite, Listing, PublicInquiry
 from .constants import MOROCCAN_DISTRICTS
 
 
@@ -279,28 +279,24 @@ def listing_detail(request, pk):
     detail_metrics = [
         {
             'value': listing.surface_area,
-            'label': 'm2 habitables',
+            'label': 'm² habitables',
         },
         {
             'value': listing.bedrooms,
-            'label': f'chambre{"s" if listing.bedrooms > 1 else ""}',
+            'label': f'Chambre{"s" if listing.bedrooms > 1 else ""}',
         },
         {
             'value': listing.bathrooms,
-            'label': 'salles de bain',
-        },
-        {
-            'value': listing.views_count,
-            'label': 'vues',
+            'label': 'Salles de bain',
         },
     ]
 
     property_details = [
         {'label': 'Type de bien', 'value': listing.get_property_type_display()},
         {'label': 'Type d annonce', 'value': listing.get_listing_type_display()},
-        {'label': 'Statut', 'value': listing.get_status_display()},
         {'label': 'Ville', 'value': listing.city},
-        {'label': 'Quartier', 'value': listing.district or 'Non precise'},
+        {'label': 'Quartier', 'value': listing.district or 'Non precisé'},
+        {'label': 'Surface', 'value': f'{listing.surface_area} m²'},
         {'label': 'Publication', 'value': listing.created_at, 'is_datetime': True},
     ]
 
@@ -315,8 +311,6 @@ def listing_detail(request, pk):
             'contact_methods': contact_methods,
             'detail_metrics': detail_metrics,
             'property_details': property_details,
-            'owner_display_name': listing.owner.get_full_name() or listing.owner.username,
-            'contact_sent': contact_sent,
             'is_favorite': is_favorite,
             'can_edit': listing.can_edit(request.user),
             'can_delete': listing.can_delete(request.user),
@@ -543,6 +537,54 @@ def contact_owner(request, pk):
             'existing_contact': existing_contact,
         },
     )
+
+
+def public_inquiry(request, pk):
+    listing = get_object_or_404(Listing, pk=pk, status=Listing.Status.PUBLISHED)
+
+    if request.method == 'POST':
+        first_name = request.POST.get('first_name', '').strip()
+        last_name = request.POST.get('last_name', '').strip()
+        email = request.POST.get('email', '').strip()
+        phone = request.POST.get('phone', '').strip()
+        message_text = request.POST.get('message', '').strip()
+        want_similar = request.POST.get('want_similar') == 'on'
+
+        if not first_name or not last_name or not email or not message_text:
+            messages.error(request, 'Merci de remplir tous les champs obligatoires (prénom, nom, email, message).')
+        else:
+            PublicInquiry.objects.create(
+                listing=listing,
+                first_name=first_name,
+                last_name=last_name,
+                email=email,
+                phone=phone,
+                message=message_text,
+                want_similar=want_similar,
+            )
+            try:
+                from django.core.mail import send_mail
+                from django.conf import settings as django_settings
+                agency_email = getattr(django_settings, 'DEFAULT_FROM_EMAIL', 'contact@yalazagence.ma')
+                similar_note = '\n✅ Souhaite recevoir des propositions similaires.' if want_similar else ''
+                send_mail(
+                    subject=f'[Yalaz] Nouvelle demande – {listing.title}',
+                    message=(
+                        f'Contact : {first_name} {last_name}\n'
+                        f'Email : {email}\n'
+                        f'Tél : {phone or "Non renseigné"}\n\n'
+                        f'Message :\n{message_text}'
+                        f'{similar_note}'
+                    ),
+                    from_email=agency_email,
+                    recipient_list=[agency_email],
+                    fail_silently=True,
+                )
+            except Exception:
+                pass
+            messages.success(request, 'Votre demande a bien été envoyée. Nous vous contacterons dans les meilleurs délais.')
+
+    return redirect('listing_detail', pk=pk)
 
 
 def get_districts_by_city(request):

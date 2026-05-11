@@ -1,0 +1,104 @@
+{% extends 'base.html' %}
+{% block title %}Demandes de contact — Admin | YalazAgence{% endblock %}
+
+{% block content %}
+
+<div class="admin-prem-header">
+    <div class="container admin-header-inner">
+        <div>
+            <a href="{% url 'admin_dashboard' %}" class="admin-back-pill">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><path d="M15 18l-6-6 6-6"/></svg>
+                Dashboard
+            </a>
+            <span class="eyebrow" style="display:block;margin-top:.5rem;">Administration</span>
+            <h1>Demandes de contact
+                {% if unread_count > 0 %}
+                    <span class="inq-count-badge">{{ unread_count }} non lue{{ unread_count|pluralize }}</span>
+                {% endif %}
+            </h1>
+        </div>
+    </div>
+</div>
+
+<div class="container" style="padding-bottom:4rem;">
+
+    <!-- Filtres -->
+    <div class="admin-filter-bar">
+        <a href="{% url 'admin_inquiries' %}" class="admin-filter-tab {% if not read_filter %}is-active{% endif %}">Toutes</a>
+        <a href="?read=unread" class="admin-filter-tab {% if read_filter == 'unread' %}is-active{% endif %}">Non lues</a>
+        <a href="?read=read" class="admin-filter-tab {% if read_filter == 'read' %}is-active{% endif %}">Lues</a>
+    </div>
+
+    {% if inquiries %}
+        <div class="admin-table-wrap">
+            <table class="admin-prem-table">
+                <thead>
+                    <tr>
+                        <th>Contact</th>
+                        <th>Email</th>
+                        <th>Téléphone</th>
+                        <th>Bien concerné</th>
+                        <th>Biens similaires</th>
+                        <th>Date</th>
+                        <th>Statut</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for inq in inquiries %}
+                    <tr class="{% if not inq.is_read %}inq-row-unread{% endif %}">
+                        <td>
+                            <strong>{{ inq.first_name }} {{ inq.last_name }}</strong>
+                        </td>
+                        <td>
+                            <a href="mailto:{{ inq.email }}" class="td-gold">{{ inq.email }}</a>
+                        </td>
+                        <td>
+                            {% if inq.phone %}
+                                <a href="tel:{{ inq.phone }}">{{ inq.phone }}</a>
+                            {% else %}
+                                <span style="color:var(--muted);">—</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="{% url 'listing_detail' inq.listing.pk %}" target="_blank" class="inq-listing-link">
+                                {{ inq.listing.title|truncatewords:5 }}
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="11" height="11"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                            </a>
+                            <small style="display:block;color:var(--muted);font-size:.72rem;">{{ inq.listing.city }}{% if inq.listing.district %}, {{ inq.listing.district }}{% endif %} — {{ inq.listing.price|floatformat:0 }} MAD</small>
+                        </td>
+                        <td style="text-align:center;">
+                            {% if inq.want_similar %}
+                                <span class="pill pill-success" style="font-size:.7rem;">Oui</span>
+                            {% else %}
+                                <span style="color:var(--muted);">Non</span>
+                            {% endif %}
+                        </td>
+                        <td style="white-space:nowrap;">{{ inq.created_at|date:"d/m/Y H:i" }}</td>
+                        <td>
+                            {% if not inq.is_read %}
+                                <span class="pill pill-warning" style="font-size:.7rem;">Nouveau</span>
+                            {% else %}
+                                <span class="pill" style="font-size:.7rem;">Lu</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="{% url 'admin_inquiry_detail' inq.pk %}" class="admin-action-btn">Voir</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="dash-empty">
+            <div class="dash-empty-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="28" height="28"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+            </div>
+            <h3>Aucune demande reçue</h3>
+            <p>Les formulaires de contact soumis depuis les annonces apparaîtront ici.</p>
+        </div>
+    {% endif %}
+
+</div>
+{% endblock %}

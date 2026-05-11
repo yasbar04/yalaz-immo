@@ -90,14 +90,13 @@
                                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
                                 <span>{{ listing.city }}</span>{% if listing.district %}<span>•</span><span>{{ listing.district }}</span>{% endif %}
                             </div>
+                            <div class="listing-price-row">
+                                <strong class="listing-price">{{ listing.price|floatformat:0 }} MAD</strong>
+                            </div>
                             <div class="listing-specs">
                                 <div class="spec-item"><strong>{{ listing.surface_area }}</strong><small>m²</small></div>
                                 <div class="spec-item"><strong>{{ listing.bedrooms }}</strong><small>ch.</small></div>
-                                <div class="spec-item"><strong>Vente</strong></div>
-                            </div>
-                            <div class="listing-footer">
-                                <small class="meta-copy">{{ listing.views_count }} vue{{ listing.views_count|pluralize }}</small>
-                                <span class="listing-contact-cta">Prix sur demande →</span>
+                                <div class="spec-item"><strong>{{ listing.bathrooms }}</strong><small>sdb</small></div>
                             </div>
                         </div>
                     </a>

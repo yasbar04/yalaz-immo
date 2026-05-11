@@ -50,6 +50,7 @@ def superuser_required(view_func):
 def admin_dashboard(request):
     """Dashboard admin avec stats"""
     from apps.core.models import SellerRequest, ContactMessage
+    from apps.listings.models import PublicInquiry
     last_7_days = now() - timedelta(days=7)
 
     stats = {
@@ -64,6 +65,7 @@ def admin_dashboard(request):
         'new_seller_requests': SellerRequest.objects.filter(status='new').count(),
         'total_seller_requests': SellerRequest.objects.count(),
         'unread_contact_messages': ContactMessage.objects.filter(is_read=False).count(),
+        'unread_inquiries': PublicInquiry.objects.filter(is_read=False).count(),
     }
 
     recent_listings = Listing.objects.all()[:10]
@@ -540,3 +542,39 @@ def change_password_required(request):
     }
     
     return render(request, 'accounts/change_password_required.html', context)
+
+
+# ── Demandes publiques (PublicInquiry) ──
+
+@admin_required
+def admin_inquiries(request):
+    from apps.listings.models import PublicInquiry
+    read_filter = request.GET.get('read', '')
+    listing_pk = request.GET.get('listing', '')
+
+    qs = PublicInquiry.objects.select_related('listing').all()
+    if read_filter == 'unread':
+        qs = qs.filter(is_read=False)
+    elif read_filter == 'read':
+        qs = qs.filter(is_read=True)
+    if listing_pk:
+        qs = qs.filter(listing__pk=listing_pk)
+
+    unread_count = PublicInquiry.objects.filter(is_read=False).count()
+
+    return render(request, 'admin/inquiries.html', {
+        'inquiries': qs,
+        'unread_count': unread_count,
+        'read_filter': read_filter,
+        'listing_pk': listing_pk,
+    })
+
+
+@admin_required
+def admin_inquiry_detail(request, pk):
+    from apps.listings.models import PublicInquiry
+    inquiry = get_object_or_404(PublicInquiry, pk=pk)
+    if not inquiry.is_read:
+        inquiry.is_read = True
+        inquiry.save(update_fields=['is_read'])
+    return render(request, 'admin/inquiry_detail.html', {'inquiry': inquiry})

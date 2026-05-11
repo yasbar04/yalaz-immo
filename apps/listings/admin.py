@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Listing, ListingImage, Contact
+from .models import Listing, ListingImage, Contact, PublicInquiry
 
 
 class ListingImageInline(admin.TabularInline):
@@ -48,6 +48,19 @@ class ContactAdmin(admin.ModelAdmin):
     readonly_fields = ('from_user', 'listing', 'email', 'phone', 'message', 'created_at')
     actions = ['mark_as_read']
     
+    def mark_as_read(self, request, queryset):
+        queryset.update(is_read=True)
+    mark_as_read.short_description = 'Marquer comme lu'
+
+
+@admin.register(PublicInquiry)
+class PublicInquiryAdmin(admin.ModelAdmin):
+    list_display = ('first_name', 'last_name', 'email', 'phone', 'listing', 'want_similar', 'is_read', 'created_at')
+    list_filter = ('is_read', 'want_similar', 'created_at')
+    search_fields = ('first_name', 'last_name', 'email', 'listing__title', 'message')
+    readonly_fields = ('first_name', 'last_name', 'email', 'phone', 'message', 'want_similar', 'listing', 'created_at')
+    actions = ['mark_as_read']
+
     def mark_as_read(self, request, queryset):
         queryset.update(is_read=True)
     mark_as_read.short_description = 'Marquer comme lu'

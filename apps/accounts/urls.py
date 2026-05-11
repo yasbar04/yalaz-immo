@@ -7,6 +7,7 @@ from .admin_views import (
     toggle_favorite, favorites,
     admin_staff_list, admin_staff_create, admin_staff_edit, admin_staff_delete,
     change_password_required,
+    admin_inquiries, admin_inquiry_detail,
 )
 from apps.core.views import (
     admin_seller_requests, admin_seller_request_detail,
@@ -61,6 +62,10 @@ urlpatterns = [
     # Messages de contact (admin/staff)
     path('admin/contact-messages/', admin_contact_messages, name='admin_contact_messages'),
     path('admin/contact-messages/<int:message_id>/', admin_contact_message_detail, name='admin_contact_message_detail'),
+
+    # Demandes publiques (formulaire annonce)
+    path('admin/demandes/', admin_inquiries, name='admin_inquiries'),
+    path('admin/demandes/<int:pk>/', admin_inquiry_detail, name='admin_inquiry_detail'),
 
     # User features
     path('report/<int:listing_id>/', report_content, name='report_listing'),

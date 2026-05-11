@@ -1,29 +1,34 @@
 {% extends 'base.html' %}
 
-{% block seo_keywords %}{{ listing.title }}, {{ listing.get_property_type_display }} à {{ listing.listing_type }} {{ listing.city }} maroc, immobilier maroc, {% if listing.bedrooms %}{{ listing.bedrooms }} chambre{{ listing.bedrooms|pluralize }}{% endif %}{% endblock %}
+{% block seo_keywords %}{{ listing.title }}, {{ listing.get_property_type_display }} à {{ listing.city }} maroc, immobilier maroc{% endblock %}
 
-{% block meta_description %}{{ listing.title }} - {% if listing.listing_type == 'rent' %}À louer{% else %}À vendre{% endif %} à {{ listing.city }}{% if listing.district %}, {{ listing.district }}{% endif %} - {{ listing.surface_area }}m² - {{ listing.bedrooms }} chambre{{ listing.bedrooms|pluralize }} | YalazAgence Maroc{% endblock %}
+{% block meta_description %}{{ listing.title }} — {% if listing.listing_type == 'rent' %}À louer{% else %}À vendre{% endif %} à {{ listing.city }}{% if listing.district %}, {{ listing.district }}{% endif %} — {{ listing.surface_area }} m² — {{ listing.bedrooms }} chambre{{ listing.bedrooms|pluralize }} | YalazAgence Maroc{% endblock %}
 
-{% block og_title %}{{ listing.title }} - {{ listing.get_property_type_display }} à {{ listing.listing_type }} | YalazAgence{% endblock %}
-
-{% block og_description %}{{ listing.title|truncatewords:20 }} - {% if listing.listing_type == 'rent' %}À louer{% else %}À vendre{% endif %} à {{ listing.city }} Maroc. {{ listing.bedrooms }} chambre{{ listing.bedrooms|pluralize }}, {{ listing.bathrooms }} sdb, {{ listing.surface_area }}m².{% endblock %}
-
+{% block og_title %}{{ listing.title }} — {{ listing.get_property_type_display }} | YalazAgence{% endblock %}
+{% block og_description %}{{ listing.title|truncatewords:20 }} — {% if listing.listing_type == 'rent' %}À louer{% else %}À vendre{% endif %} à {{ listing.city }}. {{ listing.surface_area }} m², {{ listing.bedrooms }} chambre{{ listing.bedrooms|pluralize }}.{% endblock %}
 {% block og_type %}article{% endblock %}
-
 {% block og_image %}{{ request.scheme }}://{{ request.get_host }}{{ gallery_images.0.url }}{% endblock %}
-{% block og_image_width %}1200{% endblock %}
-{% block og_image_height %}800{% endblock %}
-{% block og_image_alt %}{{ listing.title }} - {{ listing.get_property_type_display }} à {{ listing.city }}{% endblock %}
+{% block og_image_alt %}{{ listing.title }} — {{ listing.get_property_type_display }} à {{ listing.city }}{% endblock %}
 
 {% block title %}{{ listing.title }} — {% if listing.listing_type == 'rent' %}Location{% else %}Vente{% endif %} {{ listing.get_property_type_display }} {{ listing.city }} | YalazAgence{% endblock %}
 
 {% block content %}
-<div class="container detail-prem-shell" style="max-width:1200px;">
+<div class="dv2-shell">
+<div class="container dv2-container">
+
+    <!-- Breadcrumb -->
+    <nav class="dv2-breadcrumb" aria-label="Fil d'Ariane">
+        <a href="{% url 'home' %}">Accueil</a>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="11" height="11"><polyline points="9 18 15 12 9 6"/></svg>
+        <a href="{% url 'listing_list' %}">Annonces</a>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="11" height="11"><polyline points="9 18 15 12 9 6"/></svg>
+        <span>{{ listing.title|truncatechars:45 }}</span>
+    </nav>
 
     {% if user.is_staff %}
     <div class="staff-bar">
         <div class="staff-bar-left">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
             <span>Vue staff</span>
             <span class="pill pill-{% if listing.status == 'published' %}success{% elif listing.status == 'pending' %}warning{% else %}danger{% endif %}" style="font-size:.7rem;">{{ listing.get_status_display }}</span>
         </div>
@@ -33,7 +38,7 @@
                 Modérer
             </a>
             <a href="{% url 'listing_create' %}" class="btn-staff-create">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
                 Nouvelle annonce
             </a>
         </div>
@@ -41,345 +46,438 @@
     {% endif %}
 
     <!-- TOP: Gallery + Summary -->
-    <div class="detail-prem-top">
+    <div class="dv2-top">
 
         <!-- GALLERY -->
-        <div class="detail-prem-gallery">
-            <div class="detail-prem-main-img" id="mainImageWrap">
+        <div class="dv2-gallery">
+            <div class="dv2-main-img" id="mainImageWrap">
                 {% if gallery_images %}
-                    <img src="{{ gallery_images.0.url }}" alt="{{ gallery_images.0.alt }}" id="mainImage">
-                    <div class="detail-prem-badges">
-                        <span class="detail-prem-chip">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-                            {{ photo_count }} photo{{ photo_count|pluralize }}
-                        </span>
-                        <span class="detail-prem-chip">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-                            {{ listing.views_count }} vue{{ listing.views_count|pluralize }}
-                        </span>
+                    <img src="{{ gallery_images.0.url }}" alt="{{ gallery_images.0.alt }}" id="mainImage" onclick="openLightbox(0)" loading="eager">
+                    {% if photo_count > 1 %}
+                        <button class="dv2-nav-btn dv2-prev" onclick="navImage(-1)" aria-label="Précédent">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="16" height="16"><polyline points="15 18 9 12 15 6"/></svg>
+                        </button>
+                        <button class="dv2-nav-btn dv2-next" onclick="navImage(1)" aria-label="Suivant">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="16" height="16"><polyline points="9 18 15 12 9 6"/></svg>
+                        </button>
+                    {% endif %}
+                    <div class="dv2-img-overlay">
+                        {% if listing.is_featured %}
+                            <span class="dv2-featured-badge">
+                                <svg viewBox="0 0 24 24" fill="currentColor" width="11" height="11"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                                Mis en avant
+                            </span>
+                        {% else %}<span></span>{% endif %}
+                        <div class="dv2-img-chips">
+                            {% if photo_count > 0 %}
+                            <span class="dv2-chip">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                                <span id="photoCounter">1</span>&thinsp;/&thinsp;{{ photo_count }}
+                            </span>
+                            <button class="dv2-chip dv2-expand-btn" onclick="openLightbox(currentIndex)" aria-label="Voir en grand">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
+                                Galerie
+                            </button>
+                            {% endif %}
+                        </div>
                     </div>
                 {% else %}
-                    <div style="display:flex;align-items:center;justify-content:center;height:100%;min-height:280px;color:var(--muted);">
+                    <div class="dv2-no-photo">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="44" height="44"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
                         <span>Aucune photo disponible</span>
                     </div>
                 {% endif %}
             </div>
 
             {% if photo_count > 1 %}
-                <div class="detail-prem-thumb-strip">
-                    {% for image in gallery_images %}
-                        <div
-                            class="detail-prem-thumb {% if forloop.first %}is-active{% endif %}"
-                            onclick="switchImage('{{ image.url }}', '{{ image.alt }}', this)"
-                        >
-                            <img src="{{ image.url }}" alt="{{ image.alt }}">
-                        </div>
-                    {% endfor %}
+            <div class="dv2-thumbs" id="thumbStrip">
+                {% for image in gallery_images %}
+                <div class="dv2-thumb {% if forloop.first %}is-active{% endif %}"
+                     data-index="{{ forloop.counter0 }}"
+                     onclick="switchToIndex({{ forloop.counter0 }}, this)">
+                    <img src="{{ image.url }}" alt="{{ image.alt }}" loading="lazy">
                 </div>
+                {% endfor %}
+            </div>
             {% endif %}
 
-            <div class="detail-prem-gallery-foot">
-                <div>
-                    <p class="eyebrow" style="color:var(--muted);margin-bottom:.2rem;">Expérience visuelle</p>
-                    <p style="font-size:.875rem;font-weight:600;color:var(--ink);">{{ listing.title }}</p>
-                </div>
-                <div style="display:flex;gap:.5rem;">
-                    <span class="detail-prem-chip">Réf. #{{ listing.pk }}</span>
-                    <span class="detail-prem-chip">{{ listing.created_at|date:"d/m/Y" }}</span>
+            <div class="dv2-gallery-foot">
+                <p class="dv2-gallery-title">{{ listing.title }}</p>
+                <div class="dv2-gallery-meta">
+                    <span>Réf.&nbsp;#{{ listing.pk }}</span>
+                    <span>{{ listing.created_at|date:"d/m/Y" }}</span>
                 </div>
             </div>
         </div>
 
         <!-- SUMMARY -->
-        <div class="detail-prem-summary">
-            <div class="detail-prem-summary-head">
-                <div class="listing-badges" style="margin-bottom:.875rem;">
-                    <span class="pill pill-mint">{{ listing.get_listing_type_display }}</span>
-                    <span class="pill">{{ listing.get_property_type_display }}</span>
-                    <span class="pill status-{{ listing.status }}">{{ listing.get_status_display }}</span>
-                    {% if listing.is_featured %}<span class="pill pill-gold">Mis en avant</span>{% endif %}
+        <div class="dv2-summary">
+            <div class="dv2-summary-head">
+                <div class="dv2-badge-row">
+                    <span class="dv2-type-badge dv2-type-{% if listing.listing_type == 'rent' %}rent{% else %}sale{% endif %}">
+                        {% if listing.listing_type == 'rent' %}Location{% else %}Vente{% endif %}
+                    </span>
+                    <span class="dv2-cat-badge">{{ listing.get_property_type_display }}</span>
+                    {% if listing.status == 'published' %}
+                        <span class="dv2-status-badge dv2-status-ok">
+                            <span class="dv2-pulse-dot"></span>Disponible
+                        </span>
+                    {% endif %}
                 </div>
-
-                {% if user == listing.owner %}
-                    <div class="detail-prem-owner-banner">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                        <span><strong>Vue propriétaire</strong> — Vous consultez votre propre annonce.</span>
-                    </div>
-                {% endif %}
-
-                <h1 class="detail-prem-title">{{ listing.title }}</h1>
-                <p class="detail-prem-location">
+                <h1 class="dv2-title">{{ listing.title }}</h1>
+                <p class="dv2-location">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-                    {{ listing.city }}{% if listing.district %} — {{ listing.district }}{% endif %}
+                    {{ listing.city }}{% if listing.district %}, {{ listing.district }}{% endif %}
                 </p>
             </div>
 
-            <div class="detail-prem-price-bar">
+            <!-- Price -->
+            <div class="dv2-price-section">
                 <div>
-                    <p class="detail-prem-price-sub">Prix</p>
-                    <p class="detail-prem-price">{{ listing.price|floatformat:0 }} MAD</p>
+                    <p class="dv2-price-label">Prix {{ listing.get_listing_type_display|lower }}</p>
+                    <p class="dv2-price">{{ listing.price|floatformat:0 }}&thinsp;<span>MAD</span></p>
                 </div>
-                <div style="text-align:right;">
-                    <p class="detail-prem-price-sub">Publication</p>
-                    <p style="font-size:.875rem;font-weight:600;color:var(--ink);">{{ listing.created_at|date:"d/m/Y" }}</p>
+                <div class="dv2-pub-info">
+                    <p class="dv2-price-label">Référence</p>
+                    <p class="dv2-pub-val">#{{ listing.pk }}</p>
                 </div>
             </div>
 
-            <div class="detail-prem-metrics">
+            <!-- Metrics -->
+            <div class="dv2-metrics">
                 {% for metric in detail_metrics %}
-                    <div class="detail-prem-metric">
-                        <strong>{{ metric.value }}</strong>
-                        <span>{{ metric.label }}</span>
+                <div class="dv2-metric">
+                    <div class="dv2-metric-icon">
+                        {% if 'Surface' in metric.label or 'm²' in metric.label %}
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15"><rect x="3" y="3" width="18" height="18" rx="1.5"/><path d="M3 9h18M9 21V9"/></svg>
+                        {% elif 'Chambre' in metric.label %}
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                        {% else %}
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15"><path d="M4 12h16a1 1 0 0 1 1 1v3a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4v-3a1 1 0 0 1 1-1z"/><path d="M6 12V5a2 2 0 0 1 2-2h3v2.25"/></svg>
+                        {% endif %}
                     </div>
+                    <strong>{{ metric.value }}</strong>
+                    <span>{{ metric.label }}</span>
+                </div>
                 {% endfor %}
             </div>
 
-            <div class="detail-prem-chips">
-                <div class="detail-prem-info-chip">
-                    <span>Référence</span>
-                    <strong>#{{ listing.pk }}</strong>
-                </div>
-                <div class="detail-prem-info-chip" style="margin-left:1.5rem;">
-                    <span>Propriétaire</span>
-                    <strong>{{ owner_display_name }}</strong>
-                </div>
-                <div class="detail-prem-info-chip" style="margin-left:1.5rem;">
-                    <span>Mise à jour</span>
-                    <strong>{{ listing.updated_at|date:"d/m/Y" }}</strong>
-                </div>
-            </div>
-
+            <!-- Amenity preview -->
             {% if amenities %}
-                <div class="detail-prem-amenity-badges">
-                    {% for amenity in amenities|slice:":5" %}
-                        <span class="detail-prem-amenity-badge">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="10" height="10"><polyline points="20 6 9 17 4 12"/></svg>
-                            {{ amenity }}
-                        </span>
-                    {% endfor %}
-                    {% if amenities|length > 5 %}
-                        <span class="detail-prem-amenity-badge" style="background:var(--bg);color:var(--muted);border-color:var(--border-light);">+{{ amenities|length|add:"-5" }} autres</span>
-                    {% endif %}
-                </div>
+            <div class="dv2-amen-preview">
+                {% for amenity in amenities|slice:":5" %}
+                    <span class="dv2-amen-pill">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="10" height="10"><polyline points="20 6 9 17 4 12"/></svg>
+                        {{ amenity }}
+                    </span>
+                {% endfor %}
+                {% if amenities|length > 5 %}
+                    <span class="dv2-amen-pill dv2-amen-more">+{{ amenities|length|add:"-5" }} autres</span>
+                {% endif %}
+            </div>
             {% endif %}
 
-            <div class="detail-prem-actions">
-                {% if user == listing.owner %}
+            <!-- Actions (staff only + CTA) -->
+            <div class="dv2-actions">
+                {% if user.is_staff %}
                     {% if can_edit %}
-                        <a href="{% url 'listing_edit' listing.pk %}" class="btn-hero-prim">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-                            Modifier l'annonce
+                        <a href="{% url 'listing_edit' listing.pk %}" class="btn-hero-sec">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                            Modifier
                         </a>
-                    {% else %}
-                        <button class="btn-hero-sec" disabled style="opacity:.5;cursor:not-allowed;">Modification verrouillée</button>
-                        <small style="font-size:.75rem;color:var(--muted);text-align:center;">Une annonce publiée doit passer par l'équipe admin pour être modifiée.</small>
                     {% endif %}
                     {% if can_delete %}
-                        <a href="{% url 'listing_delete' listing.pk %}" class="btn-hero-sec" style="border-color:var(--danger);color:var(--danger);">Supprimer</a>
-                    {% else %}
-                        <button class="btn-hero-sec" disabled style="opacity:.5;cursor:not-allowed;">Suppression verrouillée</button>
-                    {% endif %}
-                {% else %}
-                    {% if user.is_authenticated %}
-                        <a href="{% url 'contact_owner' listing.pk %}" class="btn-hero-prim">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-                            {% if contact_sent %}Modifier ma demande{% else %}Contacter le propriétaire{% endif %}
-                        </a>
-                        <a href="{% url 'toggle_favorite' listing.pk %}" class="btn-hero-sec">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"{% if is_favorite %} fill="currentColor"{% endif %}/></svg>
-                            {% if is_favorite %}Retirer des favoris{% else %}Ajouter aux favoris{% endif %}
-                        </a>
-                        <a href="{% url 'report_listing' listing.pk %}" style="font-size:.78rem;color:var(--muted);text-align:center;text-decoration:none;">Signaler cette annonce</a>
-                    {% else %}
-                        <a href="{% url 'login' %}" class="btn-hero-prim">Se connecter pour contacter</a>
+                        <a href="{% url 'listing_delete' listing.pk %}" class="btn-hero-sec dv2-btn-danger">Supprimer</a>
                     {% endif %}
                 {% endif %}
+                {% if user.is_authenticated %}
+                    <a href="{% url 'toggle_favorite' listing.pk %}" class="btn-hero-sec dv2-fav-btn">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"{% if is_favorite %} fill="currentColor"{% endif %}/></svg>
+                        {% if is_favorite %}Retirer des favoris{% else %}Sauvegarder{% endif %}
+                    </a>
+                {% endif %}
+                <a href="#dv2-form-contact" class="btn-hero-prim dv2-cta-btn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                    Contacter l'agence
+                </a>
             </div>
         </div>
     </div>
 
-    <!-- BODY GRID: Content + Sidebar -->
-    <div class="detail-prem-body-grid">
+    <!-- BODY -->
+    <div class="dv2-body">
 
         <!-- MAIN COLUMN -->
-        <div class="detail-prem-main-col">
+        <div class="dv2-main-col">
 
             <!-- Description -->
-            <div class="admin-panel-card">
-                <div class="admin-panel-head">
+            <div class="dv2-card">
+                <div class="dv2-card-head">
+                    <div class="dv2-card-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                    </div>
                     <div>
-                        <span class="eyebrow" style="color:var(--gold);display:block;margin-bottom:.25rem;">Description</span>
-                        <h2>Ce qu'il faut savoir sur le bien</h2>
+                        <p class="dv2-eyebrow">Description</p>
+                        <h2>Ce qu'il faut savoir sur ce bien</h2>
                     </div>
                 </div>
-                <div style="padding:1.5rem;font-size:.9rem;color:var(--text);line-height:1.8;">
-                    {{ listing.description|linebreaks }}
-                </div>
+                <div class="dv2-description">{{ listing.description|linebreaks }}</div>
             </div>
 
             <!-- Informations clés -->
-            <div class="admin-panel-card">
-                <div class="admin-panel-head">
+            <div class="dv2-card">
+                <div class="dv2-card-head">
+                    <div class="dv2-card-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                    </div>
                     <div>
-                        <span class="eyebrow" style="color:var(--gold);display:block;margin-bottom:.25rem;">Informations clés</span>
-                        <h2>Lecture rapide de l'annonce</h2>
+                        <p class="dv2-eyebrow">Informations clés</p>
+                        <h2>Détails du bien</h2>
                     </div>
                 </div>
-                <div class="detail-prem-facts-grid">
+                <div class="dv2-facts-grid">
                     {% for item in property_details %}
-                        <div class="detail-prem-fact">
-                            <span>{{ item.label }}</span>
-                            <strong>
-                                {% if item.is_datetime %}{{ item.value|date:"d/m/Y" }}{% else %}{{ item.value }}{% endif %}
-                            </strong>
-                        </div>
+                    <div class="dv2-fact">
+                        <span>{{ item.label }}</span>
+                        <strong>{% if item.is_datetime %}{{ item.value|date:"d/m/Y" }}{% else %}{{ item.value }}{% endif %}</strong>
+                    </div>
                     {% endfor %}
                 </div>
             </div>
 
             <!-- Équipements -->
             {% if amenities %}
-                <div class="admin-panel-card">
-                    <div class="admin-panel-head">
-                        <div>
-                            <span class="eyebrow" style="color:var(--gold);display:block;margin-bottom:.25rem;">Confort et services</span>
-                            <h2>Équipements disponibles</h2>
-                        </div>
+            <div class="dv2-card">
+                <div class="dv2-card-head">
+                    <div class="dv2-card-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
                     </div>
-                    <div class="detail-prem-amenities-grid">
-                        {% for amenity in amenities %}
-                            <div class="detail-prem-amenity-item">
-                                <span class="detail-prem-amenity-dot"></span>
-                                {{ amenity }}
-                            </div>
-                        {% endfor %}
+                    <div>
+                        <p class="dv2-eyebrow">Confort &amp; services</p>
+                        <h2>Équipements disponibles</h2>
                     </div>
                 </div>
+                <div class="dv2-amenities-grid">
+                    {% for amenity in amenities %}
+                    <div class="dv2-amenity-item">
+                        <div class="dv2-amenity-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="11" height="11"><polyline points="20 6 9 17 4 12"/></svg>
+                        </div>
+                        {{ amenity }}
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
             {% endif %}
 
-            <!-- Messages (si propriétaire) -->
-            {% if user == listing.owner %}
-                <div class="admin-panel-card">
-                    <div class="admin-panel-head">
-                        <div>
-                            <span class="eyebrow" style="color:var(--gold);display:block;margin-bottom:.25rem;">Messages reçus</span>
-                            <h2>{{ listing.contacts.count }} contact{{ listing.contacts.count|pluralize }}</h2>
-                        </div>
+            <!-- Messages reçus (staff seulement) -->
+            {% if user.is_staff %}
+            <div class="dv2-card">
+                <div class="dv2-card-head">
+                    <div class="dv2-card-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
                     </div>
-
-                    {% if listing.contacts.all %}
-                        <div>
-                            {% for contact in listing.contacts.all %}
-                                <div class="detail-prem-contact-item {% if not contact.is_read %}is-unread{% endif %}">
-                                    <p class="detail-prem-contact-name">{{ contact.from_user.username }}</p>
-                                    <p class="detail-prem-contact-date">{{ contact.created_at|date:"d/m/Y à H:i" }}</p>
-                                    <div class="detail-prem-contact-meta">
-                                        <a href="mailto:{{ contact.email }}">{{ contact.email }}</a>
-                                        {% if contact.phone %}<span>{{ contact.phone }}</span>{% endif %}
-                                    </div>
-                                    <p class="detail-prem-contact-msg">{{ contact.message }}</p>
-                                </div>
-                            {% endfor %}
-                        </div>
-                    {% else %}
-                        <div class="dash-empty" style="padding:2rem;">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="32" height="32"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-                            <p>Aucune demande de contact pour le moment.</p>
-                            <span>Les messages reçus depuis cette annonce apparaîtront ici dès qu'un acheteur vous écrit.</span>
-                        </div>
-                    {% endif %}
+                    <div>
+                        <p class="dv2-eyebrow">Demandes reçues</p>
+                        <h2>{{ listing.inquiries.count }} demande{{ listing.inquiries.count|pluralize }}</h2>
+                    </div>
                 </div>
+                {% if listing.inquiries.all %}
+                    {% for inq in listing.inquiries.all %}
+                    <div class="dv2-msg {% if not inq.is_read %}is-unread{% endif %}">
+                        <div class="dv2-msg-header">
+                            <div class="dv2-msg-avatar">{{ inq.first_name|slice:":1"|upper }}</div>
+                            <div>
+                                <p class="dv2-msg-name">{{ inq.first_name }} {{ inq.last_name }}</p>
+                                <p class="dv2-msg-date">{{ inq.created_at|date:"d/m/Y à H:i" }}</p>
+                            </div>
+                            {% if not inq.is_read %}<span class="dv2-unread-badge">Nouveau</span>{% endif %}
+                        </div>
+                        <div class="dv2-msg-meta">
+                            <a href="mailto:{{ inq.email }}">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="11" height="11"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                                {{ inq.email }}
+                            </a>
+                            {% if inq.phone %}
+                            <span>
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="11" height="11"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.38a2 2 0 0 1 1.99-2.18h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.96a16 16 0 0 0 6.13 6.13l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                                {{ inq.phone }}
+                            </span>
+                            {% endif %}
+                            {% if inq.want_similar %}<span class="dv2-similar-badge">Biens similaires</span>{% endif %}
+                        </div>
+                        <p class="dv2-msg-body">{{ inq.message }}</p>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="dv2-empty-state">
+                        <div class="dv2-empty-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="28" height="28"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                        </div>
+                        <p>Aucune demande reçue pour le moment.</p>
+                        <span>Les formulaires de contact soumis apparaîtront ici.</span>
+                    </div>
+                {% endif %}
+            </div>
             {% endif %}
 
         </div>
 
         <!-- SIDEBAR -->
-        <div class="detail-prem-side-col">
+        <div class="dv2-side-col">
 
-            <!-- Owner card -->
-            <div class="admin-panel-card">
-                <div class="admin-panel-head">
+            <!-- Contact form -->
+            <div class="dv2-card" id="dv2-form-contact">
+                <div class="dv2-card-head">
+                    <div class="dv2-card-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                    </div>
                     <div>
-                        <span class="eyebrow" style="color:var(--gold);display:block;margin-bottom:.25rem;">Propriétaire</span>
-                        <h2>{{ owner_display_name }}</h2>
+                        <p class="dv2-eyebrow">Intéressé(e) par ce bien ?</p>
+                        <h2>Nous contacter</h2>
                     </div>
                 </div>
-                <div class="detail-prem-owner-identity">
-                    <div class="detail-prem-owner-avatar">{{ owner_display_name|slice:":1"|upper }}</div>
-                    <div>
-                        <p class="detail-prem-owner-name">{{ owner_display_name }}</p>
-                        <p class="detail-prem-owner-since">Membre depuis {{ listing.owner.date_joined|date:"d/m/Y" }}</p>
-                    </div>
-                </div>
-
-                {% if contact_methods %}
-                    <div class="detail-prem-contact-grid">
-                        {% for method in contact_methods %}
-                            <a href="{{ method.href }}" class="detail-prem-contact-link"
-                               {% if method.is_external %}target="_blank" rel="noopener"{% endif %}>
-                                <div>
-                                    <span>{{ method.label }}</span>
-                                    <strong>{{ method.value }}</strong>
-                                </div>
-                            </a>
-                        {% endfor %}
-                    </div>
-                {% else %}
-                    <div style="padding:1rem 1.5rem;">
-                        <div class="detail-prem-owner-note">
-                            Utilisez le bouton principal pour envoyer une demande de contact.
+                <form class="dv2-inquiry-form" method="post" action="{% url 'public_inquiry' listing.pk %}">
+                    {% csrf_token %}
+                    <div class="dv2-form-row">
+                        <div class="dv2-form-field">
+                            <label for="inq-first">Prénom *</label>
+                            <input type="text" id="inq-first" name="first_name" required placeholder="Votre prénom" autocomplete="given-name">
+                        </div>
+                        <div class="dv2-form-field">
+                            <label for="inq-last">Nom *</label>
+                            <input type="text" id="inq-last" name="last_name" required placeholder="Votre nom" autocomplete="family-name">
                         </div>
                     </div>
-                {% endif %}
+                    <div class="dv2-form-field">
+                        <label for="inq-email">Email *</label>
+                        <input type="email" id="inq-email" name="email" required placeholder="votre@email.com" autocomplete="email">
+                    </div>
+                    <div class="dv2-form-field">
+                        <label for="inq-phone">Téléphone</label>
+                        <input type="tel" id="inq-phone" name="phone" placeholder="+212 6 00 00 00 00" autocomplete="tel">
+                    </div>
+                    <div class="dv2-form-field">
+                        <label for="inq-msg">Message *</label>
+                        <textarea id="inq-msg" name="message" rows="4" required placeholder="Je suis intéressé(e) par ce bien et je souhaite obtenir plus d'informations…"></textarea>
+                    </div>
+                    <label class="dv2-checkbox-label">
+                        <input type="checkbox" name="want_similar">
+                        <span class="dv2-checkbox-text">Je souhaite recevoir des propositions de biens similaires</span>
+                    </label>
+                    <button type="submit" class="btn-hero-prim dv2-cta-btn">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                        Envoyer ma demande
+                    </button>
+                </form>
             </div>
 
-            <!-- Trust indicators -->
-            <div class="admin-panel-card">
-                <div class="admin-panel-head">
-                    <div>
-                        <span class="eyebrow" style="color:var(--gold);display:block;margin-bottom:.25rem;">Repères utiles</span>
-                        <h2>Ce que montre cette fiche</h2>
-                    </div>
+            <!-- Agency contact links -->
+            {% if contact_methods %}
+            <div class="dv2-card">
+                <div class="dv2-card-head dv2-card-head-sm">
+                    <p class="dv2-eyebrow" style="margin:0;">Contact direct</p>
                 </div>
-                <div class="detail-prem-trust">
-                    <div class="detail-prem-trust-row">
-                        <span class="detail-prem-trust-label">Photos disponibles</span>
-                        <span class="detail-prem-trust-val">{{ photo_count }}</span>
-                    </div>
-                    <div class="detail-prem-trust-row">
-                        <span class="detail-prem-trust-label">Vues enregistrées</span>
-                        <span class="detail-prem-trust-val">{{ listing.views_count }}</span>
-                    </div>
-                    <div class="detail-prem-trust-row">
-                        <span class="detail-prem-trust-label">Équipements mis en avant</span>
-                        <span class="detail-prem-trust-val">{{ amenities|length }}</span>
-                    </div>
-                </div>
-                <div style="padding:1rem 1.5rem;border-top:1px solid var(--border-light);">
-                    <p style="font-size:.78rem;color:var(--muted);line-height:1.6;">Chaque bloc est pensé pour aider à évaluer rapidement la pertinence du bien avant prise de contact.</p>
+                <div class="dv2-contact-methods">
+                    {% for method in contact_methods %}
+                    <a href="{{ method.href }}" class="dv2-contact-method" {% if method.is_external %}target="_blank" rel="noopener"{% endif %}>
+                        <div class="dv2-contact-method-icon">
+                            {% if 'mailto' in method.href %}
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                            {% elif 'whatsapp' in method.href or 'wa.me' in method.href %}
+                                <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413z"/></svg>
+                            {% else %}
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.38a2 2 0 0 1 1.99-2.18h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.96a16 16 0 0 0 6.13 6.13l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                            {% endif %}
+                        </div>
+                        <div class="dv2-contact-method-text">
+                            <span>{{ method.label }}</span>
+                            <strong>{{ method.value }}</strong>
+                        </div>
+                        <svg class="dv2-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="13" height="13"><polyline points="9 18 15 12 9 6"/></svg>
+                    </a>
+                    {% endfor %}
                 </div>
             </div>
+            {% endif %}
 
         </div>
     </div>
 
 </div>
 
+<!-- Mobile sticky bar -->
+<div class="dv2-sticky-bar">
+    <div>
+        <p class="dv2-sticky-price">{{ listing.price|floatformat:0 }}&thinsp;MAD</p>
+        <p class="dv2-sticky-loc">{{ listing.city }}{% if listing.district %}, {{ listing.district }}{% endif %}</p>
+    </div>
+    <a href="#dv2-form-contact" class="btn-hero-prim">Contacter</a>
+</div>
+
+</div>
+
+<!-- LIGHTBOX -->
+<div class="dv2-lightbox" id="lightbox" role="dialog" aria-modal="true">
+    <button class="dv2-lb-close" onclick="closeLightbox()" aria-label="Fermer">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="20" height="20"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+    <button class="dv2-lb-nav dv2-lb-prev" onclick="lbNav(-1)" aria-label="Précédent">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="22" height="22"><polyline points="15 18 9 12 15 6"/></svg>
+    </button>
+    <div class="dv2-lb-content">
+        <img id="lbImage" src="" alt="">
+        <p class="dv2-lb-counter" id="lbCounter"></p>
+    </div>
+    <button class="dv2-lb-nav dv2-lb-next" onclick="lbNav(1)" aria-label="Suivant">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="22" height="22"><polyline points="9 18 15 12 9 6"/></svg>
+    </button>
+</div>
+
 <script>
-function switchImage(url, alt, thumbEl) {
-    const mainImg = document.getElementById('mainImage');
-    if (mainImg) {
-        mainImg.src = url;
-        mainImg.alt = alt;
+const galleryImages = [{% for image in gallery_images %}{"url":"{{ image.url }}","alt":"{{ image.alt|escapejs }}"}{% if not forloop.last %},{% endif %}{% endfor %}];
+let currentIndex = 0;
+
+function switchToIndex(index, thumbEl) {
+    currentIndex = index;
+    const img = document.getElementById('mainImage');
+    if (img && galleryImages[index]) {
+        img.style.opacity = '0';
+        setTimeout(() => { img.src = galleryImages[index].url; img.alt = galleryImages[index].alt; img.style.opacity = '1'; }, 140);
     }
-    document.querySelectorAll('.detail-prem-thumb').forEach(t => t.classList.remove('is-active'));
-    thumbEl.classList.add('is-active');
+    document.querySelectorAll('.dv2-thumb').forEach(t => t.classList.remove('is-active'));
+    const active = thumbEl || document.querySelector('.dv2-thumb[data-index="' + index + '"]');
+    if (active) { active.classList.add('is-active'); active.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' }); }
+    const c = document.getElementById('photoCounter');
+    if (c) c.textContent = index + 1;
 }
+function navImage(dir) { switchToIndex((currentIndex + dir + galleryImages.length) % galleryImages.length, null); }
+function openLightbox(index) { currentIndex = index; updateLightbox(); document.getElementById('lightbox').classList.add('is-open'); document.body.style.overflow = 'hidden'; }
+function closeLightbox() { document.getElementById('lightbox').classList.remove('is-open'); document.body.style.overflow = ''; }
+function lbNav(dir) { currentIndex = (currentIndex + dir + galleryImages.length) % galleryImages.length; updateLightbox(); }
+function updateLightbox() {
+    const img = document.getElementById('lbImage'), c = document.getElementById('lbCounter');
+    if (img && galleryImages[currentIndex]) { img.src = galleryImages[currentIndex].url; img.alt = galleryImages[currentIndex].alt; }
+    if (c) c.textContent = (currentIndex + 1) + ' / ' + galleryImages.length;
+}
+document.getElementById('lightbox').addEventListener('click', e => { if (e.target === e.currentTarget) closeLightbox(); });
+document.addEventListener('keydown', e => {
+    if (!document.getElementById('lightbox').classList.contains('is-open')) return;
+    if (e.key === 'ArrowLeft') lbNav(-1); else if (e.key === 'ArrowRight') lbNav(1); else if (e.key === 'Escape') closeLightbox();
+});
+
+// Smooth scroll to contact form
+document.querySelectorAll('a[href="#dv2-form-contact"]').forEach(a => {
+    a.addEventListener('click', e => {
+        e.preventDefault();
+        const el = document.getElementById('dv2-form-contact');
+        if (el) { el.scrollIntoView({ behavior: 'smooth', block: 'start' }); el.querySelector('input, textarea')?.focus(); }
+    });
+});
 </script>
 {% endblock %}
 
 {% block extra_scripts %}
-<!-- JSON-LD Structured Data for Property -->
 <script type="application/ld+json">
 {
     "@context": "https://schema.org",
@@ -387,74 +485,24 @@ function switchImage(url, alt, thumbEl) {
     "name": "{{ listing.title }}",
     "description": "{{ listing.description|truncatewords:30 }}",
     "url": "{{ request.build_absolute_uri }}",
-    "image": "{{ gallery_images.0.url }}",
-    "address": {
-        "@type": "PostalAddress",
-        "addressCountry": "MA",
-        "addressRegion": "{{ listing.city }}",
-        "addressLocality": "{{ listing.district }}"
-    },
+    "image": "{% if gallery_images %}{{ gallery_images.0.url }}{% endif %}",
+    "address": { "@type": "PostalAddress", "addressCountry": "MA", "addressRegion": "{{ listing.city }}", "addressLocality": "{{ listing.district }}" },
     "priceRange": "{{ listing.price }}",
     "priceCurrency": "MAD",
     "numberOfRooms": {{ listing.bedrooms }},
-    "numberOfBathroomsUnitComplete": {{ listing.bathrooms }},
-    "floorSize": {
-        "@type": "QuantitativeValue",
-        "value": "{{ listing.surface_area }}",
-        "unitCode": "MTK"
-    },
-    "amenityFeature": [
-        {% if listing.kitchen_equipped %}{"@type": "LocationFeatureSpecification", "name": "cuisine équipée"}{% if listing.swimming_pool or listing.garden or listing.garage or listing.parking or listing.terrace or listing.balcony or listing.air_conditioning or listing.furnished or listing.security %},{% endif %}{% endif %}
-        {% if listing.swimming_pool %}{"@type": "LocationFeatureSpecification", "name": "piscine"}{% if listing.garden or listing.garage or listing.parking or listing.terrace or listing.balcony or listing.air_conditioning or listing.furnished or listing.security %},{% endif %}{% endif %}
-        {% if listing.garden %}{"@type": "LocationFeatureSpecification", "name": "jardin"}{% if listing.garage or listing.parking or listing.terrace or listing.balcony or listing.air_conditioning or listing.furnished or listing.security %},{% endif %}{% endif %}
-        {% if listing.garage %}{"@type": "LocationFeatureSpecification", "name": "garage"}{% if listing.parking or listing.terrace or listing.balcony or listing.air_conditioning or listing.furnished or listing.security %},{% endif %}{% endif %}
-        {% if listing.parking %}{"@type": "LocationFeatureSpecification", "name": "parking"}{% if listing.terrace or listing.balcony or listing.air_conditioning or listing.furnished or listing.security %},{% endif %}{% endif %}
-        {% if listing.terrace %}{"@type": "LocationFeatureSpecification", "name": "terrasse"}{% if listing.balcony or listing.air_conditioning or listing.furnished or listing.security %},{% endif %}{% endif %}
-        {% if listing.balcony %}{"@type": "LocationFeatureSpecification", "name": "balcon"}{% if listing.air_conditioning or listing.furnished or listing.security %},{% endif %}{% endif %}
-        {% if listing.air_conditioning %}{"@type": "LocationFeatureSpecification", "name": "climatisation"}{% if listing.furnished or listing.security %},{% endif %}{% endif %}
-        {% if listing.furnished %}{"@type": "LocationFeatureSpecification", "name": "meublé"}{% if listing.security %},{% endif %}{% endif %}
-        {% if listing.security %}{"@type": "LocationFeatureSpecification", "name": "gardiennage/sécurité"}{% endif %}
-    ],
-    "offers": {
-        "@type": "Offer",
-        "priceCurrency": "MAD",
-        "price": "{{ listing.price }}",
-        "availability": "https://schema.org/InStock",
-        "url": "{{ request.build_absolute_uri }}"
-    },
-    "agent": {
-        "@type": "RealEstateAgent",
-        "name": "{{ listing.owner.get_full_name }}",
-        "email": "{{ listing.owner_email }}",
-        "telephone": "{{ listing.owner_phone }}"
-    }
+    "floorSize": { "@type": "QuantitativeValue", "value": "{{ listing.surface_area }}", "unitCode": "MTK" },
+    "offers": { "@type": "Offer", "priceCurrency": "MAD", "price": "{{ listing.price }}", "availability": "https://schema.org/InStock" },
+    "agent": { "@type": "RealEstateAgent", "name": "YalazAgence", "telephone": "{{ listing.owner_phone }}", "email": "{{ listing.owner_email }}" }
 }
 </script>
-
-<!-- Breadcrumb Schema -->
 <script type="application/ld+json">
 {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
     "itemListElement": [
-        {
-            "@type": "ListItem",
-            "position": 1,
-            "name": "Accueil",
-            "item": "{% url 'home' %}"
-        },
-        {
-            "@type": "ListItem",
-            "position": 2,
-            "name": "Annonces",
-            "item": "{% url 'listing_list' %}"
-        },
-        {
-            "@type": "ListItem",
-            "position": 3,
-            "name": "{{ listing.title }}",
-            "item": "{{ request.build_absolute_uri }}"
-        }
+        { "@type": "ListItem", "position": 1, "name": "Accueil", "item": "{% url 'home' %}" },
+        { "@type": "ListItem", "position": 2, "name": "Annonces", "item": "{% url 'listing_list' %}" },
+        { "@type": "ListItem", "position": 3, "name": "{{ listing.title }}", "item": "{{ request.build_absolute_uri }}" }
     ]
 }
 </script>

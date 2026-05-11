@@ -75,9 +75,9 @@
         </div>
     </div>
 
-    <!-- Contact messages stat -->
-    <div style="display:flex;gap:1rem;margin-top:1rem;">
-        <a href="{% url 'admin_contact_messages' %}?status=unread" class="admin-stat-prem is-contact" style="flex:1;max-width:280px;text-decoration:none;">
+    <!-- Contact messages + Demandes stat -->
+    <div style="display:flex;gap:1rem;margin-top:1rem;flex-wrap:wrap;">
+        <a href="{% url 'admin_contact_messages' %}?status=unread" class="admin-stat-prem is-contact" style="flex:1;min-width:200px;max-width:280px;text-decoration:none;">
             <div class="admin-stat-icon-wrap">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" width="20" height="20"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
             </div>
@@ -85,6 +85,16 @@
                 <strong>{{ stats.unread_contact_messages }}</strong>
                 <span>Messages contact</span>
                 <small>Non lus</small>
+            </div>
+        </a>
+        <a href="{% url 'admin_inquiries' %}?read=unread" class="admin-stat-prem is-contact" style="flex:1;min-width:200px;max-width:280px;text-decoration:none;">
+            <div class="admin-stat-icon-wrap">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" width="20" height="20"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+            </div>
+            <div class="admin-stat-body">
+                <strong>{{ stats.unread_inquiries }}</strong>
+                <span>Demandes annonces</span>
+                <small>Non lues</small>
             </div>
         </a>
     </div>
