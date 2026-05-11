@@ -12,7 +12,7 @@ from apps.accounts.services import (
 )
 
 from .forms import ListingForm, ListingImageFormSet
-from .models import Contact, Favorite, Listing, PublicInquiry
+from .models import Contact, Favorite, Listing, ListingImage, PublicInquiry
 from .constants import MOROCCAN_DISTRICTS
 
 
