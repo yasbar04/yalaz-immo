@@ -181,11 +181,11 @@ _media_backend = (
 
 STORAGES = {
     'default': {'BACKEND': _media_backend},
-    'staticfiles': {'BACKEND': 'django.contrib.staticfiles.storage.StaticFilesStorage'},
+    'staticfiles': {'BACKEND': 'aylaz.storage.RelaxedManifestStaticFilesStorage'},
 }
 
 # Compatibilité django-cloudinary-storage 0.3.0 qui lit cet attribut directement
-STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
+STATICFILES_STORAGE = 'aylaz.storage.RelaxedManifestStaticFilesStorage'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 LOGIN_REDIRECT_URL = 'dashboard'
