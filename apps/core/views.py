@@ -107,9 +107,19 @@ def buy(request):
         listing_type=Listing.ListingType.SALE,
     ).prefetch_related('images').order_by('-created_at')
 
+    available_cities = (
+        Listing.objects.filter(status=Listing.Status.PUBLISHED)
+        .values_list('city', flat=True)
+        .distinct()
+        .order_by('city')
+    )
+
     context = {
         'listings': listings,
         'page_title': 'Acheter',
+        'available_cities': available_cities,
+        'property_types': Listing.PropertyType.choices,
+        'default_listing_type': 'sale',
     }
     return render(request, 'core/buy.html', context)
 
@@ -120,9 +130,19 @@ def rent(request):
         listing_type=Listing.ListingType.RENT,
     ).prefetch_related('images').order_by('-created_at')
 
+    available_cities = (
+        Listing.objects.filter(status=Listing.Status.PUBLISHED)
+        .values_list('city', flat=True)
+        .distinct()
+        .order_by('city')
+    )
+
     context = {
         'listings': listings,
         'page_title': 'Louer',
+        'available_cities': available_cities,
+        'property_types': Listing.PropertyType.choices,
+        'default_listing_type': 'rent',
     }
     return render(request, 'core/rent.html', context)
 

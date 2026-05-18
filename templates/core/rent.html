@@ -48,11 +48,45 @@
 
 {% block content %}
 
-<section class="prem-hero">
+<section class="prem-hero prem-hero--search">
     <div class="container prem-hero-inner">
         <span class="eyebrow">Large choix de locations</span>
         <h1>Louer votre bien immobilier</h1>
         <p class="prem-hero-sub">Un large choix de locations adaptées à vos besoins et votre budget, sélectionnées par nos experts au Maroc.</p>
+
+        <form method="get" action="{% url 'listing_list' %}" class="page-search-bar">
+            <div class="psb-field psb-field--grow">
+                <svg class="psb-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                <input type="text" name="search" placeholder="Titre, quartier, ville…" autocomplete="off">
+            </div>
+            <div class="psb-field">
+                <select name="city">
+                    <option value="">Toutes les villes</option>
+                    {% for city_name in available_cities %}
+                        <option value="{{ city_name }}">{{ city_name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="psb-field">
+                <select name="property_type">
+                    <option value="">Type de bien</option>
+                    {% for value, label in property_types %}
+                        <option value="{{ value }}">{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="psb-field">
+                <select name="listing_type">
+                    <option value="rent" selected>Location</option>
+                    <option value="sale">Vente</option>
+                    <option value="">Tous</option>
+                </select>
+            </div>
+            <button type="submit" class="psb-submit">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" width="16" height="16" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+                Rechercher
+            </button>
+        </form>
     </div>
 </section>
 
