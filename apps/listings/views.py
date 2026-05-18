@@ -1,5 +1,9 @@
+import logging
+
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
+
+logger = logging.getLogger(__name__)
 from django.core.paginator import Paginator
 from django.db import transaction
 from django.db.models import Q
@@ -392,13 +396,18 @@ def listing_edit(request, pk):
 
                 # Ajout des nouvelles photos
                 extra_images = request.FILES.getlist('extra_images')
+                logger.info('Upload: %d fichier(s) reçu(s) pour annonce pk=%s', len(extra_images), updated_listing.pk)
                 existing_count = updated_listing.images.count()
                 for idx, img_file in enumerate(extra_images):
-                    ListingImage.objects.create(
-                        listing=updated_listing,
-                        image=img_file,
-                        order=existing_count + idx,
-                    )
+                    try:
+                        ListingImage.objects.create(
+                            listing=updated_listing,
+                            image=img_file,
+                            order=existing_count + idx,
+                        )
+                        logger.info('Image %d sauvegardée : %s', idx, img_file.name)
+                    except Exception as e:
+                        logger.error('Erreur sauvegarde image %d : %s', idx, e)
 
             messages.success(request, 'Les modifications ont été enregistrées.')
             return redirect('listing_detail', pk=listing.pk)
