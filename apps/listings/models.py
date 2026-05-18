@@ -11,6 +11,7 @@ class Listing(models.Model):
         VILLA = 'villa', 'Villa'
         LAND = 'land', 'Terrain'
         OFFICE = 'office', 'Bureau'
+        COMMERCIAL = 'commercial', 'Local commercial'
 
     class ListingType(models.TextChoices):
         SALE = 'sale', 'Vente'
