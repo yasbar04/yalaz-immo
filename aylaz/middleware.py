@@ -71,24 +71,26 @@ class SecurityHeadersMiddleware:
         if is_debug:
             csp = (
                 "default-src 'self'; "
-                "script-src 'self' 'unsafe-inline' https://fonts.googleapis.com; "
+                "script-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://www.googletagmanager.com; "
                 "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://fonts.gstatic.com; "
                 "font-src 'self' https://fonts.gstatic.com; "
-                "img-src 'self' data: blob: https://res.cloudinary.com; "
-                "connect-src 'self'; "
+                "img-src 'self' data: blob: https://res.cloudinary.com https://www.googletagmanager.com; "
+                "connect-src 'self' https://www.google-analytics.com https://analytics.google.com; "
                 "media-src 'self'; "
+                "frame-src https://www.googletagmanager.com; "
                 "object-src 'none'; "
                 "frame-ancestors 'none';"
             )
         else:
             csp = (
                 "default-src 'self'; "
-                "script-src 'self' 'unsafe-inline' https://fonts.googleapis.com; "
+                "script-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://www.googletagmanager.com; "
                 "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://fonts.gstatic.com; "
                 "font-src 'self' https://fonts.gstatic.com; "
-                "img-src 'self' data: blob: https://res.cloudinary.com https:; "
-                "connect-src 'self'; "
+                "img-src 'self' data: blob: https://res.cloudinary.com https://www.googletagmanager.com https:; "
+                "connect-src 'self' https://www.google-analytics.com https://analytics.google.com; "
                 "media-src 'self'; "
+                "frame-src https://www.googletagmanager.com; "
                 "object-src 'none'; "
                 "upgrade-insecure-requests; "
                 "frame-ancestors 'none';"
