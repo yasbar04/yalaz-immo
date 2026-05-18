@@ -52,7 +52,7 @@
         <div class="dv2-gallery">
             <div class="dv2-main-img" id="mainImageWrap">
                 {% if gallery_images %}
-                    <img src="{{ gallery_images.0.url }}" alt="{{ gallery_images.0.alt }}" id="mainImage" onclick="openLightbox(0)" loading="eager">
+                    <img src="{{ gallery_images.0.url }}" alt="{{ gallery_images.0.alt }}" id="mainImage" onclick="openLightbox(0)" loading="eager" onerror="handleBrokenMain(this)">
                     {% if photo_count > 1 %}
                         <button class="dv2-nav-btn dv2-prev" onclick="navImage(-1)" aria-label="Précédent">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="16" height="16"><polyline points="15 18 9 12 15 6"/></svg>
@@ -95,7 +95,7 @@
                 <div class="dv2-thumb {% if forloop.first %}is-active{% endif %}"
                      data-index="{{ forloop.counter0 }}"
                      onclick="switchToIndex({{ forloop.counter0 }}, this)">
-                    <img src="{{ image.url }}" alt="{{ image.alt }}" loading="lazy">
+                    <img src="{{ image.url }}" alt="{{ image.alt }}" loading="lazy" onerror="this.closest('.dv2-thumb').style.display='none'">
                 </div>
                 {% endfor %}
             </div>
@@ -435,6 +435,18 @@
 <script>
 const galleryImages = [{% for image in gallery_images %}{"url":"{{ image.url }}","alt":"{{ image.alt|escapejs }}"}{% if not forloop.last %},{% endif %}{% endfor %}];
 let currentIndex = 0;
+
+function handleBrokenMain(img) {
+    img.onerror = null;
+    for (let i = 1; i < galleryImages.length; i++) {
+        const thumb = document.querySelector('.dv2-thumb[data-index="' + i + '"]');
+        if (thumb && thumb.style.display !== 'none') {
+            switchToIndex(i, thumb);
+            return;
+        }
+    }
+    img.closest('.dv2-main-img').innerHTML = '<div class="dv2-no-photo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="44" height="44"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg><span>Aucune photo disponible</span></div>';
+}
 
 function switchToIndex(index, thumbEl) {
     currentIndex = index;
