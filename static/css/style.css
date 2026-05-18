@@ -284,6 +284,14 @@ h5, h6 { font-family: var(--font-heading); font-weight: 600; color: var(--ink); 
 
 .nav-brand { flex-shrink: 0; }
 
+/* Groupe droit toujours visible : avatar + hamburger */
+.nav-end {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-3);
+    flex-shrink: 0;
+}
+
 .brand,
 .footer-brand {
     display: inline-flex;
@@ -2535,40 +2543,23 @@ h5, h6 { font-family: var(--font-heading); font-weight: 600; color: var(--ink); 
         padding: 0.75rem 1rem;
     }
 
-    .user-menu-button {
-        width: 100%;
-        justify-content: space-between;
-        cursor: default;
-        pointer-events: none;
-    }
+    /* Avatar : cacher le nom sur mobile, garder seulement l'icône */
+    .user-menu-button .user-name { display: none; }
     .user-menu-button .user-menu-icon { display: none; }
+    .user-menu-button { padding: 0; background: none; border: none; }
 
-    /* Sur mobile : dropdown toujours visible, pas de clic nécessaire */
-    .nav-panel .user-menu-dropdown {
-        display: block !important;
-        position: static;
-        width: 100%;
-        margin-top: .625rem;
-        box-shadow: none;
-        border: 1px solid rgba(201,169,110,0.18);
-        border-radius: .75rem;
-        overflow: hidden;
+    /* Dropdown : s'ouvre sous l'avatar, pleine largeur sur mobile */
+    .nav-end .user-menu-dropdown {
+        position: absolute;
+        top: calc(100% + 8px);
+        right: 0;
+        left: auto;
+        width: calc(100vw - 2rem);
+        max-width: 320px;
+        box-shadow: 0 8px 32px rgba(11,28,46,.22);
+        border-radius: .875rem;
     }
-    .nav-panel .user-menu-header {
-        padding: .875rem 1rem;
-        background: rgba(201,169,110,0.08);
-    }
-    .nav-panel .user-menu-nav a {
-        padding: .75rem 1rem;
-        font-size: .875rem;
-    }
-    .nav-panel .user-menu-footer { padding: .5rem .75rem .75rem; }
-    .nav-panel .user-menu-logout {
-        width: 100%;
-        padding: .75rem 1rem;
-        font-size: .875rem;
-        border-radius: .625rem;
-    }
+    .user-menu-logout { width: 100%; padding: .875rem 1rem; font-size: .9rem; }
 
     .listing-row { grid-template-columns: 1fr; }
     .listing-row-media { height: 160px; }

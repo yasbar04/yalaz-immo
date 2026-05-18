@@ -206,12 +206,6 @@
                 <span class="brand-name">Yalaz</span>
             </a>
 
-            <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav" data-nav-toggle aria-label="Ouvrir le menu">
-                <span></span>
-                <span></span>
-                <span></span>
-            </button>
-
             <div class="nav-panel" id="site-nav" data-nav-panel>
                 <nav class="nav-links" aria-label="Navigation principale">
                     <a href="{% url 'home' %}">Accueil</a>
@@ -232,62 +226,72 @@
                         </svg>
                         Nous Contacter
                     </a>
-                    {% if user.is_authenticated %}
-                        <div class="user-menu-wrapper">
-                            {% with profile=user.profile %}
-                                <button class="user-menu-button" type="button" aria-expanded="false" aria-haspopup="true" data-user-menu-toggle>
+                </div>
+            </div>
+
+            <!-- Toujours visible dans la barre : avatar + hamburger -->
+            <div class="nav-end">
+                {% if user.is_authenticated %}
+                    <div class="user-menu-wrapper">
+                        {% with profile=user.profile %}
+                            <button class="user-menu-button" type="button" aria-expanded="false" aria-haspopup="true" data-user-menu-toggle>
+                                {% if profile.avatar %}
+                                    <img src="{{ profile.avatar.url }}" alt="{{ user.username }}" class="user-avatar">
+                                {% else %}
+                                    <div class="user-avatar placeholder">{{ user.username|slice:":1"|upper }}</div>
+                                {% endif %}
+                                <span class="user-name">{{ user.get_full_name|default:user.username }}</span>
+                                <svg class="user-menu-icon" width="14" height="14" viewBox="0 0 16 16" fill="none">
+                                    <path d="M4 6L8 10L12 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                            </button>
+
+                            <div class="user-menu-dropdown" data-user-menu-dropdown>
+                                <div class="user-menu-header">
                                     {% if profile.avatar %}
-                                        <img src="{{ profile.avatar.url }}" alt="{{ user.username }}" class="user-avatar">
+                                        <img src="{{ profile.avatar.url }}" alt="{{ user.username }}" class="dropdown-avatar">
                                     {% else %}
-                                        <div class="user-avatar placeholder">{{ user.username|slice:":1"|upper }}</div>
+                                        <div class="dropdown-avatar placeholder">{{ user.username|slice:":1"|upper }}</div>
                                     {% endif %}
-                                    <span class="user-name">{{ user.get_full_name|default:user.username }}</span>
-                                    <svg class="user-menu-icon" width="14" height="14" viewBox="0 0 16 16" fill="none">
-                                        <path d="M4 6L8 10L12 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                                    </svg>
-                                </button>
-
-                                <div class="user-menu-dropdown" data-user-menu-dropdown>
-                                    <div class="user-menu-header">
-                                        {% if profile.avatar %}
-                                            <img src="{{ profile.avatar.url }}" alt="{{ user.username }}" class="dropdown-avatar">
-                                        {% else %}
-                                            <div class="dropdown-avatar placeholder">{{ user.username|slice:":1"|upper }}</div>
-                                        {% endif %}
-                                        <div class="user-info">
-                                            <p class="user-fullname">{{ user.get_full_name|default:user.username }}</p>
-                                            <p class="user-email">{{ user.email }}</p>
-                                        </div>
-                                    </div>
-
-                                    <nav class="user-menu-nav">
-                                        <a href="{% url 'profile' %}" class="user-menu-link">
-                                            <span>Mon profil</span>
-                                        </a>
-                                        <a href="{% url 'favorites' %}" class="user-menu-link">
-                                            <span>Mes favoris</span>
-                                        </a>
-                                        <a href="{% url 'dashboard' %}" class="user-menu-link">
-                                            <span>Mon espace</span>
-                                        </a>
-                                        {% if user.is_staff or user.is_superuser %}
-                                            <a href="{% url 'admin_dashboard' %}" class="user-menu-link admin-link">
-                                                <span>Back-office</span>
-                                            </a>
-                                        {% endif %}
-                                    </nav>
-
-                                    <div class="user-menu-footer">
-                                        <form method="post" action="{% url 'logout' %}">
-                                            {% csrf_token %}
-                                            <button type="submit" class="user-menu-logout">Se déconnecter</button>
-                                        </form>
+                                    <div class="user-info">
+                                        <p class="user-fullname">{{ user.get_full_name|default:user.username }}</p>
+                                        <p class="user-email">{{ user.email }}</p>
                                     </div>
                                 </div>
-                            {% endwith %}
-                        </div>
-                    {% endif %}
-                </div>
+
+                                <nav class="user-menu-nav">
+                                    <a href="{% url 'profile' %}" class="user-menu-link">
+                                        <span>Mon profil</span>
+                                    </a>
+                                    <a href="{% url 'favorites' %}" class="user-menu-link">
+                                        <span>Mes favoris</span>
+                                    </a>
+                                    <a href="{% url 'dashboard' %}" class="user-menu-link">
+                                        <span>Mon espace</span>
+                                    </a>
+                                    {% if user.is_staff or user.is_superuser %}
+                                        <a href="{% url 'admin_dashboard' %}" class="user-menu-link admin-link">
+                                            <span>Back-office</span>
+                                        </a>
+                                    {% endif %}
+                                </nav>
+
+                                <div class="user-menu-footer">
+                                    <form method="post" action="{% url 'logout' %}">
+                                        {% csrf_token %}
+                                        <button type="submit" class="user-menu-logout">Se déconnecter</button>
+                                    </form>
+                                </div>
+                            </div>
+                        {% endwith %}
+                    </div>
+                {% endif %}
+
+                <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav" data-nav-toggle aria-label="Ouvrir le menu">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
             </div>
         </div>
     </header>
