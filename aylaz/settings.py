@@ -178,9 +178,21 @@ MEDIA_ROOT = BASE_DIR / 'media'
 # Cloudinary — stockage cloud des fichiers media (obligatoire sur Render)
 CLOUDINARY_URL = os.getenv('CLOUDINARY_URL', '')
 if CLOUDINARY_URL:
-    import cloudinary
-    cloudinary.config(cloudinary_url=CLOUDINARY_URL)
-    DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+    import re as _re
+    _m = _re.match(r'cloudinary://(\w+):([^@]+)@(\S+)', CLOUDINARY_URL)
+    if _m:
+        CLOUDINARY_STORAGE = {
+            'CLOUD_NAME': _m.group(3),
+            'API_KEY': _m.group(1),
+            'API_SECRET': _m.group(2),
+        }
+        import cloudinary as _cloudinary
+        _cloudinary.config(
+            cloud_name=_m.group(3),
+            api_key=_m.group(1),
+            api_secret=_m.group(2),
+        )
+        DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 LOGIN_REDIRECT_URL = 'dashboard'
