@@ -34,7 +34,7 @@
                     {{ form.title }}
                     {% if form.title.errors %}<span class="auth-field-error">{{ form.title.errors.0 }}</span>{% endif %}
                 </div>
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.125rem;">
+                <div class="form-grid-2">
                     <div class="filter-prem-field">
                         <label for="{{ form.property_type.id_for_label }}">{{ form.property_type.label }}</label>
                         {{ form.property_type }}
@@ -83,7 +83,7 @@
                 </div>
             </div>
             <div style="padding:1.75rem;">
-                <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:1.125rem;">
+                <div class="form-grid-auto">
                     <div class="filter-prem-field">
                         <label for="{{ form.price.id_for_label }}">{{ form.price.label }}</label>
                         {{ form.price }}
@@ -118,7 +118,7 @@
                 </div>
             </div>
             <div style="padding:1.75rem;">
-                <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:.75rem;">
+                <div class="form-grid-auto--tight">
                     <label class="lform-check">{{ form.kitchen_equipped }}<span>{{ form.kitchen_equipped.label }}</span></label>
                     <label class="lform-check">{{ form.swimming_pool }}<span>{{ form.swimming_pool.label }}</span></label>
                     <label class="lform-check">{{ form.garden }}<span>{{ form.garden.label }}</span></label>
@@ -157,7 +157,7 @@
                 </div>
             </div>
             <div style="padding:1.75rem;">
-                <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:1.125rem;">
+                <div class="form-grid-contact">
                     <div class="filter-prem-field">
                         <label for="{{ form.owner_email.id_for_label }}">{{ form.owner_email.label }}</label>
                         {{ form.owner_email }}
@@ -195,7 +195,7 @@
                     {% if imgs %}
                     <div>
                         <p style="font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:.75rem;">Photos enregistrées — cliquez × pour supprimer</p>
-                        <div style="display:flex;flex-wrap:wrap;gap:.75rem;">
+                        <div class="existing-imgs-row">
                             {% for img in imgs %}
                             <div class="existing-img-tile" id="tile-{{ img.pk }}">
                                 <img src="{{ img.image.url }}" alt="Photo {{ forloop.counter }}" style="width:100px;height:80px;object-fit:cover;border-radius:.5rem;display:block;border:2px solid var(--border-light);">
@@ -223,7 +223,7 @@
         </div>
 
         <!-- Actions -->
-        <div style="display:flex;gap:.75rem;">
+        <div class="form-actions">
             <button type="submit" class="btn-hero-prim">{{ submit_label }}</button>
             {% if listing %}
                 <a href="{{ listing.get_absolute_url }}" class="btn-hero-sec" style="border-color:var(--border);color:var(--muted);">Annuler</a>
