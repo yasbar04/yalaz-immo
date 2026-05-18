@@ -215,7 +215,7 @@
                                 <span>{{ listing.city }}</span>{% if listing.district %}<span>•</span><span>{{ listing.district }}</span>{% endif %}
                             </div>
                             <div class="listing-price-row">
-                                <strong class="listing-price">{{ listing.price|floatformat:0 }} MAD</strong>
+                                <strong class="listing-price">{{ listing.price|floatformat:0|intcomma }} MAD</strong>
                             </div>
                             <div class="listing-specs">
                                 <div class="spec-item"><strong>{{ listing.surface_area }}</strong><small>m²</small></div>

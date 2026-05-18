@@ -20,7 +20,7 @@
                 <div style="background:rgba(201,169,110,0.08);border:1px solid rgba(201,169,110,0.18);border-radius:1rem;padding:1.25rem 1.5rem;margin-top:2rem;">
                     <span class="eyebrow" style="color:var(--gold);display:block;margin-bottom:.4rem;">Annonce signalée</span>
                     <strong style="color:#fff;font-size:.95rem;">{{ listing.title }}</strong>
-                    <p style="color:rgba(255,255,255,.4);font-size:.8rem;margin:.25rem 0 0;">{{ listing.city }} — {{ listing.price|floatformat:0 }} MAD</p>
+                    <p style="color:rgba(255,255,255,.4);font-size:.8rem;margin:.25rem 0 0;">{{ listing.city }} — {{ listing.price|floatformat:0|intcomma }} MAD</p>
                 </div>
             {% endif %}
 

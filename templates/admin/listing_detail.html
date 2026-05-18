@@ -12,7 +12,7 @@
             </a>
             <span class="eyebrow" style="display:block;margin-top:.5rem;">Détail annonce</span>
             <h1>{{ listing.title }}</h1>
-            <p class="meta-copy">{{ listing.owner.username }} · {{ listing.city }} · {{ listing.price|floatformat:0 }} MAD</p>
+            <p class="meta-copy">{{ listing.owner.username }} · {{ listing.city }} · {{ listing.price|floatformat:0|intcomma }} MAD</p>
         </div>
     </div>
 </div>

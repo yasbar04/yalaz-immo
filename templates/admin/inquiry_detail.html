@@ -87,7 +87,7 @@
                 </div>
                 <div style="padding:1rem 1.5rem;display:flex;flex-direction:column;gap:.5rem;">
                     <p style="font-size:.8rem;color:var(--muted);">{{ inquiry.listing.city }}{% if inquiry.listing.district %}, {{ inquiry.listing.district }}{% endif %}</p>
-                    <p style="font-family:var(--font-heading);font-size:1.1rem;font-weight:700;color:var(--ink);">{{ inquiry.listing.price|floatformat:0 }} MAD</p>
+                    <p style="font-family:var(--font-heading);font-size:1.1rem;font-weight:700;color:var(--ink);">{{ inquiry.listing.price|floatformat:0|intcomma }} MAD</p>
                     <p style="font-size:.8rem;color:var(--muted);">{{ inquiry.listing.surface_area }} m² · {{ inquiry.listing.bedrooms }} ch. · {{ inquiry.listing.get_listing_type_display }}</p>
                 </div>
                 <div style="padding:.75rem 1.5rem;border-top:1px solid var(--border-light);display:flex;gap:.625rem;">

@@ -18,7 +18,7 @@
             <p class="auth-left-sub">{{ listing.city }}{% if listing.district %} — {{ listing.district }}{% endif %}</p>
             <div class="auth-left-stats" style="margin-top:2rem;padding-top:1.5rem;">
                 <div class="auth-left-stat">
-                    <strong>{{ listing.price|floatformat:0 }}</strong>
+                    <strong>{{ listing.price|floatformat:0|intcomma }}</strong>
                     <span>MAD</span>
                 </div>
                 <div class="auth-left-stat">

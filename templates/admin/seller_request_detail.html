@@ -90,7 +90,7 @@
                     </div>
                     <div class="sr-info-item">
                         <span class="sr-info-label">Prix souhaité</span>
-                        <span class="sr-info-value">{% if seller_request.price %}{{ seller_request.price|floatformat:0 }} MAD{% else %}—{% endif %}</span>
+                        <span class="sr-info-value">{% if seller_request.price %}{{ seller_request.price|floatformat:0|intcomma }} MAD{% else %}—{% endif %}</span>
                     </div>
                 </div>
 

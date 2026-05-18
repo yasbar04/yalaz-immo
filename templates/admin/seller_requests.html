@@ -62,7 +62,7 @@
                             {{ sr.city }}{% if sr.district %}<br><span style="font-size:.78rem;color:var(--text-muted,#888);">{{ sr.district }}</span>{% endif %}
                         </td>
                         <td style="font-size:.88rem;">
-                            {% if sr.price %}{{ sr.price|floatformat:0 }} MAD{% else %}<span style="color:var(--text-muted,#888);">—</span>{% endif %}
+                            {% if sr.price %}{{ sr.price|floatformat:0|intcomma }} MAD{% else %}<span style="color:var(--text-muted,#888);">—</span>{% endif %}
                         </td>
                         <td style="font-size:.85rem;text-align:center;">{{ sr.images.count }}</td>
                         <td style="font-size:.8rem;color:var(--text-muted,#888);">{{ sr.created_at|date:"d M Y H:i" }}</td>

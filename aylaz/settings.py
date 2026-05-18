@@ -69,6 +69,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'cloudinary_storage',
     'django.contrib.staticfiles',
+    'django.contrib.humanize',
     # Third-party
     'cloudinary',
     'rest_framework',
@@ -120,6 +121,9 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+            ],
+            'builtins': [
+                'django.contrib.humanize.templatetags.humanize',
             ],
         },
     },

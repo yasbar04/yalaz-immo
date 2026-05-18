@@ -135,7 +135,7 @@
             <div class="dv2-price-section">
                 <div>
                     <p class="dv2-price-label">Prix {{ listing.get_listing_type_display|lower }}</p>
-                    <p class="dv2-price">{{ listing.price|floatformat:0 }}&thinsp;<span>MAD</span></p>
+                    <p class="dv2-price">{{ listing.price|floatformat:0|intcomma }}&thinsp;<span>MAD</span></p>
                 </div>
                 <div class="dv2-pub-info">
                     <p class="dv2-price-label">Référence</p>
@@ -407,7 +407,7 @@
 <!-- Mobile sticky bar -->
 <div class="dv2-sticky-bar">
     <div>
-        <p class="dv2-sticky-price">{{ listing.price|floatformat:0 }}&thinsp;MAD</p>
+        <p class="dv2-sticky-price">{{ listing.price|floatformat:0|intcomma }}&thinsp;MAD</p>
         <p class="dv2-sticky-loc">{{ listing.city }}{% if listing.district %}, {{ listing.district }}{% endif %}</p>
     </div>
     <a href="#dv2-form-contact" class="btn-hero-prim">Contacter</a>

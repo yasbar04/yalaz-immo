@@ -22,24 +22,24 @@
 
         <div class="summary-card entry-card">
             <p class="summary-label">TOTAL ENTRÉES</p>
-            <p class="summary-amount entry-amount">+ {{ total_entries|floatformat:0 }} DH</p>
+            <p class="summary-amount entry-amount">+ {{ total_entries|floatformat:0|intcomma }} DH</p>
         </div>
 
         <div class="summary-card exit-card">
             <p class="summary-label">TOTAL SORTIES</p>
-            <p class="summary-amount exit-amount">− {{ total_exits|floatformat:0 }} DH</p>
+            <p class="summary-amount exit-amount">− {{ total_exits|floatformat:0|intcomma }} DH</p>
         </div>
 
         <div class="summary-card {% if balance >= 0 %}entry-card{% else %}exit-card{% endif %}">
             <p class="summary-label">SOLDE NET</p>
             <p class="summary-amount {% if balance >= 0 %}entry-amount{% else %}exit-amount{% endif %}">
-                {% if balance >= 0 %}+ {{ balance|floatformat:0 }}{% else %}{{ balance|floatformat:0 }}{% endif %} DH
+                {% if balance >= 0 %}+ {{ balance|floatformat:0|intcomma }}{% else %}{{ balance|floatformat:0|intcomma }}{% endif %} DH
             </p>
         </div>
 
         <div class="summary-card commission-card">
             <p class="summary-label">COMMISSIONS</p>
-            <p class="summary-amount commission-amount">{{ total_commissions|floatformat:0 }} DH</p>
+            <p class="summary-amount commission-amount">{{ total_commissions|floatformat:0|intcomma }} DH</p>
         </div>
 
     </div>
@@ -173,7 +173,7 @@
                         </td>
                         <td class="td" style="text-align: right; white-space: nowrap;">
                             <strong style="font-size: 1rem; color: {% if tx.type == 'entry' %}var(--success){% else %}var(--danger){% endif %};">
-                                {% if tx.type == 'entry' %}+{% else %}−{% endif %} {{ tx.amount|floatformat:0 }} DH
+                                {% if tx.type == 'entry' %}+{% else %}−{% endif %} {{ tx.amount|floatformat:0|intcomma }} DH
                             </strong>
                             {% if tx.payment_source %}
                             <br><span style="font-size: var(--text-xs); color: var(--muted);">{{ tx.get_payment_source_display }}</span>
@@ -181,7 +181,7 @@
                         </td>
                         <td class="td" style="text-align: center; font-size: var(--text-xs);">
                             {% if tx.payment_source == 'both' and tx.owner_amount and tx.client_amount %}
-                            <span title="Proprio: {{ tx.owner_amount|floatformat:0 }} DH | Client: {{ tx.client_amount|floatformat:0 }} DH" style="cursor: help;">🏠/👤</span>
+                            <span title="Proprio: {{ tx.owner_amount|floatformat:0|intcomma }} DH | Client: {{ tx.client_amount|floatformat:0|intcomma }} DH" style="cursor: help;">🏠/👤</span>
                             {% elif tx.payment_source == 'owner' %}
                             <span title="Propriétaire">🏠</span>
                             {% elif tx.payment_source == 'client' %}

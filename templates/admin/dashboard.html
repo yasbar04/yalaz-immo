@@ -255,7 +255,7 @@
                                 <div class="admin-item-meta">
                                     <span>{{ sr.get_property_type_display }}</span>
                                     <span>{{ sr.get_listing_type_display }}</span>
-                                    {% if sr.price %}<span>{{ sr.price|floatformat:0 }} MAD</span>{% endif %}
+                                    {% if sr.price %}<span>{{ sr.price|floatformat:0|intcomma }} MAD</span>{% endif %}
                                     <span>{{ sr.created_at|date:"d M H:i" }}</span>
                                 </div>
                             </div>
@@ -312,7 +312,7 @@
                                 <a href="{% url 'admin_listing_detail' listing.pk %}" class="admin-item-title">{{ listing.title|truncatewords:6 }}</a>
                                 <div class="admin-item-meta">
                                     <span>{{ listing.owner.username }}</span>
-                                    <span>{{ listing.price|floatformat:0 }} MAD</span>
+                                    <span>{{ listing.price|floatformat:0|intcomma }} MAD</span>
                                 </div>
                             </div>
                             {% if listing.status == 'published' %}
