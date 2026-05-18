@@ -133,6 +133,8 @@ function initListingFilters() {
 
         const setPanelState = (isOpen) => {
             panel.hidden = !isOpen;
+            panel.classList.toggle('is-open', isOpen);
+            toggle.classList.toggle('is-open', isOpen);
             toggle.setAttribute('aria-expanded', String(isOpen));
 
             if (toggleIcon) {
