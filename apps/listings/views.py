@@ -358,7 +358,7 @@ def listing_create(request):
     )
 
 
-@admin_only
+@login_required
 def listing_edit(request, pk):
     listing = get_object_or_404(
         Listing.objects.prefetch_related('images'),
@@ -420,7 +420,7 @@ def listing_edit(request, pk):
     )
 
 
-@admin_only
+@login_required
 def listing_delete(request, pk):
     listing = get_object_or_404(Listing, pk=pk)
 
