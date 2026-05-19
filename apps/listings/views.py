@@ -521,15 +521,17 @@ def public_inquiry(request, pk):
     listing = get_object_or_404(Listing, pk=pk, status=Listing.Status.PUBLISHED)
 
     if request.method == 'POST':
-        first_name = request.POST.get('first_name', '').strip()
-        last_name = request.POST.get('last_name', '').strip()
+        full_name = request.POST.get('full_name', '').strip()
+        parts = full_name.split(None, 1)
+        first_name = parts[0] if parts else ''
+        last_name = parts[1] if len(parts) > 1 else ''
         email = request.POST.get('email', '').strip()
         phone = request.POST.get('phone', '').strip()
         message_text = request.POST.get('message', '').strip()
         want_similar = request.POST.get('want_similar') == 'on'
 
-        if not first_name or not last_name or not email or not message_text:
-            messages.error(request, 'Merci de remplir tous les champs obligatoires (prénom, nom, email, message).')
+        if not full_name or not email or not message_text:
+            messages.error(request, 'Merci de remplir tous les champs obligatoires (nom, email, message).')
         else:
             PublicInquiry.objects.create(
                 listing=listing,

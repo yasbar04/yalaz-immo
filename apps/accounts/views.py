@@ -401,8 +401,9 @@ def profile_edit_view(request):
         form = UserProfileForm(request.POST, request.FILES, instance=profile)
         if form.is_valid():
             # Mettre a jour les informations utilisateur
-            request.user.first_name = form.cleaned_data.get('first_name', '')
-            request.user.last_name = form.cleaned_data.get('last_name', '')
+            parts = form.cleaned_data.get('full_name', '').strip().split(None, 1)
+            request.user.first_name = parts[0] if parts else ''
+            request.user.last_name = parts[1] if len(parts) > 1 else ''
             request.user.email = form.cleaned_data.get('email', '')
             request.user.save()
 

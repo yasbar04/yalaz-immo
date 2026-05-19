@@ -26,15 +26,10 @@
             </div>
             <div style="padding:1.75rem;">
                 <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.125rem;">
-                    <div class="filter-prem-field">
-                        {{ form.first_name.label_tag }}
-                        {{ form.first_name }}
-                        {% if form.first_name.errors %}<span class="auth-field-error">{{ form.first_name.errors.0 }}</span>{% endif %}
-                    </div>
-                    <div class="filter-prem-field">
-                        {{ form.last_name.label_tag }}
-                        {{ form.last_name }}
-                        {% if form.last_name.errors %}<span class="auth-field-error">{{ form.last_name.errors.0 }}</span>{% endif %}
+                    <div class="filter-prem-field" style="grid-column:1/-1;">
+                        {{ form.full_name.label_tag }}
+                        {{ form.full_name }}
+                        {% if form.full_name.errors %}<span class="auth-field-error">{{ form.full_name.errors.0 }}</span>{% endif %}
                     </div>
                     <div class="filter-prem-field" style="grid-column:1/-1;">
                         {{ form.email.label_tag }}

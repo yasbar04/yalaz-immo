@@ -337,15 +337,9 @@
                 </div>
                 <form class="dv2-inquiry-form" method="post" action="{% url 'public_inquiry' listing.pk %}">
                     {% csrf_token %}
-                    <div class="dv2-form-row">
-                        <div class="dv2-form-field">
-                            <label for="inq-first">Prénom *</label>
-                            <input type="text" id="inq-first" name="first_name" required placeholder="Votre prénom" autocomplete="given-name">
-                        </div>
-                        <div class="dv2-form-field">
-                            <label for="inq-last">Nom *</label>
-                            <input type="text" id="inq-last" name="last_name" required placeholder="Votre nom" autocomplete="family-name">
-                        </div>
+                    <div class="dv2-form-field">
+                        <label for="inq-name">Nom et Prénom *</label>
+                        <input type="text" id="inq-name" name="full_name" required placeholder="Votre nom et prénom" autocomplete="name">
                     </div>
                     <div class="dv2-form-field">
                         <label for="inq-email">Email *</label>

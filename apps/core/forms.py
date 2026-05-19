@@ -177,18 +177,23 @@ class FinancialTransactionForm(forms.ModelForm):
 
 
 class SellerRequestForm(forms.ModelForm):
+    full_name = forms.CharField(
+        max_length=201,
+        required=True,
+        label='Nom et Prénom',
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Votre nom et prénom'}),
+    )
+
     class Meta:
         model = SellerRequest
         fields = [
-            'first_name', 'last_name', 'email', 'phone',
+            'full_name', 'email', 'phone',
             'listing_type', 'property_type', 'city', 'district',
             'surface', 'rooms', 'bathrooms', 'price', 'description',
             'has_parking', 'has_pool', 'has_garden', 'has_terrace',
             'has_elevator', 'has_security',
         ]
         widgets = {
-            'first_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Votre prénom'}),
-            'last_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Votre nom'}),
             'email': forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'votre@email.com'}),
             'phone': forms.TextInput(attrs={'class': 'form-control', 'placeholder': '+212 6XX XXX XXX'}),
             'listing_type': forms.Select(attrs={'class': 'form-control'}),
@@ -206,8 +211,6 @@ class SellerRequestForm(forms.ModelForm):
             }),
         }
         labels = {
-            'first_name': 'Prénom',
-            'last_name': 'Nom',
             'email': 'Email',
             'phone': 'Téléphone',
             'listing_type': 'Type d\'opération',
@@ -226,3 +229,12 @@ class SellerRequestForm(forms.ModelForm):
             'has_elevator': 'Ascenseur',
             'has_security': 'Sécurité / Gardien',
         }
+
+    def save(self, commit=True):
+        instance = super().save(commit=False)
+        parts = self.cleaned_data['full_name'].strip().split(None, 1)
+        instance.first_name = parts[0]
+        instance.last_name = parts[1] if len(parts) > 1 else ''
+        if commit:
+            instance.save()
+        return instance

@@ -123,15 +123,10 @@
                 </div>
             </div>
             <div class="sell-grid-2">
-                <div class="sf-field">
-                    <label class="sf-label" for="{{ form.first_name.id_for_label }}">{{ form.first_name.label }} <span class="sf-req">*</span></label>
-                    {{ form.first_name }}
-                    {% if form.first_name.errors %}<span class="sf-error">{{ form.first_name.errors.0 }}</span>{% endif %}
-                </div>
-                <div class="sf-field">
-                    <label class="sf-label" for="{{ form.last_name.id_for_label }}">{{ form.last_name.label }} <span class="sf-req">*</span></label>
-                    {{ form.last_name }}
-                    {% if form.last_name.errors %}<span class="sf-error">{{ form.last_name.errors.0 }}</span>{% endif %}
+                <div class="sf-field" style="grid-column:1/-1;">
+                    <label class="sf-label" for="{{ form.full_name.id_for_label }}">{{ form.full_name.label }} <span class="sf-req">*</span></label>
+                    {{ form.full_name }}
+                    {% if form.full_name.errors %}<span class="sf-error">{{ form.full_name.errors.0 }}</span>{% endif %}
                 </div>
                 <div class="sf-field">
                     <label class="sf-label" for="{{ form.email.id_for_label }}">{{ form.email.label }} <span class="sf-req">*</span></label>

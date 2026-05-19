@@ -37,27 +37,15 @@ class LoginForm(AuthenticationForm):
 
 
 class SignUpForm(UserCreationForm):
-    first_name = forms.CharField(
-        max_length=150,
+    full_name = forms.CharField(
+        max_length=301,
         required=True,
-        label='Prenom',
+        label='Nom et Prénom',
         widget=forms.TextInput(
             attrs={
                 'class': 'form-input',
-                'placeholder': 'Votre prenom',
-                'autocomplete': 'given-name',
-            }
-        ),
-    )
-    last_name = forms.CharField(
-        max_length=150,
-        required=True,
-        label='Nom',
-        widget=forms.TextInput(
-            attrs={
-                'class': 'form-input',
-                'placeholder': 'Votre nom',
-                'autocomplete': 'family-name',
+                'placeholder': 'Votre nom et prénom',
+                'autocomplete': 'name',
             }
         ),
     )
@@ -89,8 +77,7 @@ class SignUpForm(UserCreationForm):
         model = User
         fields = (
             'username',
-            'first_name',
-            'last_name',
+            'full_name',
             'email',
             'phone_number',
             'password1',
@@ -157,8 +144,9 @@ class SignUpForm(UserCreationForm):
 
     def save(self, commit=True):
         user = super().save(commit=False)
-        user.first_name = self.cleaned_data['first_name'].strip()
-        user.last_name = self.cleaned_data['last_name'].strip()
+        parts = self.cleaned_data['full_name'].strip().split(None, 1)
+        user.first_name = parts[0]
+        user.last_name = parts[1] if len(parts) > 1 else ''
         user.email = self.cleaned_data['email']
         user.is_active = False
 
@@ -210,25 +198,14 @@ class VerificationRecoveryForm(forms.Form):
 
 
 class UserProfileForm(forms.ModelForm):
-    first_name = forms.CharField(
-        max_length=150,
+    full_name = forms.CharField(
+        max_length=301,
         required=False,
-        label='Prenom',
+        label='Nom et Prénom',
         widget=forms.TextInput(
             attrs={
                 'class': 'form-input',
-                'placeholder': 'Votre prenom',
-            }
-        ),
-    )
-    last_name = forms.CharField(
-        max_length=150,
-        required=False,
-        label='Nom',
-        widget=forms.TextInput(
-            attrs={
-                'class': 'form-input',
-                'placeholder': 'Votre nom',
+                'placeholder': 'Votre nom et prénom',
             }
         ),
     )
@@ -276,6 +253,6 @@ class UserProfileForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         if self.instance and self.instance.user:
-            self.fields['first_name'].initial = self.instance.user.first_name
-            self.fields['last_name'].initial = self.instance.user.last_name
+            full = f"{self.instance.user.first_name} {self.instance.user.last_name}".strip()
+            self.fields['full_name'].initial = full
             self.fields['email'].initial = self.instance.user.email
