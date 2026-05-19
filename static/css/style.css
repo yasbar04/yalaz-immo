@@ -7849,7 +7849,10 @@ tbody tr:hover td { background: var(--gold-mist); }
 }
 
 /* ── Legal Container & Section ── */
-.legal-container { max-width: 860px; }
+.legal-page-wrap { overflow-x: hidden; }
+.legal-layout > * { min-width: 0; }
+.legal-container { max-width: 860px; overflow-x: hidden; }
+.legal-card { overflow-x: hidden; overflow-wrap: break-word; word-break: break-word; }
 .legal-section { margin-bottom: var(--sp-10); }
 .legal-section-header {
     display: flex;
@@ -8123,7 +8126,7 @@ tbody tr:hover td { background: var(--gold-mist); }
     font-family: var(--font-body);
     font-size: var(--text-sm);
     color: var(--text);
-    min-width: 580px;
+    min-width: 500px;
 }
 .legal-table thead tr { background: var(--ink); }
 .legal-table th {
@@ -8266,6 +8269,9 @@ tbody tr:hover td { background: var(--gold-mist); }
 .cookie-banner {
     position: fixed;
     bottom: 0; left: 0; right: 0;
+    width: 100%;
+    max-width: 100vw;
+    box-sizing: border-box;
     z-index: 9999;
     background: var(--ink);
     border-top: 1px solid rgba(201,169,110,.25);
@@ -8285,7 +8291,7 @@ tbody tr:hover td { background: var(--gold-mist); }
     flex-wrap: wrap;
 }
 .cookie-banner-icon { flex-shrink: 0; display: flex; align-items: center; }
-.cookie-banner-text { flex: 1; min-width: 240px; }
+.cookie-banner-text { flex: 1; min-width: 0; }
 .cookie-banner-title {
     font-family: var(--font-heading);
     font-size: var(--text-base);
@@ -8434,7 +8440,9 @@ tbody tr:hover td { background: var(--gold-mist); }
     /* Cookie cards & table */
     .legal-cookie-card { padding: var(--sp-4); }
     .legal-cookie-card-header { flex-wrap: wrap; gap: var(--sp-2); }
-    .legal-table-wrap { margin: 0 calc(-1 * var(--sp-5)); border-radius: 0; }
+    .legal-table { min-width: 380px; }
+    .legal-table th, .legal-table td { padding: var(--sp-2) var(--sp-3); font-size: .75rem; }
+    .legal-table-wrap { border-radius: var(--r-md); }
 
     /* Preference options */
     .legal-pref-option { flex-direction: column; gap: var(--sp-3); }
