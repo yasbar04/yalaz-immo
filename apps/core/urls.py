@@ -5,6 +5,7 @@ from .views import (
     FinancialTransactionListView, FinancialTransactionCreateView,
     FinancialTransactionUpdateView, FinancialTransactionDeleteView,
     FinancialTransactionDetailView,
+    mentions_legales, politique_confidentialite, politique_cookies, cgu,
 )
 from .sitemaps import SitemapView, SitemapListingsView, SitemapIndexView
 from .health import health_check
@@ -28,6 +29,12 @@ urlpatterns = [
     path('finances/transactions/<int:pk>/delete/', FinancialTransactionDeleteView.as_view(), name='financial_transaction_delete'),
     path('api/finances/stats/', financial_stats_api, name='financial_stats_api'),
     
+    # Pages légales
+    path('mentions-legales/', mentions_legales, name='mentions_legales'),
+    path('confidentialite/', politique_confidentialite, name='politique_confidentialite'),
+    path('cookies/', politique_cookies, name='politique_cookies'),
+    path('cgu/', cgu, name='cgu'),
+
     # Sitemaps
     path('sitemap.xml', SitemapView.as_view(), name='sitemap'),
     path('sitemap-listings.xml', SitemapListingsView.as_view(), name='sitemap_listings'),

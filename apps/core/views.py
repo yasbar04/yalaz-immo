@@ -540,3 +540,19 @@ def admin_contact_message_detail(request, message_id):
 
 def csrf_failure(request, reason=''):
     return render(request, '403.html', {'reason': reason}, status=403)
+
+
+def mentions_legales(request):
+    return render(request, 'core/mentions_legales.html')
+
+
+def politique_confidentialite(request):
+    return render(request, 'core/politique_confidentialite.html')
+
+
+def politique_cookies(request):
+    return render(request, 'core/politique_cookies.html')
+
+
+def cgu(request):
+    return render(request, 'core/cgu.html')
