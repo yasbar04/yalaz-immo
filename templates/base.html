@@ -411,13 +411,19 @@
             document.getElementById('cookieBanner').classList.add('is-visible');
         }
     })();
+    function hideBanner(banner){
+        banner.classList.remove('is-visible');
+        banner.addEventListener('transitionend', function(){
+            banner.style.display = 'none';
+        }, { once: true });
+    }
     function cookieAccept(){
         localStorage.setItem('cookieConsent','accepted');
-        document.getElementById('cookieBanner').classList.remove('is-visible');
+        hideBanner(document.getElementById('cookieBanner'));
     }
     function cookieDecline(){
         localStorage.setItem('cookieConsent','declined');
-        document.getElementById('cookieBanner').classList.remove('is-visible');
+        hideBanner(document.getElementById('cookieBanner'));
     }
     </script>
 </body>
