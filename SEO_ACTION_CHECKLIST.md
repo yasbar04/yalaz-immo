@@ -1,11 +1,11 @@
-# ✅ CHECKLIST SEO - ACTION IMMÉDIATE
+﻿# ✅ CHECKLIST SEO - ACTION IMMÉDIATE
 
 ## Phase 1: Déploiement Technique (URGENT - 1-2 jours)
 
 ```
 ☐ 1. Mettre à jour .env en production:
-    ALLOWED_HOSTS=yalazagence.ma,www.yalazagence.ma
-    APP_BASE_URL=https://yalazagence.ma
+    ALLOWED_HOSTS=yalaz-immo.com,www.yalaz-immo.com
+    APP_BASE_URL=https://yalaz-immo.com
     DEBUG=False
     SECURE_SSL_REDIRECT=True
     SECURE_HSTS_SECONDS=31536000
@@ -13,9 +13,9 @@
 ☐ 2. Redémarrer le serveur Django
 
 ☐ 3. Vérifier les URLs fonctionnent:
-    - https://yalazagence.ma/robots.txt ✓
-    - https://yalazagence.ma/sitemap.xml ✓
-    - https://yalazagence.ma/sitemap-listings.xml ✓
+    - https://yalaz-immo.com/robots.txt ✓
+    - https://yalaz-immo.com/sitemap.xml ✓
+    - https://yalaz-immo.com/sitemap-listings.xml ✓
 
 ☐ 4. Activer SSL/HTTPS (Let's Encrypt gratuit)
 
@@ -30,7 +30,7 @@
 ```
 ☐ 1. Créer compte: https://search.google.com/search-console
     
-☐ 2. Ajouter propriété yalazagence.ma
+☐ 2. Ajouter propriété yalaz-immo.com
 
 ☐ 3. Vérifier propriété (choosir: HTML tag ou DNS)
     - Récupérer le code de vérification
@@ -39,8 +39,8 @@
 
 ☐ 4. Soumettre Sitemap:
     Sitemaps > Ajouter
-    → https://yalazagence.ma/sitemap.xml
-    → https://yalazagence.ma/sitemap-listings.xml
+    → https://yalaz-immo.com/sitemap.xml
+    → https://yalaz-immo.com/sitemap-listings.xml
 
 ☐ 5. Checker Règles robots.txt:
     Outils > Testeur de robots.txt
@@ -49,7 +49,7 @@
 
 ☐ 6. Demander une couverture (crawl budget):
     Outils > Inspecter une URL
-    → https://yalazagence.ma/
+    → https://yalaz-immo.com/
 
 ☐ 7. Attendre l'indexation (24-48h)
 ```
@@ -61,13 +61,13 @@
 ```
 ☐ 1. Créer compte: https://www.bing.com/webmasters
 
-☐ 2. Ajouter site yalazagence.ma
+☐ 2. Ajouter site yalaz-immo.com
 
 ☐ 3. Vérifier propriété (recommandé: fichier HTML)
 
 ☐ 4. Soumettre sitemap:
     Sitemaps > Soumettre un sitemap
-    → https://yalazagence.ma/sitemap.xml
+    → https://yalaz-immo.com/sitemap.xml
 
 ☐ 5. Configurer Crawl Settings:
     Site Configuration > Crawl Control
@@ -82,8 +82,8 @@
 ☐ 1. Créer compte: https://analytics.google.com
 
 ☐ 2. Créer Data Stream (Web)
-    → Domain: yalazagence.ma
-    → URLs: https://yalazagence.ma
+    → Domain: yalaz-immo.com
+    → URLs: https://yalaz-immo.com
 
 ☐ 3. Ajouter tracking code (GA4) dans base.html
     <script async src="https://www.googletagmanager.com/..."></script>

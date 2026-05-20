@@ -1,4 +1,4 @@
-import logging
+﻿import logging
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
@@ -545,7 +545,7 @@ def public_inquiry(request, pk):
             try:
                 from django.core.mail import send_mail
                 from django.conf import settings as django_settings
-                agency_email = getattr(django_settings, 'DEFAULT_FROM_EMAIL', 'contact@yalazagence.ma')
+                agency_email = getattr(django_settings, 'DEFAULT_FROM_EMAIL', 'contact@yalaz-immo.com')
                 similar_note = '\n✅ Souhaite recevoir des propositions similaires.' if want_similar else ''
                 send_mail(
                     subject=f'[Yalaz] Nouvelle demande – {listing.title}',

@@ -1,4 +1,4 @@
-import csv
+﻿import csv
 import json
 from datetime import timedelta
 from functools import wraps
@@ -221,10 +221,10 @@ def contact(request):
 
         try:
             subject_display = dict(ContactMessage.SUBJECT_CHOICES).get(subject, 'Autre')
-            admin_email = settings.DEFAULT_FROM_EMAIL or 'admin@yalazagence.ma'
+            admin_email = settings.DEFAULT_FROM_EMAIL or 'admin@yalaz-immo.com'
 
             email_body = f"""
-Nouveau message de contact de YalazAgence:
+Nouveau message de contact de Yalaz:
 
 Nom: {name}
 Email: {email}
@@ -242,7 +242,7 @@ Adresse IP: {ip}
             send_mail(
                 f'Nouveau message de contact - {subject_display}',
                 email_body,
-                settings.DEFAULT_FROM_EMAIL or 'contact@yalazagence.ma',
+                settings.DEFAULT_FROM_EMAIL or 'contact@yalaz-immo.com',
                 [admin_email],
                 fail_silently=True,
             )

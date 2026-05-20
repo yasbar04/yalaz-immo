@@ -1,4 +1,4 @@
-"""
+﻿"""
 Django template context helpers for SEO optimization
 Usage: Call add_seo_context() in views to inject SEO data
 """
@@ -44,13 +44,13 @@ def get_listing_seo_data(listing, request):
     property_type = listing.get_property_type_display()
     listing_type = "à louer" if listing.listing_type == "rent" else "à vendre"
     
-    title = f"{listing.title} - {property_type} {listing_type} | YalazAgence"
+    title = f"{listing.title} - {property_type} {listing_type} | Yalaz"
     
     description = (
         f"{listing.title} - {property_type} {listing_type} à {listing.city}"
         f"{f', {listing.district}' if listing.district else ''} "
         f"- {listing.surface_area}m² - {listing.bedrooms} chambre"
-        f"{'s' if listing.bedrooms > 1 else ''} | YalazAgence Maroc"
+        f"{'s' if listing.bedrooms > 1 else ''} | Yalaz Maroc"
     )
     
     keywords = [
@@ -81,13 +81,13 @@ def get_city_page_seo_data(city, listing_type, request):
     type_label = "à louer" if listing_type == "rent" else "à vendre"
     type_fr = "Location" if listing_type == "rent" else "Vente"
     
-    title = f"{city.title()} - Biens {type_label} | YalazAgence Maroc"
+    title = f"{city.title()} - Biens {type_label} | Yalaz Maroc"
     
     description = (
         f"Trouvez des propriétés {type_label} à {city}. "
         f"Consultez nos annonces immobilières à {city} - "
         f"{type_fr} d'apartements, maisons, villas et terrains. "
-        f"YalazAgence - Agence immobilière de confiance au Maroc."
+        f"Yalaz - Agence immobilière de confiance au Maroc."
     )
     
     keywords = [

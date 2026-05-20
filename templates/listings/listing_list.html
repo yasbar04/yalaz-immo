@@ -1,9 +1,9 @@
-{% extends 'base.html' %}
+﻿{% extends 'base.html' %}
 
-{% block title %}Annonces Immobilières Maroc | Acheter, Vendre, Louer | YalazAgence{% endblock %}
+{% block title %}Annonces Immobilières Maroc | Acheter, Vendre, Louer | Yalaz{% endblock %}
 {% block seo_keywords %}annonces immobilier maroc, acheter bien maroc, louer appartement maroc, vendre propriete maroc, agence immobiliere, listings maroc{% endblock %}
-{% block meta_description %}{{ listings.paginator.count }} annonces immobilières au Maroc. Trouvez des biens à acheter, vendre ou louer avec des filtres avancés sur YalazAgence.{% endblock %}
-{% block og_title %}Annonces Immobilières au Maroc | YalazAgence{% endblock %}
+{% block meta_description %}{{ listings.paginator.count }} annonces immobilières au Maroc. Trouvez des biens à acheter, vendre ou louer avec des filtres avancés sur Yalaz.{% endblock %}
+{% block og_title %}Annonces Immobilières au Maroc | Yalaz{% endblock %}
 {% block og_description %}Explorez {{ listings.paginator.count }} propriétés à acheter, vendre ou louer au Maroc. Filtres par ville, prix, type de bien et bien plus.{% endblock %}
 {% block robots %}index, follow, max-image-preview:large, max-snippet:-1{% endblock %}
 {% block canonical_url %}{{ request.scheme }}://{{ request.get_host }}{% url 'listing_list' %}{% if listings.number > 1 %}?page={{ listings.number }}{% endif %}{% endblock %}

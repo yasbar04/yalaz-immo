@@ -1,4 +1,4 @@
-import os
+﻿import os
 import logging
 from pathlib import Path
 
@@ -205,7 +205,7 @@ EMAIL_USE_TLS = env_bool('EMAIL_USE_TLS', True)
 EMAIL_USE_SSL = env_bool('EMAIL_USE_SSL', False)
 EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER', '')
 EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD', '')
-DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'noreply@yalaz.local')
+DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'noreply@yalaz-immo.com')
 TRANSACTIONAL_FROM_EMAIL = os.getenv('TRANSACTIONAL_FROM_EMAIL', DEFAULT_FROM_EMAIL)
 
 VERIFICATION_CODE_TTL_MINUTES = env_int('VERIFICATION_CODE_TTL_MINUTES', 10)

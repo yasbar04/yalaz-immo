@@ -1,16 +1,16 @@
-{% extends 'base.html' %}
+﻿{% extends 'base.html' %}
 
 {% block seo_keywords %}{{ listing.title }}, {{ listing.get_property_type_display }} à {{ listing.city }} maroc, immobilier maroc{% endblock %}
 
-{% block meta_description %}{{ listing.title }} — {% if listing.listing_type == 'rent' %}À louer{% else %}À vendre{% endif %} à {{ listing.city }}{% if listing.district %}, {{ listing.district }}{% endif %} — {{ listing.surface_area }} m² — {{ listing.bedrooms }} chambre{{ listing.bedrooms|pluralize }} | YalazAgence Maroc{% endblock %}
+{% block meta_description %}{{ listing.title }} — {% if listing.listing_type == 'rent' %}À louer{% else %}À vendre{% endif %} à {{ listing.city }}{% if listing.district %}, {{ listing.district }}{% endif %} — {{ listing.surface_area }} m² — {{ listing.bedrooms }} chambre{{ listing.bedrooms|pluralize }} | Yalaz Maroc{% endblock %}
 
-{% block og_title %}{{ listing.title }} — {{ listing.get_property_type_display }} | YalazAgence{% endblock %}
+{% block og_title %}{{ listing.title }} — {{ listing.get_property_type_display }} | Yalaz{% endblock %}
 {% block og_description %}{{ listing.title|truncatewords:20 }} — {% if listing.listing_type == 'rent' %}À louer{% else %}À vendre{% endif %} à {{ listing.city }}. {{ listing.surface_area }} m², {{ listing.bedrooms }} chambre{{ listing.bedrooms|pluralize }}.{% endblock %}
 {% block og_type %}article{% endblock %}
 {% block og_image %}{{ request.scheme }}://{{ request.get_host }}{{ gallery_images.0.url }}{% endblock %}
 {% block og_image_alt %}{{ listing.title }} — {{ listing.get_property_type_display }} à {{ listing.city }}{% endblock %}
 
-{% block title %}{{ listing.title }} — {% if listing.listing_type == 'rent' %}Location{% else %}Vente{% endif %} {{ listing.get_property_type_display }} {{ listing.city }} | YalazAgence{% endblock %}
+{% block title %}{{ listing.title }} — {% if listing.listing_type == 'rent' %}Location{% else %}Vente{% endif %} {{ listing.get_property_type_display }} {{ listing.city }} | Yalaz{% endblock %}
 
 {% block content %}
 <div class="dv2-shell">
@@ -496,7 +496,7 @@ document.querySelectorAll('a[href="#dv2-form-contact"]').forEach(a => {
     "numberOfRooms": {{ listing.bedrooms }},
     "floorSize": { "@type": "QuantitativeValue", "value": "{{ listing.surface_area }}", "unitCode": "MTK" },
     "offers": { "@type": "Offer", "priceCurrency": "MAD", "price": "{{ listing.price }}", "availability": "https://schema.org/InStock" },
-    "agent": { "@type": "RealEstateAgent", "name": "YalazAgence", "telephone": "{{ listing.owner_phone }}", "email": "{{ listing.owner_email }}" }
+    "agent": { "@type": "RealEstateAgent", "name": "Yalaz", "telephone": "{{ listing.owner_phone }}", "email": "{{ listing.owner_email }}" }
 }
 </script>
 <script type="application/ld+json">

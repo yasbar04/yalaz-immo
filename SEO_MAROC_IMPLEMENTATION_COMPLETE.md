@@ -1,4 +1,4 @@
-# 🚀 SEO MAROC - RÉSUMÉ DES OPTIMISATIONS COMPLÈTES
+﻿# 🚀 SEO MAROC - RÉSUMÉ DES OPTIMISATIONS COMPLÈTES
 
 ## 📊 SCORE SEO AVANT vs APRÈS
 
@@ -60,12 +60,12 @@
 ### 4. **Meta Tags Optimisés pour Maroc** 🔑
 ```html
 <!-- Home Page -->
-Title: "YalazAgence | Meilleure Agence Immobilière Online au Maroc..."
+Title: "Yalaz | Meilleure Agence Immobilière Online au Maroc..."
 Keywords: "immobilier maroc, acheter bien maroc, louer maroc..."
 Description: "Plateforme #1 au Maroc pour acheter/vendre/louer..."
 
 <!-- Listings -->
-Title: "Villa 3 chambres à louer Casablanca | YalazAgence"
+Title: "Villa 3 chambres à louer Casablanca | Yalaz"
 Description: "Villa 3ch à louer à Casablanca - 200m² - Prix: 8000 DH"
 ```
 **Fichiers modifiés:**
@@ -94,7 +94,7 @@ Description: "Villa 3ch à louer à Casablanca - 200m² - Prix: 8000 DH"
 
 ### 6. **Canonical URLs + hreflang** 🔗
 ```html
-<link rel="canonical" href="https://yalazagence.ma/listings/123/">
+<link rel="canonical" href="https://yalaz-immo.com/listings/123/">
 <link rel="alternate" hreflang="fr-MA" href="...">
 ```
 
@@ -108,7 +108,7 @@ User-agent: Googlebot → Crawl-delay: 0
 User-agent: Bingbot → Crawl-delay: 1
 Disallow: /admin, /api (pas d'indexation)
 Disallow: AhrefsBot, SemrushBot (bots spam)
-Sitemap: https://yalazagence.ma/sitemap.xml
+Sitemap: https://yalaz-immo.com/sitemap.xml
 ```
 
 **Impact:** Google crawle efficacement, les bots spam sont bloqués
@@ -178,8 +178,8 @@ get_city_page_seo_data()    # Data optimisée par ville
 ### 1. Configuration Production (URGENT)
 ```env
 # .env - À mettre à jour:
-ALLOWED_HOSTS=yalazagence.ma,www.yalazagence.ma
-APP_BASE_URL=https://yalazagence.ma
+ALLOWED_HOSTS=yalaz-immo.com,www.yalaz-immo.com
+APP_BASE_URL=https://yalaz-immo.com
 DEBUG=False
 SECURE_SSL_REDIRECT=True
 SECURE_HSTS_SECONDS=31536000
@@ -187,7 +187,7 @@ SECURE_HSTS_SECONDS=31536000
 
 ### 2. Google Search Console (URGENT)
 ```
-1. Vérifier domaine yalazagence.ma
+1. Vérifier domaine yalaz-immo.com
 2. Soumettre /robots.txt
 3. Soumettre /sitemap.xml
 4. Attendre indexation (24-48h)
@@ -366,15 +366,15 @@ git commit -m "SEO: Add geo-targeting, sitemaps, structured data for Morocco"
 git push
 
 ### 2. Update .env
-ALLOWED_HOSTS=yalazagence.ma,www.yalazagence.ma
-APP_BASE_URL=https://yalazagence.ma
+ALLOWED_HOSTS=yalaz-immo.com,www.yalaz-immo.com
+APP_BASE_URL=https://yalaz-immo.com
 
 ### 3. Runserver
 python manage.py runserver
 
 ### 4. Tester sitemaps
-curl https://yalazagence.ma/sitemap.xml
-curl https://yalazagence.ma/robots.txt
+curl https://yalaz-immo.com/sitemap.xml
+curl https://yalaz-immo.com/robots.txt
 
 ### 5. Google Search Console
 1. Vérifier site

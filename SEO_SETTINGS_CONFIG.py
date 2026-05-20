@@ -1,4 +1,4 @@
-"""
+﻿"""
 SEO Configuration Settings for Django
 Add these settings to your settings.py or .env
 """
@@ -6,7 +6,7 @@ Add these settings to your settings.py or .env
 # ===== SEO Configuration =====
 
 # 1. ALLOWED_HOSTS (update with your domain)
-# ALLOWED_HOSTS = ['yalazagence.ma', 'www.yalazagence.ma', 'localhost', '127.0.0.1']
+# ALLOWED_HOSTS = ['yalaz-immo.com', 'www.yalaz-immo.com', 'localhost', '127.0.0.1']
 
 # 2. Security Settings (Production)
 # SECURE_SSL_REDIRECT = True
@@ -18,7 +18,7 @@ Add these settings to your settings.py or .env
 
 # 3. Site Configuration
 SITE_ID = 1
-SITE_NAME = 'YalazAgence'
+SITE_NAME = 'Yalaz'
 
 # 4. Sitemap Configuration
 SITEMAPS = {
@@ -29,12 +29,12 @@ SITEMAPS = {
 
 # 5. SEO Meta Tags Defaults
 SEO_DEFAULTS = {
-    'description': 'YalazAgence - Agence immobilière professionnelle au Maroc. Acheter, vendre, louer ou estimer votre bien avec nos experts.',
+    'description': 'Yalaz - Agence immobilière professionnelle au Maroc. Acheter, vendre, louer ou estimer votre bien avec nos experts.',
     'keywords': 'immobilier maroc, acheter bien maroc, louer maroc, vendre propriete maroc, agence immobiliere',
-    'author': 'YalazAgence',
+    'author': 'Yalaz',
     'robots': 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1',
-    'og_image': 'https://yalazagence.ma/static/og-image.png',  # Update with your OG image
-    'twitter_handle': '@yalazagence',  # Your Twitter handle
+    'og_image': 'https://yalaz-immo.com/static/og-image.png',  # Update with your OG image
+    'twitter_handle': '@yalaz',  # Your Twitter handle
 }
 
 # 6. Geo-targeting for Maroc
@@ -50,7 +50,7 @@ GEO_CONFIG = {
 CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
-        'LOCATION': 'yalazagence-cache',
+        'LOCATION': 'yalaz-immo-cache',
     }
 }
 

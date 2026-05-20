@@ -1,4 +1,4 @@
-# 🇲🇦 SEO CONFIGURATION - YalazAgence Maroc
+﻿# 🇲🇦 SEO CONFIGURATION - Yalaz Maroc
 
 ## Environment Configuration pour Production
 
@@ -6,9 +6,9 @@ Pour activer tous les SEO benefits, créez/mettez à jour votre `.env` :
 
 ```env
 # Domaine production
-ALLOWED_HOSTS=yalazagence.ma,www.yalazagence.ma
-CSRF_TRUSTED_ORIGINS=https://yalazagence.ma,https://www.yalazagence.ma
-APP_BASE_URL=https://yalazagence.ma
+ALLOWED_HOSTS=yalaz-immo.com,www.yalaz-immo.com
+CSRF_TRUSTED_ORIGINS=https://yalaz-immo.com,https://www.yalaz-immo.com
+APP_BASE_URL=https://yalaz-immo.com
 
 # SSL/Security (production)
 DEBUG=False
@@ -94,9 +94,9 @@ Recommandation (future):
 
 ## Checklist Google Search Console ✓
 
-1. **Vérifier domaine** → Ajouter yalazagence.ma à GSC
-2. **Soumettre sitemap** → https://yalazagence.ma/sitemap.xml
-3. **Vérifier robots.txt** → https://yalazagence.ma/robots.txt
+1. **Vérifier domaine** → Ajouter yalaz-immo.com à GSC
+2. **Soumettre sitemap** → https://yalaz-immo.com/sitemap.xml
+3. **Vérifier robots.txt** → https://yalaz-immo.com/robots.txt
 4. **Tester Rich Results** → https://search.google.com/test/rich-results
 5. **Vérifier Mobile Friendly** → https://search.google.com/test/mobile-friendly
 
