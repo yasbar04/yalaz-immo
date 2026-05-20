@@ -382,7 +382,7 @@
     {% block extra_scripts %}{% endblock %}
 
     <!-- Cookie Banner -->
-    <div class="cookie-banner" id="cookieBanner" aria-live="polite" role="dialog" aria-label="Consentement cookies">
+    <div class="cookie-banner" id="cookieBanner" style="display:none" aria-live="polite" role="dialog" aria-label="Consentement cookies">
         <div class="cookie-banner-inner">
             <div class="cookie-banner-icon">
                 <svg width="32" height="32" viewBox="0 0 32 32" fill="none" aria-hidden="true">
@@ -408,7 +408,11 @@
     <script>
     (function(){
         if(!localStorage.getItem('cookieConsent')){
-            document.getElementById('cookieBanner').classList.add('is-visible');
+            var b = document.getElementById('cookieBanner');
+            b.style.display = 'block';
+            requestAnimationFrame(function(){
+                requestAnimationFrame(function(){ b.classList.add('is-visible'); });
+            });
         }
     })();
     function hideBanner(banner){
