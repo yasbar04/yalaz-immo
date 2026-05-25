@@ -8,14 +8,15 @@ from django.db.models import Count, Sum
 from django.db.models.functions import TruncDay, TruncMonth
 from django.shortcuts import render
 from django.utils import timezone
+from django.utils.timezone import localtime
 
 from apps.listings.models import Favorite, Listing, PublicInquiry
 
 User = get_user_model()
 
 PERIOD_CONFIG = {
-    '24h': {'days': 1,   'label': '24 dernières heures', 'trunc': 'day',   'n_bars': 1},
-    '48h': {'days': 2,   'label': '48 dernières heures', 'trunc': 'day',   'n_bars': 2},
+    '24h': {'days': 1,   'label': '24 dernières heures', 'trunc': 'day',   'n_bars': 2},
+    '48h': {'days': 2,   'label': '48 dernières heures', 'trunc': 'day',   'n_bars': 3},
     '7d':  {'days': 7,   'label': '7 derniers jours',    'trunc': 'day',   'n_bars': 7},
     '30d': {'days': 30,  'label': '30 derniers jours',   'trunc': 'day',   'n_bars': 30},
     '6m':  {'days': 182, 'label': '6 derniers mois',     'trunc': 'month', 'n_bars': 6},
@@ -43,10 +44,12 @@ def superuser_required(view_func):
 
 
 def _build_bars(trunc, n_bars, now, since):
+    local_now = localtime(now)
+
     if trunc == 'day':
         bars = []
         for i in range(n_bars - 1, -1, -1):
-            d = (now - timedelta(days=i)).date()
+            d = (local_now - timedelta(days=i)).date()
             bars.append({'key': d, 'label': d.strftime('%d/%m'), 'listings': 0, 'inquiries': 0})
 
         rows_l = (
@@ -60,19 +63,20 @@ def _build_bars(trunc, n_bars, now, since):
             .values('day').annotate(count=Count('id')).order_by('day')
         )
         for row in rows_l:
-            rd = row['day'].date()
+            rd = localtime(row['day']).date()
             for b in bars:
                 if b['key'] == rd:
                     b['listings'] = row['count']
         for row in rows_i:
-            rd = row['day'].date()
+            rd = localtime(row['day']).date()
             for b in bars:
                 if b['key'] == rd:
                     b['inquiries'] = row['count']
     else:
+        local_first = local_now.replace(day=1)
         bars = []
         for i in range(n_bars - 1, -1, -1):
-            d = (now.replace(day=1) - timedelta(days=i * 30)).replace(day=1)
+            d = (local_first - timedelta(days=i * 30)).replace(day=1)
             bars.append({'key': d, 'label': d.strftime('%b'), 'listings': 0, 'inquiries': 0})
 
         rows_l = (
@@ -86,12 +90,14 @@ def _build_bars(trunc, n_bars, now, since):
             .values('month').annotate(count=Count('id')).order_by('month')
         )
         for row in rows_l:
+            lm = localtime(row['month'])
             for b in bars:
-                if b['key'].year == row['month'].year and b['key'].month == row['month'].month:
+                if b['key'].year == lm.year and b['key'].month == lm.month:
                     b['listings'] = row['count']
         for row in rows_i:
+            lm = localtime(row['month'])
             for b in bars:
-                if b['key'].year == row['month'].year and b['key'].month == row['month'].month:
+                if b['key'].year == lm.year and b['key'].month == lm.month:
                     b['inquiries'] = row['count']
 
     return bars
