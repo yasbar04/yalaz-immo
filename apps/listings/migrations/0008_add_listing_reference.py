@@ -3,6 +3,49 @@
 from django.db import migrations, models
 
 
+_CITY_CODES = {
+    'Agadir': 'AGD', 'Al Hoceima': 'AHO', 'Azilal': 'AZL',
+    'Béni Mellal': 'BML', 'Beni Mellal': 'BML', 'Berkane': 'BRK',
+    'Berrechid': 'BRC', 'Bouskoura': 'BSK', 'Casablanca': 'CAS',
+    'Chefchaouen': 'CHF', 'Dakhla': 'DKH', 'El Jadida': 'EJD',
+    'Errachidia': 'ERR', 'Essaouira': 'ESS', 'Fès': 'FES', 'Fes': 'FES',
+    'Guelmim': 'GLM', 'Ifrane': 'IFR', 'Kénitra': 'KNT', 'Kenitra': 'KNT',
+    'Khémisset': 'KMS', 'Khemisset': 'KMS', 'Khouribga': 'KHR',
+    'Laâyoune': 'LYN', 'Laayoune': 'LYN', 'Larache': 'LAR',
+    'Marrakech': 'MRK', 'Meknès': 'MKN', 'Meknes': 'MKN',
+    'Mohammedia': 'MOH', 'Nador': 'NAD', 'Ouarzazate': 'OUA',
+    'Oujda': 'OJD', 'Rabat': 'RBT', 'Safi': 'SAF', 'Salé': 'SAL',
+    'Sale': 'SAL', 'Settat': 'SET', 'Sidi Ifni': 'SIF', 'Skhirat': 'SKH',
+    'Tanger': 'TNG', 'Taroudant': 'TRD', 'Tétouan': 'TET', 'Tetouan': 'TET',
+    'Tiznit': 'TZN', 'Zagora': 'ZAG', 'Taza': 'TAZ', 'Tan-Tan': 'TNT',
+    'Oued Zem': 'OZM', 'Fquih Ben Salah': 'FBS', 'Sidi Kacem': 'SKC',
+    'Sidi Slimane': 'SSL', 'Souk El Arbaa': 'SEA', 'Temara': 'TMR',
+}
+
+_PROPERTY_CODES = {
+    'apartment': 'APT', 'house': 'MAI', 'villa': 'VIL',
+    'land': 'TER', 'office': 'BUR', 'commercial': 'COM',
+}
+
+
+def _city_code(city):
+    code = _CITY_CODES.get(city.strip())
+    if code:
+        return code
+    clean = ''.join(c for c in city.upper() if c.isalpha())
+    return clean[:3] if len(clean) >= 3 else clean.ljust(3, 'X')
+
+
+def backfill_references(apps, schema_editor):
+    Listing = apps.get_model('listings', 'Listing')
+    for listing in Listing.objects.filter(reference='').order_by('pk'):
+        city = _city_code(listing.city or 'YAL')
+        prop = _PROPERTY_CODES.get(listing.property_type, (listing.property_type or 'BIE')[:3].upper())
+        kind = 'V' if listing.listing_type == 'sale' else 'L'
+        listing.reference = f"{city}-{prop}-{kind}-{listing.pk:04d}"
+        listing.save(update_fields=['reference'])
+
+
 class Migration(migrations.Migration):
 
     dependencies = [
@@ -10,9 +53,21 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
+        # 1 — Ajouter le champ sans contrainte unique
         migrations.AddField(
             model_name='listing',
             name='reference',
-            field=models.CharField(blank=True, db_index=True, help_text='Référence unique (ex : CAS-APT-V-0042)', max_length=20, unique=True),
+            field=models.CharField(blank=True, max_length=20, default='',
+                                   help_text='Référence unique (ex : CAS-APT-V-0042)'),
+            preserve_default=False,
+        ),
+        # 2 — Remplir les références pour toutes les lignes existantes
+        migrations.RunPython(backfill_references, migrations.RunPython.noop),
+        # 3 — Ajouter la contrainte unique + l'index maintenant que les valeurs sont uniques
+        migrations.AlterField(
+            model_name='listing',
+            name='reference',
+            field=models.CharField(blank=True, db_index=True, unique=True, max_length=20,
+                                   help_text='Référence unique (ex : CAS-APT-V-0042)'),
         ),
     ]
