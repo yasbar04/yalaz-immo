@@ -1412,6 +1412,15 @@ h5, h6 { font-family: var(--font-heading); font-weight: 600; color: var(--ink); 
 .spec-item strong { display: block; font-size: var(--text-lg); color: var(--ink); }
 .spec-item small  { display: block; font-size: var(--text-xs); color: var(--light-text); }
 
+.listing-ref {
+    font-size: .7rem;
+    font-weight: 600;
+    color: var(--muted);
+    letter-spacing: .05em;
+    margin: var(--sp-3) 0 0;
+    opacity: .7;
+}
+
 /* Card footer */
 .listing-card-footer,
 .listing-footer {

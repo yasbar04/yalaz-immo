@@ -10,15 +10,15 @@ class ListingImageInline(admin.TabularInline):
 
 @admin.register(Listing)
 class ListingAdmin(admin.ModelAdmin):
-    list_display = ('title', 'city', 'listing_type', 'price', 'status', 'owner', 'views_count', 'created_at')
+    list_display = ('reference', 'title', 'city', 'listing_type', 'price', 'status', 'owner', 'views_count', 'created_at')
     list_filter = ('status', 'listing_type', 'property_type', 'city', 'created_at')
-    search_fields = ('title', 'city', 'district', 'description')
+    search_fields = ('reference', 'title', 'city', 'district', 'description')
     list_editable = ('status',)
-    readonly_fields = ('created_at', 'updated_at', 'views_count')
+    readonly_fields = ('reference', 'created_at', 'updated_at', 'views_count')
     inlines = [ListingImageInline]
     fieldsets = (
         ('Informations générales', {
-            'fields': ('title', 'description', 'owner', 'image')
+            'fields': ('reference', 'title', 'description', 'owner', 'image')
         }),
         ('Détails du bien', {
             'fields': ('property_type', 'listing_type', 'price', 'surface_area', 'bedrooms', 'bathrooms')

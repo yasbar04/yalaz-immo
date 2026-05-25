@@ -104,7 +104,7 @@
             <div class="dv2-gallery-foot">
                 <p class="dv2-gallery-title">{{ listing.title }}</p>
                 <div class="dv2-gallery-meta">
-                    <span>Réf.&nbsp;#{{ listing.pk }}</span>
+                    <span>Réf.&nbsp;{{ listing.reference|default:listing.pk }}</span>
                     <span>{{ listing.created_at|date:"d/m/Y" }}</span>
                 </div>
             </div>
@@ -139,7 +139,7 @@
                 </div>
                 <div class="dv2-pub-info">
                     <p class="dv2-price-label">Référence</p>
-                    <p class="dv2-pub-val">#{{ listing.pk }}</p>
+                    <p class="dv2-pub-val">{{ listing.reference|default:listing.pk }}</p>
                 </div>
             </div>
 

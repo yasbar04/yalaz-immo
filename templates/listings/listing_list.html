@@ -222,6 +222,7 @@
                                 <div class="spec-item"><strong>{{ listing.bedrooms }}</strong><small>ch.</small></div>
                                 <div class="spec-item"><strong>{{ listing.bathrooms }}</strong><small>sdb</small></div>
                             </div>
+                            <p class="listing-ref">Réf. {{ listing.reference|default:listing.pk }}</p>
                         </div>
                     </a>
                 </article>

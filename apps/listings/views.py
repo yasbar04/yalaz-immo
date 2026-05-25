@@ -115,6 +115,7 @@ def listing_list(request):
             | Q(description__icontains=search)
             | Q(city__icontains=search)
             | Q(district__icontains=search)
+            | Q(reference__icontains=search)
         )
 
     sort = request.GET.get('sort', '-created_at')
