@@ -70,6 +70,8 @@ class Listing(models.Model):
         max_digits=12,
         decimal_places=2,
         validators=[MinValueValidator(0)],
+        null=True,
+        blank=True,
     )
     surface_area = models.PositiveIntegerField(help_text='Surface en m2')
     bedrooms = models.PositiveIntegerField(default=0)

@@ -106,7 +106,7 @@ class ListingForm(forms.ModelForm):
             'image': forms.FileInput(
                 attrs={'class': 'form-input', 'accept': 'image/*'}
             ),
-            'price': forms.NumberInput(attrs={'placeholder': 'Ex: 1250000', 'min': '0'}),
+            'price': forms.NumberInput(attrs={'placeholder': 'Laisser vide → "Contactez-nous"', 'min': '0'}),
             'surface_area': forms.NumberInput(
                 attrs={'placeholder': 'Ex: 120', 'min': '0'}
             ),

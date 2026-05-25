@@ -318,7 +318,7 @@
                                 <a href="{% url 'admin_listing_detail' listing.pk %}" class="admin-item-title">{{ listing.title|truncatewords:6 }}</a>
                                 <div class="admin-item-meta">
                                     <span>{{ listing.owner.username }}</span>
-                                    <span>{{ listing.price|floatformat:0|intcomma }} MAD</span>
+                                    <span>{% if listing.price %}{{ listing.price|floatformat:0|intcomma }} MAD{% else %}Sur demande{% endif %}</span>
                                 </div>
                             </div>
                             {% if listing.status == 'published' %}

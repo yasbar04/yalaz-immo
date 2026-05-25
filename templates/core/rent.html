@@ -125,7 +125,7 @@
                                 <span>{{ listing.city }}</span>{% if listing.district %}<span>•</span><span>{{ listing.district }}</span>{% endif %}
                             </div>
                             <div class="listing-price-row">
-                                <strong class="listing-price">{{ listing.price|floatformat:0|intcomma }} MAD</strong>
+                                {% if listing.price %}<strong class="listing-price">{{ listing.price|floatformat:0|intcomma }} MAD</strong>{% else %}<strong class="listing-price listing-price--contact">Contactez Yalaz</strong>{% endif %}
                             </div>
                             <div class="listing-specs">
                                 <div class="spec-item"><strong>{{ listing.surface_area }}</strong><small>m²</small></div>

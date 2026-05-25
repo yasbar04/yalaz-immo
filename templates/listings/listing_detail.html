@@ -135,7 +135,11 @@
             <div class="dv2-price-section">
                 <div>
                     <p class="dv2-price-label">Prix {{ listing.get_listing_type_display|lower }}</p>
+                    {% if listing.price %}
                     <p class="dv2-price">{{ listing.price|floatformat:0|intcomma }}&thinsp;<span>MAD</span></p>
+                    {% else %}
+                    <p class="dv2-price dv2-price--contact">Contactez Yalaz<br><span>pour en savoir plus</span></p>
+                    {% endif %}
                 </div>
                 <div class="dv2-pub-info">
                     <p class="dv2-price-label">Référence</p>
@@ -401,7 +405,7 @@
 <!-- Mobile sticky bar -->
 <div class="dv2-sticky-bar">
     <div>
-        <p class="dv2-sticky-price">{{ listing.price|floatformat:0|intcomma }}&thinsp;MAD</p>
+        {% if listing.price %}<p class="dv2-sticky-price">{{ listing.price|floatformat:0|intcomma }}&thinsp;MAD</p>{% else %}<p class="dv2-sticky-price dv2-sticky-price--contact">Contactez Yalaz</p>{% endif %}
         <p class="dv2-sticky-loc">{{ listing.city }}{% if listing.district %}, {{ listing.district }}{% endif %}</p>
     </div>
     <a href="#dv2-form-contact" class="btn-hero-prim">Contacter</a>
@@ -491,11 +495,11 @@ document.querySelectorAll('a[href="#dv2-form-contact"]').forEach(a => {
     "url": "{{ request.build_absolute_uri }}",
     "image": "{% if gallery_images %}{{ gallery_images.0.url }}{% endif %}",
     "address": { "@type": "PostalAddress", "addressCountry": "MA", "addressRegion": "{{ listing.city }}", "addressLocality": "{{ listing.district }}" },
-    "priceRange": "{{ listing.price }}",
+    "priceRange": "{% if listing.price %}{{ listing.price }} MAD{% else %}Sur demande{% endif %}",
     "priceCurrency": "MAD",
     "numberOfRooms": {{ listing.bedrooms }},
     "floorSize": { "@type": "QuantitativeValue", "value": "{{ listing.surface_area }}", "unitCode": "MTK" },
-    "offers": { "@type": "Offer", "priceCurrency": "MAD", "price": "{{ listing.price }}", "availability": "https://schema.org/InStock" },
+    {% if listing.price %}"offers": { "@type": "Offer", "priceCurrency": "MAD", "price": "{{ listing.price }}", "availability": "https://schema.org/InStock" },{% endif %}
     "agent": { "@type": "RealEstateAgent", "name": "Yalaz", "telephone": "{{ listing.owner_phone }}", "email": "{{ listing.owner_email }}" }
 }
 </script>

@@ -85,7 +85,7 @@
                                     </div>
                                     <h4><a href="{{ listing.get_absolute_url }}">{{ listing.title }}</a></h4>
                                     <div class="profile-activity-meta">
-                                        <span>{{ listing.price|floatformat:0|intcomma }} MAD</span>
+                                        <span>{% if listing.price %}{{ listing.price|floatformat:0|intcomma }} MAD{% else %}Sur demande{% endif %}</span>
                                         <span>{{ listing.surface_area }} m²</span>
                                         <span>{{ listing.views_count }} vue{{ listing.views_count|pluralize }}</span>
                                     </div>
@@ -126,7 +126,7 @@
                                         </div>
                                         <h4><a href="{% url 'listing_detail' listing.pk %}">{{ listing.title }}</a></h4>
                                         <div class="profile-activity-meta">
-                                            <span>{{ listing.price|floatformat:0|intcomma }} MAD</span>
+                                            <span>{% if listing.price %}{{ listing.price|floatformat:0|intcomma }} MAD{% else %}Sur demande{% endif %}</span>
                                             <span>{{ listing.surface_area }} m²</span>
                                         </div>
                                     </div>

@@ -107,7 +107,7 @@
                         <div class="admin-item-body">
                             <a href="{% url 'admin_listing_detail' listing.pk %}" class="admin-item-title">{{ listing.title|truncatewords:8 }}</a>
                             <div class="admin-item-meta">
-                                <span>{{ listing.price|floatformat:0|intcomma }} MAD</span>
+                                <span>{% if listing.price %}{{ listing.price|floatformat:0|intcomma }} MAD{% else %}Sur demande{% endif %}</span>
                                 <span>{{ listing.city }}</span>
                                 <span>{{ listing.views_count }} vues</span>
                             </div>

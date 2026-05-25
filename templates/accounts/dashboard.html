@@ -74,7 +74,7 @@
                             <span>{{ listing.views_count }} vues</span>
                             <span>{{ listing.contacts.count }} contact{{ listing.contacts.count|pluralize }}</span>
                         </div>
-                        <strong class="dash-listing-price">{{ listing.price|floatformat:0|intcomma }} MAD</strong>
+                        <strong class="dash-listing-price">{% if listing.price %}{{ listing.price|floatformat:0|intcomma }} MAD{% else %}Sur demande{% endif %}</strong>
                     </div>
                     <div class="dash-listing-actions">
                         <a href="{{ listing.get_absolute_url }}" class="dash-action-btn-view" title="Voir">

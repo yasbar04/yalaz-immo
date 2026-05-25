@@ -50,7 +50,7 @@
                         <tr>
                             <td><strong>{{ listing.title|truncatewords:6 }}</strong></td>
                             <td>{{ listing.owner.username }}</td>
-                            <td class="td-gold">{{ listing.price|floatformat:0|intcomma }} MAD</td>
+                            <td class="td-gold">{% if listing.price %}{{ listing.price|floatformat:0|intcomma }} MAD{% else %}Sur demande{% endif %}</td>
                             <td>{{ listing.city }}</td>
                             <td>
                                 {% if listing.status == 'published' %}

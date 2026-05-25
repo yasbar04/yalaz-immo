@@ -6383,6 +6383,10 @@ tbody tr:hover td { background: var(--gold-mist); }
     font-family: var(--font-heading); font-size: 1.1rem;
     color: var(--gold-dark); font-weight: 700;
 }
+.listing-price--contact {
+    font-size: .82rem; font-weight: 600;
+    color: var(--muted); letter-spacing: .01em;
+}
 .listing-price-row {
     padding: .375rem 0;
     border-top: 1px solid var(--border-light);
@@ -7141,6 +7145,9 @@ tbody tr:hover td { background: var(--gold-mist); }
     color: var(--ink); font-weight: 700; line-height: 1;
 }
 .dv2-price span { font-size: .6em; font-weight: 600; color: var(--muted); }
+.dv2-price--contact { font-size: 1.1rem; color: var(--gold-dark); line-height: 1.3; }
+.dv2-price--contact span { font-size: .75em; color: var(--muted); font-weight: 500; }
+.dv2-sticky-price--contact { font-size: .82rem; font-weight: 600; color: var(--gold-dark); }
 .dv2-pub-info { text-align: right; }
 .dv2-pub-val { font-size: .875rem; font-weight: 600; color: var(--ink); }
 
