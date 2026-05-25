@@ -5,7 +5,7 @@ from .views import (
     FinancialTransactionListView, FinancialTransactionCreateView,
     FinancialTransactionUpdateView, FinancialTransactionDeleteView,
     FinancialTransactionDetailView,
-    analytics_dashboard,
+    mentions_legales, politique_confidentialite, politique_cookies, cgu,
 )
 from .sitemaps import SitemapView, SitemapListingsView, SitemapIndexView
 from .health import health_check
@@ -20,16 +20,21 @@ urlpatterns = [
     path('contact/', contact, name='contact'),
     path('health/', health_check, name='health_check'),
     
-    # Transactions financières
-    path('admin/finances/', financial_dashboard, name='financial_dashboard'),
-    path('admin/finances/transactions/', FinancialTransactionListView.as_view(), name='financial_transactions_list'),
-    path('admin/finances/transactions/new/', FinancialTransactionCreateView.as_view(), name='financial_transaction_create'),
-    path('admin/finances/transactions/<int:pk>/', FinancialTransactionDetailView.as_view(), name='financial_transaction_detail'),
-    path('admin/finances/transactions/<int:pk>/edit/', FinancialTransactionUpdateView.as_view(), name='financial_transaction_update'),
-    path('admin/finances/transactions/<int:pk>/delete/', FinancialTransactionDeleteView.as_view(), name='financial_transaction_delete'),
+    # Transactions financières (staff uniquement)
+    path('finances/', financial_dashboard, name='financial_dashboard'),
+    path('finances/transactions/', FinancialTransactionListView.as_view(), name='financial_transactions_list'),
+    path('finances/transactions/new/', FinancialTransactionCreateView.as_view(), name='financial_transaction_create'),
+    path('finances/transactions/<int:pk>/', FinancialTransactionDetailView.as_view(), name='financial_transaction_detail'),
+    path('finances/transactions/<int:pk>/edit/', FinancialTransactionUpdateView.as_view(), name='financial_transaction_update'),
+    path('finances/transactions/<int:pk>/delete/', FinancialTransactionDeleteView.as_view(), name='financial_transaction_delete'),
     path('api/finances/stats/', financial_stats_api, name='financial_stats_api'),
-    path('admin/analytics/', analytics_dashboard, name='analytics_dashboard'),
     
+    # Pages légales
+    path('mentions-legales/', mentions_legales, name='mentions_legales'),
+    path('confidentialite/', politique_confidentialite, name='politique_confidentialite'),
+    path('cookies/', politique_cookies, name='politique_cookies'),
+    path('cgu/', cgu, name='cgu'),
+
     # Sitemaps
     path('sitemap.xml', SitemapView.as_view(), name='sitemap'),
     path('sitemap-listings.xml', SitemapListingsView.as_view(), name='sitemap_listings'),
