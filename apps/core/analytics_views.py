@@ -14,13 +14,17 @@ from apps.listings.models import Favorite, Listing, PublicInquiry
 User = get_user_model()
 
 PERIOD_CONFIG = {
-    '7d':  {'days': 7,   'label': '7 derniers jours',  'trunc': 'day',   'n_bars': 7},
-    '30d': {'days': 30,  'label': '30 derniers jours', 'trunc': 'day',   'n_bars': 30},
-    '6m':  {'days': 182, 'label': '6 derniers mois',   'trunc': 'month', 'n_bars': 6},
-    '1y':  {'days': 365, 'label': '12 derniers mois',  'trunc': 'month', 'n_bars': 12},
+    '24h': {'days': 1,   'label': '24 dernières heures', 'trunc': 'day',   'n_bars': 1},
+    '48h': {'days': 2,   'label': '48 dernières heures', 'trunc': 'day',   'n_bars': 2},
+    '7d':  {'days': 7,   'label': '7 derniers jours',    'trunc': 'day',   'n_bars': 7},
+    '30d': {'days': 30,  'label': '30 derniers jours',   'trunc': 'day',   'n_bars': 30},
+    '6m':  {'days': 182, 'label': '6 derniers mois',     'trunc': 'month', 'n_bars': 6},
+    '1y':  {'days': 365, 'label': '12 derniers mois',    'trunc': 'month', 'n_bars': 12},
 }
 
 PERIODS_NAV = [
+    {'key': '24h', 'label': '24h'},
+    {'key': '48h', 'label': '48h'},
     {'key': '7d',  'label': '7j'},
     {'key': '30d', 'label': '30j'},
     {'key': '6m',  'label': '6 mois'},
