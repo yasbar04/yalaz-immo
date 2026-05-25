@@ -5,13 +5,27 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
 from django.db.models import Count, Sum
-from django.db.models.functions import TruncMonth
+from django.db.models.functions import TruncDay, TruncMonth
 from django.shortcuts import render
 from django.utils import timezone
 
 from apps.listings.models import Favorite, Listing, PublicInquiry
 
 User = get_user_model()
+
+PERIOD_CONFIG = {
+    '7d':  {'days': 7,   'label': '7 derniers jours',  'trunc': 'day',   'n_bars': 7},
+    '30d': {'days': 30,  'label': '30 derniers jours', 'trunc': 'day',   'n_bars': 30},
+    '6m':  {'days': 182, 'label': '6 derniers mois',   'trunc': 'month', 'n_bars': 6},
+    '1y':  {'days': 365, 'label': '12 derniers mois',  'trunc': 'month', 'n_bars': 12},
+}
+
+PERIODS_NAV = [
+    {'key': '7d',  'label': '7j'},
+    {'key': '30d', 'label': '30j'},
+    {'key': '6m',  'label': '6 mois'},
+    {'key': '1y',  'label': '1 an'},
+]
 
 
 def superuser_required(view_func):
@@ -24,13 +38,72 @@ def superuser_required(view_func):
     return _wrapped
 
 
+def _build_bars(trunc, n_bars, now, since):
+    if trunc == 'day':
+        bars = []
+        for i in range(n_bars - 1, -1, -1):
+            d = (now - timedelta(days=i)).date()
+            bars.append({'key': d, 'label': d.strftime('%d/%m'), 'listings': 0, 'inquiries': 0})
+
+        rows_l = (
+            Listing.objects.filter(created_at__gte=since)
+            .annotate(day=TruncDay('created_at'))
+            .values('day').annotate(count=Count('id')).order_by('day')
+        )
+        rows_i = (
+            PublicInquiry.objects.filter(created_at__gte=since)
+            .annotate(day=TruncDay('created_at'))
+            .values('day').annotate(count=Count('id')).order_by('day')
+        )
+        for row in rows_l:
+            rd = row['day'].date()
+            for b in bars:
+                if b['key'] == rd:
+                    b['listings'] = row['count']
+        for row in rows_i:
+            rd = row['day'].date()
+            for b in bars:
+                if b['key'] == rd:
+                    b['inquiries'] = row['count']
+    else:
+        bars = []
+        for i in range(n_bars - 1, -1, -1):
+            d = (now.replace(day=1) - timedelta(days=i * 30)).replace(day=1)
+            bars.append({'key': d, 'label': d.strftime('%b'), 'listings': 0, 'inquiries': 0})
+
+        rows_l = (
+            Listing.objects.filter(created_at__gte=since)
+            .annotate(month=TruncMonth('created_at'))
+            .values('month').annotate(count=Count('id')).order_by('month')
+        )
+        rows_i = (
+            PublicInquiry.objects.filter(created_at__gte=since)
+            .annotate(month=TruncMonth('created_at'))
+            .values('month').annotate(count=Count('id')).order_by('month')
+        )
+        for row in rows_l:
+            for b in bars:
+                if b['key'].year == row['month'].year and b['key'].month == row['month'].month:
+                    b['listings'] = row['count']
+        for row in rows_i:
+            for b in bars:
+                if b['key'].year == row['month'].year and b['key'].month == row['month'].month:
+                    b['inquiries'] = row['count']
+
+    return bars
+
+
 @superuser_required
 def analytics_dashboard(request):
     now = timezone.now()
-    six_months_ago = now - timedelta(days=182)
-    thirty_days_ago = now - timedelta(days=30)
-    seven_days_ago = now - timedelta(days=7)
 
+    period_key = request.GET.get('period', '30d')
+    if period_key not in PERIOD_CONFIG:
+        period_key = '30d'
+    cfg = PERIOD_CONFIG[period_key]
+    since = now - timedelta(days=cfg['days'])
+
+    # KPIs globaux
     total_published  = Listing.objects.filter(status=Listing.Status.PUBLISHED).count()
     total_pending    = Listing.objects.filter(status=Listing.Status.PENDING).count()
     total_views      = Listing.objects.aggregate(t=Sum('views_count'))['t'] or 0
@@ -38,67 +111,42 @@ def analytics_dashboard(request):
     unread_inquiries = PublicInquiry.objects.filter(is_read=False).count()
     total_favorites  = Favorite.objects.count()
     total_users      = User.objects.count()
-    new_users_30d    = User.objects.filter(date_joined__gte=thirty_days_ago).count()
-    new_listings_7d  = Listing.objects.filter(created_at__gte=seven_days_ago).count()
-    new_listings_30d = Listing.objects.filter(created_at__gte=thirty_days_ago).count()
 
+    # KPIs sur la période sélectionnée
+    new_listings  = Listing.objects.filter(created_at__gte=since).count()
+    new_inquiries = PublicInquiry.objects.filter(created_at__gte=since).count()
+    new_users     = User.objects.filter(date_joined__gte=since).count()
+    new_favorites = Favorite.objects.filter(created_at__gte=since).count()
+
+    # Top annonces (tous temps)
     top_listings = (
         Listing.objects.filter(status=Listing.Status.PUBLISHED)
         .order_by('-views_count')[:10]
     )
     max_views = top_listings[0].views_count if top_listings else 1
 
-    monthly_listings = (
-        Listing.objects.filter(created_at__gte=six_months_ago)
-        .annotate(month=TruncMonth('created_at'))
-        .values('month')
-        .annotate(count=Count('id'))
-        .order_by('month')
-    )
-    monthly_inquiries = (
-        PublicInquiry.objects.filter(created_at__gte=six_months_ago)
-        .annotate(month=TruncMonth('created_at'))
-        .values('month')
-        .annotate(count=Count('id'))
-        .order_by('month')
-    )
+    # Graphique évolution
+    bars = _build_bars(cfg['trunc'], cfg['n_bars'], now, since)
+    max_bar = max((b['listings'] for b in bars), default=1) or 1
 
-    months = []
-    for i in range(5, -1, -1):
-        d = (now.replace(day=1) - timedelta(days=i * 30)).replace(day=1)
-        months.append({'month': d, 'label': d.strftime('%b'), 'listings': 0, 'inquiries': 0})
-
-    for row in monthly_listings:
-        for m in months:
-            if m['month'].year == row['month'].year and m['month'].month == row['month'].month:
-                m['listings'] = row['count']
-    for row in monthly_inquiries:
-        for m in months:
-            if m['month'].year == row['month'].year and m['month'].month == row['month'].month:
-                m['inquiries'] = row['count']
-
-    max_monthly = max((m['listings'] for m in months), default=1) or 1
-
+    # Villes
     cities = (
         Listing.objects.filter(status=Listing.Status.PUBLISHED)
-        .values('city')
-        .annotate(count=Count('id'))
-        .order_by('-count')[:8]
+        .values('city').annotate(count=Count('id')).order_by('-count')[:8]
     )
     max_city = cities[0]['count'] if cities else 1
 
+    # Par type de bien
     by_property = (
         Listing.objects.filter(status=Listing.Status.PUBLISHED)
-        .values('property_type')
-        .annotate(count=Count('id'))
-        .order_by('-count')
+        .values('property_type').annotate(count=Count('id')).order_by('-count')
     )
     property_labels = {v: l for v, l in Listing.PropertyType.choices}
 
+    # Vente vs location
     by_listing_type = (
         Listing.objects.filter(status=Listing.Status.PUBLISHED)
-        .values('listing_type')
-        .annotate(count=Count('id'))
+        .values('listing_type').annotate(count=Count('id'))
     )
     sale_count = next((r['count'] for r in by_listing_type if r['listing_type'] == 'sale'), 0)
     rent_count = next((r['count'] for r in by_listing_type if r['listing_type'] == 'rent'), 0)
@@ -113,13 +161,14 @@ def analytics_dashboard(request):
         'unread_inquiries': unread_inquiries,
         'total_favorites': total_favorites,
         'total_users': total_users,
-        'new_users_30d': new_users_30d,
-        'new_listings_7d': new_listings_7d,
-        'new_listings_30d': new_listings_30d,
+        'new_listings': new_listings,
+        'new_inquiries': new_inquiries,
+        'new_users': new_users,
+        'new_favorites': new_favorites,
         'top_listings': top_listings,
         'max_views': max_views or 1,
-        'months': months,
-        'max_monthly': max_monthly,
+        'bars': bars,
+        'max_bar': max_bar,
         'cities': cities,
         'max_city': max_city or 1,
         'by_property': [
@@ -129,5 +178,8 @@ def analytics_dashboard(request):
         'sale_count': sale_count,
         'rent_count': rent_count,
         'recent_inquiries': recent_inquiries,
+        'active_period': period_key,
+        'period_label': cfg['label'],
+        'periods': PERIODS_NAV,
     }
     return render(request, 'admin/analytics.html', context)

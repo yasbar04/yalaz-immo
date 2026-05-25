@@ -9,13 +9,27 @@
     <!-- ══ HEADER ══ -->
     <div class="an-header">
         <div class="an-header-left">
+            <a href="{% url 'dashboard' %}" class="an-back">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><path d="M15 18l-6-6 6-6"/></svg>
+                Dashboard
+            </a>
             <p class="an-eyebrow">Superadmin</p>
             <h1 class="an-title">Analytics</h1>
         </div>
         <div class="an-header-right">
             <span class="an-live-dot"></span>
-            <span class="an-live-label">Données en temps réel</span>
+            <span class="an-live-label">Temps réel</span>
         </div>
+    </div>
+
+    <!-- ══ SÉLECTEUR DE PÉRIODE ══ -->
+    <div class="an-period-bar">
+        {% for p in periods %}
+        <a href="?period={{ p.key }}" class="an-period-btn {% if p.key == active_period %}an-period-btn--active{% endif %}">
+            {{ p.label }}
+        </a>
+        {% endfor %}
+        <span class="an-period-label">{{ period_label }}</span>
     </div>
 
     <!-- ══ KPI GRID ══ -->
@@ -28,7 +42,7 @@
                 <span class="an-kpi-val">{{ total_published|intcomma }}</span>
                 <span class="an-kpi-lbl">Annonces publiées</span>
             </div>
-            {% if new_listings_7d %}<div class="an-kpi-badge an-kpi-badge--up">+{{ new_listings_7d }} cette semaine</div>{% endif %}
+            {% if new_listings %}<div class="an-kpi-badge an-kpi-badge--up">+{{ new_listings }} sur la période</div>{% endif %}
         </div>
 
         <div class="an-kpi">
@@ -60,7 +74,7 @@
                 <span class="an-kpi-val">{{ total_inquiries|intcomma }}</span>
                 <span class="an-kpi-lbl">Demandes reçues</span>
             </div>
-            {% if unread_inquiries %}<div class="an-kpi-badge an-kpi-badge--alert">{{ unread_inquiries }} non lues</div>{% endif %}
+            {% if new_inquiries %}<div class="an-kpi-badge an-kpi-badge--up">+{{ new_inquiries }} sur la période</div>{% endif %}
         </div>
 
         <div class="an-kpi">
@@ -71,6 +85,7 @@
                 <span class="an-kpi-val">{{ total_favorites|intcomma }}</span>
                 <span class="an-kpi-lbl">Favoris</span>
             </div>
+            {% if new_favorites %}<div class="an-kpi-badge an-kpi-badge--up">+{{ new_favorites }} sur la période</div>{% endif %}
         </div>
 
         <div class="an-kpi">
@@ -81,7 +96,7 @@
                 <span class="an-kpi-val">{{ total_users|intcomma }}</span>
                 <span class="an-kpi-lbl">Utilisateurs</span>
             </div>
-            {% if new_users_30d %}<div class="an-kpi-badge an-kpi-badge--up">+{{ new_users_30d }} ce mois</div>{% endif %}
+            {% if new_users %}<div class="an-kpi-badge an-kpi-badge--up">+{{ new_users }} sur la période</div>{% endif %}
         </div>
     </div>
 
@@ -89,24 +104,30 @@
     <div class="an-row-2">
         <div class="an-card an-card--chart">
             <div class="an-card-head">
-                <h2 class="an-card-title">Évolution — 6 derniers mois</h2>
+                <h2 class="an-card-title">Évolution — {{ period_label }}</h2>
             </div>
             <div class="an-chart-legend">
                 <span class="an-legend-dot an-legend-dot--gold"></span> Annonces
                 <span class="an-legend-dot an-legend-dot--blue" style="margin-left:1rem;"></span> Demandes
             </div>
-            <div class="an-bar-chart">
-                {% for m in months %}
+            <div class="an-bar-chart {% if bars|length > 10 %}an-bar-chart--dense{% endif %}">
+                {% for b in bars %}
                 <div class="an-bar-col">
                     <div class="an-bar-wrap">
                         <div class="an-bar an-bar--gold"
-                             style="height:{% widthratio m.listings max_monthly 100 %}%"
-                             title="{{ m.listings }} annonce{{ m.listings|pluralize }}"></div>
+                             style="height:{% widthratio b.listings max_bar 100 %}%"
+                             title="{{ b.listings }} annonce{{ b.listings|pluralize }}"></div>
                         <div class="an-bar an-bar--blue"
-                             style="height:{% widthratio m.inquiries max_monthly 100 %}%"
-                             title="{{ m.inquiries }} demande{{ m.inquiries|pluralize }}"></div>
+                             style="height:{% widthratio b.inquiries max_bar 100 %}%"
+                             title="{{ b.inquiries }} demande{{ b.inquiries|pluralize }}"></div>
                     </div>
-                    <span class="an-bar-label">{{ m.label }}</span>
+                    {% if bars|length <= 12 %}
+                    <span class="an-bar-label">{{ b.label }}</span>
+                    {% elif forloop.counter|divisibleby:5 %}
+                    <span class="an-bar-label">{{ b.label }}</span>
+                    {% else %}
+                    <span class="an-bar-label" style="visibility:hidden">·</span>
+                    {% endif %}
                 </div>
                 {% endfor %}
             </div>
@@ -239,7 +260,9 @@
 <style>
 .an-shell { max-width: 1100px; margin: 0 auto; padding: var(--sp-6) var(--sp-5) var(--sp-16); }
 
-.an-header { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: var(--sp-7); padding-bottom: var(--sp-5); border-bottom: 1px solid var(--border-light); }
+.an-header { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: var(--sp-5); padding-bottom: var(--sp-5); border-bottom: 1px solid var(--border-light); }
+.an-back { display: inline-flex; align-items: center; gap: var(--sp-1); font-size: .72rem; font-weight: 600; color: var(--muted); text-decoration: none; margin-bottom: var(--sp-2); }
+.an-back:hover { color: var(--ink); }
 .an-eyebrow { font-size: .7rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--gold); margin-bottom: var(--sp-1); }
 .an-title { font-family: var(--font-heading); font-size: 1.75rem; font-weight: 700; color: var(--ink); margin: 0; }
 .an-header-right { display: flex; align-items: center; gap: var(--sp-2); }
@@ -247,6 +270,14 @@
 @keyframes an-pulse { 0%,100% { box-shadow: 0 0 0 3px rgba(34,197,94,.2); } 50% { box-shadow: 0 0 0 6px rgba(34,197,94,.05); } }
 .an-live-label { font-size: .72rem; color: var(--muted); font-weight: 500; }
 
+/* ── Période ── */
+.an-period-bar { display: flex; align-items: center; gap: var(--sp-2); margin-bottom: var(--sp-6); flex-wrap: wrap; }
+.an-period-btn { padding: .35rem .9rem; border-radius: 20px; border: 1.5px solid var(--border-light); font-size: .78rem; font-weight: 600; color: var(--muted); text-decoration: none; transition: all .15s; background: #fff; }
+.an-period-btn:hover { border-color: var(--gold); color: var(--gold-dark); }
+.an-period-btn--active { background: var(--ink); border-color: var(--ink); color: #fff; }
+.an-period-label { font-size: .72rem; color: var(--muted); margin-left: auto; }
+
+/* ── KPI ── */
 .an-kpi-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--sp-4); margin-bottom: var(--sp-5); }
 .an-kpi { background: #fff; border: 1px solid var(--border-light); border-radius: 14px; padding: var(--sp-5); display: flex; flex-direction: column; gap: var(--sp-3); transition: box-shadow .2s; }
 .an-kpi:hover { box-shadow: 0 4px 20px rgba(11,28,46,.08); }
@@ -266,6 +297,7 @@
 .an-kpi-badge--alert { background: #fee2e2; color: #dc2626; }
 .an-kpi-action { font-size: .72rem; font-weight: 700; color: var(--gold-dark); text-decoration: none; align-self: flex-start; }
 
+/* ── Cards ── */
 .an-card { background: #fff; border: 1px solid var(--border-light); border-radius: 14px; padding: var(--sp-6); overflow: hidden; }
 .an-card--full { margin-top: var(--sp-5); }
 .an-card-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--sp-5); }
@@ -273,19 +305,25 @@
 .an-badge-alert { font-size: .7rem; font-weight: 700; padding: 3px 10px; border-radius: 20px; background: #fee2e2; color: #dc2626; }
 .an-empty { color: var(--muted); font-size: var(--text-sm); text-align: center; padding: var(--sp-4) 0; }
 
+/* ── Layout ── */
 .an-row-2 { display: grid; grid-template-columns: 1fr 280px; gap: var(--sp-5); margin-bottom: var(--sp-5); }
+.an-row-3 { display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-5); margin-bottom: var(--sp-5); }
+
+/* ── Bar chart ── */
 .an-chart-legend { display: flex; align-items: center; font-size: .72rem; color: var(--muted); margin-bottom: var(--sp-5); }
 .an-legend-dot { width: 8px; height: 8px; border-radius: 50%; margin-right: var(--sp-2); display: inline-block; }
 .an-legend-dot--gold { background: var(--gold); }
 .an-legend-dot--blue { background: #3b82f6; }
 .an-bar-chart { display: flex; align-items: flex-end; gap: var(--sp-3); height: 140px; }
+.an-bar-chart--dense { gap: 2px; }
 .an-bar-col { flex: 1; display: flex; flex-direction: column; align-items: center; gap: var(--sp-2); height: 100%; }
-.an-bar-wrap { flex: 1; width: 100%; display: flex; align-items: flex-end; gap: 3px; }
+.an-bar-wrap { flex: 1; width: 100%; display: flex; align-items: flex-end; gap: 2px; }
 .an-bar { flex: 1; border-radius: 4px 4px 0 0; min-height: 2px; transition: height .4s ease; }
 .an-bar--gold { background: var(--gold); }
 .an-bar--blue { background: #3b82f6; opacity: .7; }
-.an-bar-label { font-size: .68rem; color: var(--muted); font-weight: 600; text-transform: capitalize; }
+.an-bar-label { font-size: .62rem; color: var(--muted); font-weight: 600; text-transform: capitalize; white-space: nowrap; }
 
+/* ── Donut ── */
 .an-card--donut { display: flex; flex-direction: column; }
 .an-donut-wrap { display: flex; justify-content: center; margin: var(--sp-4) 0; }
 .an-donut { width: 120px; height: 120px; border-radius: 50%; background: conic-gradient(var(--gold) 0deg var(--sale, 180deg), #3b82f6 var(--sale, 180deg) 360deg); display: flex; align-items: center; justify-content: center; position: relative; }
@@ -303,8 +341,7 @@
 .an-donut-cnt { font-weight: 700; color: var(--ink); }
 .an-donut-pct { color: var(--muted); font-size: .75rem; }
 
-.an-row-3 { display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-5); margin-bottom: var(--sp-5); }
-
+/* ── Top annonces ── */
 .an-top-list { display: flex; flex-direction: column; gap: var(--sp-1); }
 .an-top-item { display: flex; align-items: center; gap: var(--sp-3); padding: var(--sp-3) var(--sp-2); border-radius: 8px; text-decoration: none; transition: background .15s; }
 .an-top-item:hover { background: var(--bg-sand, #faf9f6); }
@@ -319,6 +356,7 @@
 .an-top-bar { height: 100%; background: linear-gradient(90deg, var(--gold-dark), var(--gold)); border-radius: 2px; }
 .an-top-views { font-family: var(--font-heading); font-size: .85rem; font-weight: 700; color: var(--ink); flex-shrink: 0; }
 
+/* ── Villes ── */
 .an-city-list { display: flex; flex-direction: column; gap: var(--sp-3); }
 .an-city-row { display: flex; align-items: center; gap: var(--sp-3); }
 .an-city-name { font-size: .8rem; font-weight: 600; color: var(--ink); width: 90px; flex-shrink: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -330,6 +368,7 @@
 .an-type-name { font-size: .75rem; color: var(--muted); }
 .an-type-count { font-size: .75rem; font-weight: 700; color: var(--ink); }
 
+/* ── Demandes ── */
 .an-inquiries { display: flex; flex-direction: column; }
 .an-inq-row { display: flex; align-items: flex-start; gap: var(--sp-4); padding: var(--sp-4) 0; border-bottom: 1px solid var(--border-light); }
 .an-inq-row:last-child { border-bottom: none; }
@@ -350,6 +389,7 @@
     .an-shell { padding: var(--sp-4) var(--sp-4) var(--sp-12); }
     .an-title { font-size: 1.4rem; }
     .an-live-label { display: none; }
+    .an-period-label { display: none; }
     .an-kpi-grid { grid-template-columns: 1fr 1fr; gap: var(--sp-3); }
     .an-kpi { padding: var(--sp-4); }
     .an-kpi-val { font-size: 1.4rem; }
