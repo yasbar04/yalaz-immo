@@ -29,7 +29,7 @@ urlpatterns = [
     path('finances/transactions/<int:pk>/edit/', FinancialTransactionUpdateView.as_view(), name='financial_transaction_update'),
     path('finances/transactions/<int:pk>/delete/', FinancialTransactionDeleteView.as_view(), name='financial_transaction_delete'),
     path('api/finances/stats/', financial_stats_api, name='financial_stats_api'),
-    path('admin/analytics/', analytics_dashboard, name='analytics_dashboard'),
+    path('superadmin/analytics/', analytics_dashboard, name='analytics_dashboard'),
     
     # Pages légales
     path('mentions-legales/', mentions_legales, name='mentions_legales'),
