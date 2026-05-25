@@ -1,0 +1,874 @@
+{% extends 'base.html' %}
+{% load humanize %}
+
+{% block title %}Analytics — Yalaz{% endblock %}
+
+{% block content %}
+<div class="an-shell">
+
+    <!-- ══ HEADER ══ -->
+    <div class="an-header">
+        <div class="an-header-left">
+            <p class="an-eyebrow">Superadmin</p>
+            <h1 class="an-title">Analytics</h1>
+        </div>
+        <div class="an-header-right">
+            <span class="an-live-dot"></span>
+            <span class="an-live-label">Données en temps réel</span>
+        </div>
+    </div>
+
+    <!-- ══ KPI GRID ══ -->
+    <div class="an-kpi-grid">
+        <div class="an-kpi an-kpi--primary">
+            <div class="an-kpi-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" width="20" height="20"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            </div>
+            <div class="an-kpi-body">
+                <span class="an-kpi-val">{{ total_published|intcomma }}</span>
+                <span class="an-kpi-lbl">Annonces publiées</span>
+            </div>
+            {% if new_listings_7d %}
+            <div class="an-kpi-badge an-kpi-badge--up">+{{ new_listings_7d }} cette semaine</div>
+            {% endif %}
+        </div>
+
+        <div class="an-kpi">
+            <div class="an-kpi-icon an-kpi-icon--gold">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" width="20" height="20"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            </div>
+            <div class="an-kpi-body">
+                <span class="an-kpi-val">{{ total_views|intcomma }}</span>
+                <span class="an-kpi-lbl">Vues totales</span>
+            </div>
+        </div>
+
+        <div class="an-kpi {% if total_pending %}an-kpi--warn{% endif %}">
+            <div class="an-kpi-icon an-kpi-icon--warn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" width="20" height="20"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            </div>
+            <div class="an-kpi-body">
+                <span class="an-kpi-val">{{ total_pending }}</span>
+                <span class="an-kpi-lbl">En attente modération</span>
+            </div>
+            {% if total_pending %}
+            <a href="{% url 'dashboard' %}" class="an-kpi-action">Traiter →</a>
+            {% endif %}
+        </div>
+
+        <div class="an-kpi">
+            <div class="an-kpi-icon an-kpi-icon--green">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" width="20" height="20"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            </div>
+            <div class="an-kpi-body">
+                <span class="an-kpi-val">{{ total_inquiries|intcomma }}</span>
+                <span class="an-kpi-lbl">Demandes reçues</span>
+            </div>
+            {% if unread_inquiries %}
+            <div class="an-kpi-badge an-kpi-badge--alert">{{ unread_inquiries }} non lues</div>
+            {% endif %}
+        </div>
+
+        <div class="an-kpi">
+            <div class="an-kpi-icon an-kpi-icon--pink">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" width="20" height="20"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+            </div>
+            <div class="an-kpi-body">
+                <span class="an-kpi-val">{{ total_favorites|intcomma }}</span>
+                <span class="an-kpi-lbl">Favoris ajoutés</span>
+            </div>
+        </div>
+
+        <div class="an-kpi">
+            <div class="an-kpi-icon an-kpi-icon--blue">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" width="20" height="20"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            </div>
+            <div class="an-kpi-body">
+                <span class="an-kpi-val">{{ total_users|intcomma }}</span>
+                <span class="an-kpi-lbl">Utilisateurs</span>
+            </div>
+            {% if new_users_30d %}
+            <div class="an-kpi-badge an-kpi-badge--up">+{{ new_users_30d }} ce mois</div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- ══ LIGNE 2 : Évolution + Répartition ══ -->
+    <div class="an-row-2">
+
+        <!-- Évolution mensuelle -->
+        <div class="an-card an-card--chart">
+            <div class="an-card-head">
+                <h2 class="an-card-title">Évolution — 6 derniers mois</h2>
+            </div>
+            <div class="an-chart-legend">
+                <span class="an-legend-dot an-legend-dot--gold"></span> Annonces
+                <span class="an-legend-dot an-legend-dot--blue" style="margin-left:1rem;"></span> Demandes
+            </div>
+            <div class="an-bar-chart">
+                {% for m in months %}
+                <div class="an-bar-col">
+                    <div class="an-bar-wrap">
+                        <div class="an-bar an-bar--gold"
+                             style="height:{% if max_monthly > 0 %}{{ m.listings|floatformat:0 }}{% else %}0{% endif %}%"
+                             data-val="{{ m.listings }}"
+                             title="{{ m.listings }} annonce{{ m.listings|pluralize }}"></div>
+                        <div class="an-bar an-bar--blue"
+                             style="height:{% widthratio m.inquiries max_monthly 100 %}%"
+                             title="{{ m.inquiries }} demande{{ m.inquiries|pluralize }}"></div>
+                    </div>
+                    <span class="an-bar-label">{{ m.label }}</span>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Vente / Location -->
+        <div class="an-card an-card--donut">
+            <div class="an-card-head">
+                <h2 class="an-card-title">Vente / Location</h2>
+            </div>
+            {% with total=sale_count|add:rent_count %}
+            {% if total > 0 %}
+            <div class="an-donut-wrap">
+                <div class="an-donut"
+                     style="--sale:{% widthratio sale_count total 360 %}deg">
+                    <div class="an-donut-inner">
+                        <span class="an-donut-num">{{ total }}</span>
+                        <span class="an-donut-sub">annonces</span>
+                    </div>
+                </div>
+            </div>
+            <div class="an-donut-legend">
+                <div class="an-donut-row">
+                    <span class="an-donut-dot an-donut-dot--gold"></span>
+                    <span class="an-donut-lbl">Vente</span>
+                    <strong class="an-donut-cnt">{{ sale_count }}</strong>
+                    <span class="an-donut-pct">({% widthratio sale_count total 100 %}%)</span>
+                </div>
+                <div class="an-donut-row">
+                    <span class="an-donut-dot an-donut-dot--blue"></span>
+                    <span class="an-donut-lbl">Location</span>
+                    <strong class="an-donut-cnt">{{ rent_count }}</strong>
+                    <span class="an-donut-pct">({% widthratio rent_count total 100 %}%)</span>
+                </div>
+            </div>
+            {% else %}
+            <p class="an-empty">Aucune donnée</p>
+            {% endif %}
+            {% endwith %}
+        </div>
+
+    </div>
+
+    <!-- ══ LIGNE 3 : Top annonces + Villes ══ -->
+    <div class="an-row-3">
+
+        <!-- Top 10 annonces -->
+        <div class="an-card">
+            <div class="an-card-head">
+                <h2 class="an-card-title">Top annonces par vues</h2>
+            </div>
+            <div class="an-top-list">
+                {% for l in top_listings %}
+                <a href="{{ l.get_absolute_url }}" class="an-top-item">
+                    <span class="an-top-rank">{{ forloop.counter }}</span>
+                    <div class="an-top-info">
+                        <span class="an-top-title">{{ l.title|truncatechars:38 }}</span>
+                        <span class="an-top-meta">{{ l.city }}{% if l.district %} · {{ l.district }}{% endif %} · {{ l.reference }}</span>
+                        <div class="an-top-bar-wrap">
+                            <div class="an-top-bar"
+                                 style="width:{% widthratio l.views_count max_views 100 %}%"></div>
+                        </div>
+                    </div>
+                    <span class="an-top-views">{{ l.views_count|intcomma }}</span>
+                </a>
+                {% empty %}
+                <p class="an-empty">Aucune annonce publiée</p>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Top villes -->
+        <div class="an-card">
+            <div class="an-card-head">
+                <h2 class="an-card-title">Annonces par ville</h2>
+            </div>
+            <div class="an-city-list">
+                {% for c in cities %}
+                <div class="an-city-row">
+                    <span class="an-city-name">{{ c.city }}</span>
+                    <div class="an-city-bar-wrap">
+                        <div class="an-city-bar"
+                             style="width:{% widthratio c.count max_city 100 %}%"></div>
+                    </div>
+                    <span class="an-city-count">{{ c.count }}</span>
+                </div>
+                {% empty %}
+                <p class="an-empty">Aucune donnée</p>
+                {% endfor %}
+            </div>
+
+            <!-- Types de bien -->
+            <div class="an-card-head" style="margin-top:var(--sp-7);padding-top:var(--sp-5);border-top:1px solid var(--border-light);">
+                <h2 class="an-card-title">Par type de bien</h2>
+            </div>
+            <div class="an-types-grid">
+                {% for p in by_property %}
+                <div class="an-type-pill">
+                    <span class="an-type-name">{{ p.label }}</span>
+                    <span class="an-type-count">{{ p.count }}</span>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+    </div>
+
+    <!-- ══ DEMANDES RÉCENTES ══ -->
+    <div class="an-card an-card--full">
+        <div class="an-card-head">
+            <h2 class="an-card-title">Demandes récentes</h2>
+            {% if unread_inquiries %}
+            <span class="an-badge-alert">{{ unread_inquiries }} non lues</span>
+            {% endif %}
+        </div>
+        <div class="an-inquiries">
+            {% for inq in recent_inquiries %}
+            <div class="an-inq-row {% if not inq.is_read %}an-inq-row--unread{% endif %}">
+                <div class="an-inq-avatar">{{ inq.first_name|first|upper }}</div>
+                <div class="an-inq-body">
+                    <div class="an-inq-head">
+                        <span class="an-inq-name">{{ inq.first_name }} {{ inq.last_name }}</span>
+                        {% if not inq.is_read %}<span class="an-inq-dot"></span>{% endif %}
+                        <span class="an-inq-time">{{ inq.created_at|timesince }} ago</span>
+                    </div>
+                    <a href="{{ inq.listing.get_absolute_url }}" class="an-inq-listing">
+                        {{ inq.listing.title|truncatechars:45 }}
+                    </a>
+                    <p class="an-inq-msg">{{ inq.message|truncatechars:90 }}</p>
+                </div>
+                <div class="an-inq-contact">
+                    {% if inq.phone %}
+                    <a href="tel:{{ inq.phone }}" class="an-inq-btn">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.62 3.36 2 2 0 0 1 3.62 1.16h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L7.91 8.75a16 16 0 0 0 6 6l.96-.96a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 21.44 16h.48a2 2 0 0 1 .08.92z"/></svg>
+                    </a>
+                    {% endif %}
+                    <a href="mailto:{{ inq.email }}" class="an-inq-btn">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                    </a>
+                </div>
+            </div>
+            {% empty %}
+            <p class="an-empty" style="padding:var(--sp-8) 0;">Aucune demande pour l'instant</p>
+            {% endfor %}
+        </div>
+    </div>
+
+</div>
+
+<style>
+/* ════════════════════════════════════
+   SHELL
+   ════════════════════════════════════ */
+.an-shell {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: var(--sp-6) var(--sp-5) var(--sp-16);
+}
+
+/* ════════════════════════════════════
+   HEADER
+   ════════════════════════════════════ */
+.an-header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    margin-bottom: var(--sp-7);
+    padding-bottom: var(--sp-5);
+    border-bottom: 1px solid var(--border-light);
+}
+
+.an-eyebrow {
+    font-size: .7rem;
+    font-weight: 700;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: var(--sp-1);
+}
+
+.an-title {
+    font-family: var(--font-heading);
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--ink);
+    margin: 0;
+}
+
+.an-header-right {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-2);
+}
+
+.an-live-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: #22c55e;
+    box-shadow: 0 0 0 3px rgba(34,197,94,.2);
+    animation: an-pulse 2s infinite;
+}
+
+@keyframes an-pulse {
+    0%, 100% { box-shadow: 0 0 0 3px rgba(34,197,94,.2); }
+    50%       { box-shadow: 0 0 0 6px rgba(34,197,94,.05); }
+}
+
+.an-live-label {
+    font-size: .72rem;
+    color: var(--muted);
+    font-weight: 500;
+}
+
+/* ════════════════════════════════════
+   KPI GRID
+   ════════════════════════════════════ */
+.an-kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--sp-4);
+    margin-bottom: var(--sp-5);
+}
+
+.an-kpi {
+    background: #fff;
+    border: 1px solid var(--border-light);
+    border-radius: 14px;
+    padding: var(--sp-5);
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-3);
+    position: relative;
+    overflow: hidden;
+    transition: box-shadow .2s;
+}
+
+.an-kpi:hover { box-shadow: 0 4px 20px rgba(11,28,46,.08); }
+
+.an-kpi--primary { border-color: var(--gold-pale); background: var(--gold-mist, #fbf6ec); }
+.an-kpi--warn { border-color: #fde68a; background: #fffbeb; }
+
+.an-kpi-icon {
+    width: 40px; height: 40px;
+    border-radius: 10px;
+    background: rgba(11,28,46,.06);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--ink);
+    flex-shrink: 0;
+}
+
+.an-kpi-icon--gold  { background: rgba(201,169,110,.15); color: var(--gold-dark); }
+.an-kpi-icon--warn  { background: #fef3c7; color: #d97706; }
+.an-kpi-icon--green { background: #dcfce7; color: #16a34a; }
+.an-kpi-icon--pink  { background: #fce7f3; color: #db2777; }
+.an-kpi-icon--blue  { background: #dbeafe; color: #2563eb; }
+
+.an-kpi-body { display: flex; flex-direction: column; gap: 2px; }
+
+.an-kpi-val {
+    font-family: var(--font-heading);
+    font-size: 1.7rem;
+    font-weight: 700;
+    color: var(--ink);
+    line-height: 1;
+}
+
+.an-kpi-lbl {
+    font-size: .75rem;
+    color: var(--muted);
+    font-weight: 500;
+}
+
+.an-kpi-badge {
+    font-size: .68rem;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 20px;
+    align-self: flex-start;
+}
+
+.an-kpi-badge--up    { background: #dcfce7; color: #16a34a; }
+.an-kpi-badge--alert { background: #fee2e2; color: #dc2626; }
+
+.an-kpi-action {
+    font-size: .72rem;
+    font-weight: 700;
+    color: var(--gold-dark);
+    text-decoration: none;
+    align-self: flex-start;
+}
+
+/* ════════════════════════════════════
+   CARD BASE
+   ════════════════════════════════════ */
+.an-card {
+    background: #fff;
+    border: 1px solid var(--border-light);
+    border-radius: 14px;
+    padding: var(--sp-6);
+    overflow: hidden;
+}
+
+.an-card--full { margin-top: var(--sp-5); }
+
+.an-card-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--sp-5);
+}
+
+.an-card-title {
+    font-family: var(--font-heading);
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--ink);
+    margin: 0;
+}
+
+.an-badge-alert {
+    font-size: .7rem;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 20px;
+    background: #fee2e2;
+    color: #dc2626;
+}
+
+.an-empty {
+    color: var(--muted);
+    font-size: var(--text-sm);
+    text-align: center;
+    padding: var(--sp-4) 0;
+}
+
+/* ════════════════════════════════════
+   LIGNE 2
+   ════════════════════════════════════ */
+.an-row-2 {
+    display: grid;
+    grid-template-columns: 1fr 280px;
+    gap: var(--sp-5);
+    margin-bottom: var(--sp-5);
+}
+
+/* ── Bar chart ── */
+.an-chart-legend {
+    display: flex;
+    align-items: center;
+    font-size: .72rem;
+    color: var(--muted);
+    margin-bottom: var(--sp-5);
+}
+
+.an-legend-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    margin-right: var(--sp-2);
+    display: inline-block;
+}
+
+.an-legend-dot--gold { background: var(--gold); }
+.an-legend-dot--blue { background: #3b82f6; }
+
+.an-bar-chart {
+    display: flex;
+    align-items: flex-end;
+    gap: var(--sp-3);
+    height: 140px;
+}
+
+.an-bar-col {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--sp-2);
+    height: 100%;
+}
+
+.an-bar-wrap {
+    flex: 1;
+    width: 100%;
+    display: flex;
+    align-items: flex-end;
+    gap: 3px;
+}
+
+.an-bar {
+    flex: 1;
+    border-radius: 4px 4px 0 0;
+    min-height: 2px;
+    transition: height .4s ease;
+}
+
+.an-bar--gold { background: var(--gold); }
+.an-bar--blue { background: #3b82f6; opacity: .7; }
+
+.an-bar-label {
+    font-size: .68rem;
+    color: var(--muted);
+    font-weight: 600;
+    text-transform: capitalize;
+}
+
+/* ── Donut chart (CSS) ── */
+.an-card--donut { display: flex; flex-direction: column; }
+
+.an-donut-wrap {
+    display: flex;
+    justify-content: center;
+    margin: var(--sp-4) 0;
+}
+
+.an-donut {
+    width: 120px; height: 120px;
+    border-radius: 50%;
+    background: conic-gradient(
+        var(--gold) 0deg var(--sale, 180deg),
+        #3b82f6 var(--sale, 180deg) 360deg
+    );
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.an-donut::after {
+    content: '';
+    position: absolute;
+    width: 72px; height: 72px;
+    background: #fff;
+    border-radius: 50%;
+}
+
+.an-donut-inner {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+}
+
+.an-donut-num {
+    display: block;
+    font-family: var(--font-heading);
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--ink);
+    line-height: 1;
+}
+
+.an-donut-sub {
+    font-size: .62rem;
+    color: var(--muted);
+    font-weight: 600;
+    letter-spacing: .04em;
+}
+
+.an-donut-legend { margin-top: auto; }
+
+.an-donut-row {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-2);
+    padding: var(--sp-2) 0;
+    font-size: .82rem;
+}
+
+.an-donut-row + .an-donut-row { border-top: 1px solid var(--border-light); }
+
+.an-donut-dot {
+    width: 10px; height: 10px;
+    border-radius: 3px;
+    flex-shrink: 0;
+}
+
+.an-donut-dot--gold { background: var(--gold); }
+.an-donut-dot--blue { background: #3b82f6; }
+
+.an-donut-lbl { flex: 1; color: var(--muted); }
+.an-donut-cnt { font-weight: 700; color: var(--ink); }
+.an-donut-pct { color: var(--muted); font-size: .75rem; }
+
+/* ════════════════════════════════════
+   LIGNE 3
+   ════════════════════════════════════ */
+.an-row-3 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--sp-5);
+    margin-bottom: var(--sp-5);
+}
+
+/* ── Top annonces ── */
+.an-top-list { display: flex; flex-direction: column; gap: var(--sp-1); }
+
+.an-top-item {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-3);
+    padding: var(--sp-3) var(--sp-2);
+    border-radius: 8px;
+    text-decoration: none;
+    transition: background .15s;
+}
+
+.an-top-item:hover { background: var(--bg-sand, #faf9f6); }
+
+.an-top-rank {
+    font-family: var(--font-heading);
+    font-size: .8rem;
+    font-weight: 700;
+    color: var(--muted);
+    width: 20px;
+    text-align: center;
+    flex-shrink: 0;
+}
+
+.an-top-item:nth-child(1) .an-top-rank { color: var(--gold-dark); font-size: 1rem; }
+.an-top-item:nth-child(2) .an-top-rank { color: #9ca3af; font-size: .95rem; }
+.an-top-item:nth-child(3) .an-top-rank { color: #cd7f32; font-size: .9rem; }
+
+.an-top-info { flex: 1; min-width: 0; }
+
+.an-top-title {
+    display: block;
+    font-size: .85rem;
+    font-weight: 600;
+    color: var(--ink);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.an-top-meta {
+    display: block;
+    font-size: .7rem;
+    color: var(--muted);
+    margin-bottom: var(--sp-1);
+}
+
+.an-top-bar-wrap {
+    height: 3px;
+    background: var(--border-light);
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.an-top-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--gold-dark), var(--gold));
+    border-radius: 2px;
+}
+
+.an-top-views {
+    font-family: var(--font-heading);
+    font-size: .85rem;
+    font-weight: 700;
+    color: var(--ink);
+    flex-shrink: 0;
+}
+
+/* ── Villes ── */
+.an-city-list { display: flex; flex-direction: column; gap: var(--sp-3); }
+
+.an-city-row {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-3);
+}
+
+.an-city-name {
+    font-size: .8rem;
+    font-weight: 600;
+    color: var(--ink);
+    width: 90px;
+    flex-shrink: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.an-city-bar-wrap {
+    flex: 1;
+    height: 6px;
+    background: var(--border-light);
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.an-city-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--ink), #1a3451);
+    border-radius: 3px;
+}
+
+.an-city-count {
+    font-size: .8rem;
+    font-weight: 700;
+    color: var(--muted);
+    width: 24px;
+    text-align: right;
+    flex-shrink: 0;
+}
+
+/* ── Types ── */
+.an-types-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--sp-2);
+    margin-top: var(--sp-3);
+}
+
+.an-type-pill {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-2);
+    background: var(--bg-sand, #faf9f6);
+    border: 1px solid var(--border-light);
+    border-radius: 20px;
+    padding: var(--sp-1) var(--sp-3);
+}
+
+.an-type-name { font-size: .75rem; color: var(--muted); }
+.an-type-count { font-size: .75rem; font-weight: 700; color: var(--ink); }
+
+/* ════════════════════════════════════
+   DEMANDES RÉCENTES
+   ════════════════════════════════════ */
+.an-inquiries { display: flex; flex-direction: column; }
+
+.an-inq-row {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--sp-4);
+    padding: var(--sp-4) 0;
+    border-bottom: 1px solid var(--border-light);
+}
+
+.an-inq-row:last-child { border-bottom: none; }
+.an-inq-row--unread { background: #fffbeb; margin: 0 calc(-1 * var(--sp-6)); padding: var(--sp-4) var(--sp-6); }
+
+.an-inq-avatar {
+    width: 38px; height: 38px;
+    border-radius: 50%;
+    background: var(--gold-mist, #fbf6ec);
+    border: 1.5px solid var(--gold-pale);
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: .9rem;
+    color: var(--gold-dark);
+    flex-shrink: 0;
+}
+
+.an-inq-body { flex: 1; min-width: 0; }
+
+.an-inq-head {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-2);
+    margin-bottom: 2px;
+    flex-wrap: wrap;
+}
+
+.an-inq-name { font-size: .875rem; font-weight: 700; color: var(--ink); }
+
+.an-inq-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: #3b82f6;
+    flex-shrink: 0;
+}
+
+.an-inq-time {
+    font-size: .7rem;
+    color: var(--muted);
+    margin-left: auto;
+}
+
+.an-inq-listing {
+    display: block;
+    font-size: .78rem;
+    color: var(--gold-dark);
+    font-weight: 600;
+    text-decoration: none;
+    margin-bottom: var(--sp-1);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.an-inq-msg {
+    font-size: .78rem;
+    color: var(--muted);
+    line-height: 1.5;
+    margin: 0;
+}
+
+.an-inq-contact {
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-2);
+    flex-shrink: 0;
+}
+
+.an-inq-btn {
+    width: 32px; height: 32px;
+    border-radius: 8px;
+    background: var(--bg-sand, #faf9f6);
+    border: 1px solid var(--border-light);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--ink);
+    text-decoration: none;
+    transition: background .15s, border-color .15s;
+}
+
+.an-inq-btn:hover { background: var(--ink); color: #fff; border-color: var(--ink); }
+
+/* ════════════════════════════════════
+   RESPONSIVE MOBILE
+   ════════════════════════════════════ */
+@media (max-width: 768px) {
+    .an-shell { padding: var(--sp-4) var(--sp-4) var(--sp-12); }
+
+    .an-header { margin-bottom: var(--sp-5); }
+    .an-title { font-size: 1.4rem; }
+    .an-live-label { display: none; }
+
+    .an-kpi-grid { grid-template-columns: 1fr 1fr; gap: var(--sp-3); }
+    .an-kpi { padding: var(--sp-4); }
+    .an-kpi-val { font-size: 1.4rem; }
+    .an-kpi-lbl { font-size: .7rem; }
+
+    .an-row-2 { grid-template-columns: 1fr; }
+    .an-card--donut { order: -1; }
+    .an-donut-wrap { margin: var(--sp-2) 0; }
+
+    .an-row-3 { grid-template-columns: 1fr; }
+
+    .an-bar-chart { height: 110px; }
+
+    .an-top-item { padding: var(--sp-3) 0; }
+
+    .an-inq-row { gap: var(--sp-3); }
+    .an-inq-row--unread { margin: 0 calc(-1 * var(--sp-4)); padding: var(--sp-4); }
+    .an-inq-contact { flex-direction: row; }
+}
+
+@media (max-width: 420px) {
+    .an-kpi-grid { grid-template-columns: 1fr; }
+}
+</style>
+
+{% endblock %}
