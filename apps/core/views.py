@@ -11,6 +11,7 @@ from django.contrib.auth.mixins import UserPassesTestMixin
 from django.core.exceptions import PermissionDenied
 from django.db.models import Q, Sum
 from django.http import JsonResponse
+from django.views.decorators.http import require_POST
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse_lazy
 from django.utils import timezone
@@ -19,7 +20,7 @@ from django.core.mail import send_mail
 from django.conf import settings
 from apps.listings.models import Listing
 from .forms import FinancialTransactionForm, SellerRequestForm
-from .models import ContactMessage, FinancialTransaction, SellerRequest, SellerRequestImage
+from .models import ContactMessage, EstimateEvent, FinancialTransaction, SellerRequest, SellerRequestImage
 
 User = get_user_model()
 
@@ -345,6 +346,21 @@ def financial_stats_api(request):
         'total_commissions': float(summary['total_commissions']),
         'total_count': transactions.count(),
     })
+
+
+@require_POST
+def estimate_track_api(request):
+    try:
+        data = json.loads(request.body)
+    except (json.JSONDecodeError, ValueError):
+        data = {}
+    EstimateEvent.objects.create(
+        city=str(data.get('city', ''))[:100],
+        district=str(data.get('district', ''))[:100],
+        property_type=str(data.get('property_type', ''))[:50],
+        surface=data.get('surface') or None,
+    )
+    return JsonResponse({'ok': True})
 
 
 class FinancialTransactionListView(StaffRequiredMixin, ListView):

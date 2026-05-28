@@ -5183,7 +5183,6 @@ tbody tr:hover td { background: var(--gold-mist); }
     margin-top: 2rem;
     background: #fff;
     border-radius: 14px;
-    overflow: hidden;
     box-shadow: 0 8px 40px rgba(0,0,0,0.28);
     position: relative;
     z-index: 2;
@@ -5229,6 +5228,10 @@ tbody tr:hover td { background: var(--gold-mist); }
 
 .psb-field--grow input { padding-left: 0.5rem; }
 
+/* Clip first/last children corners to preserve border-radius without overflow:hidden */
+.page-search-bar > *:first-child { border-radius: 14px 0 0 14px; }
+.page-search-bar > *:last-child  { border-radius: 0 14px 14px 0; }
+
 .psb-submit {
     display: flex;
     align-items: center;
@@ -5258,6 +5261,9 @@ tbody tr:hover td { background: var(--gold-mist); }
     .psb-field select,
     .psb-field input { height: 2.875rem; }
     .psb-submit { height: 3rem; justify-content: center; border-radius: 0; }
+    /* Mobile: first/last child radius adapts to column layout */
+    .page-search-bar > *:first-child { border-radius: 12px 12px 0 0; }
+    .page-search-bar > *:last-child  { border-radius: 0 0 12px 12px; }
 }
 
 /* ── Footer Premium ── */
@@ -6109,11 +6115,12 @@ tbody tr:hover td { background: var(--gold-mist); }
 /* Listing List Filter */
 .filter-prem-panel {
     background: #fff; border: 1px solid var(--border-light);
-    border-radius: 1.125rem; overflow: hidden; margin-bottom: 2rem;
+    border-radius: 1.125rem; margin-bottom: 2rem;
 }
 .filter-prem-main {
     padding: 1.25rem 1.5rem;
     display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;
+    border-radius: 1.125rem 1.125rem 0 0;
 }
 .filter-prem-search {
     display: flex; flex: 1; min-width: 240px;
@@ -6145,6 +6152,7 @@ tbody tr:hover td { background: var(--gold-mist); }
     display: none; padding: 1.5rem;
     border-top: 1px solid var(--border-light);
     background: var(--bg);
+    border-radius: 0 0 1.125rem 1.125rem;
 }
 .filter-prem-advanced.is-open { display: block; }
 .filter-prem-grid {
@@ -7204,6 +7212,18 @@ tbody tr:hover td { background: var(--gold-mist); }
 /* Actions */
 .dv2-actions { padding: 1.25rem 1.5rem; display: flex; flex-direction: column; gap: .625rem; }
 .dv2-cta-btn { justify-content: center; font-size: .9rem; padding: .875rem 1.5rem; }
+/* btn-hero-sec is designed for dark backgrounds — override for the white summary panel */
+.dv2-actions .btn-hero-sec {
+    border-color: #d4cfc7 !important;
+    color: #0b1c2e !important;
+    background: transparent !important;
+}
+.dv2-actions .btn-hero-sec:hover {
+    border-color: var(--gold) !important;
+    color: var(--gold-dark) !important;
+    background: rgba(201,169,110,.08) !important;
+    transform: translateY(-1px);
+}
 .dv2-btn-danger { border-color: var(--danger) !important; color: var(--danger) !important; }
 .dv2-locked-note { font-size: .75rem; color: var(--muted); text-align: center; }
 .dv2-report-link { font-size: .78rem; color: var(--muted); text-align: center; text-decoration: none; transition: color .15s; }
@@ -7698,6 +7718,15 @@ tbody tr:hover td { background: var(--gold-mist); }
     .form-input,
     .est-select,
     .est-input-num { min-height: 48px; }
+
+    /* Restore native select appearance on touch — avoids iOS tap-to-open issues */
+    .psb-field select,
+    .filter-prem-field select {
+        appearance: auto;
+        -webkit-appearance: auto;
+        background-image: none;
+        padding-right: 0.875rem;
+    }
 
     .psb-submit,
     .filter-prem-toggle,

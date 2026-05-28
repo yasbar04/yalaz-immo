@@ -122,35 +122,27 @@
 
             <div style="margin-top:1.25rem;">
                 <p class="eyebrow" style="margin-bottom:.75rem;">Équipements</p>
-                <div class="filter-amenities-grid">
-                    {% for name, label in  amenity_fields %}
-                        <label class="filter-amenity-label">
-                            <input type="checkbox" class="filter-amenity-check" name="{{ name }}" {% if filters|default:'' %}{% if name in filters and filters|default:'' %}checked{% endif %}{% endif %}
-                            {% if filters.kitchen_equipped == "on" and name == "kitchen_equipped" %}checked{% endif %}
-                            {% if filters.swimming_pool == "on" and name == "swimming_pool" %}checked{% endif %}
-                            {% if filters.garden == "on" and name == "garden" %}checked{% endif %}
-                            {% if filters.garage == "on" and name == "garage" %}checked{% endif %}
-                            {% if filters.parking == "on" and name == "parking" %}checked{% endif %}
-                            {% if filters.terrace == "on" and name == "terrace" %}checked{% endif %}
-                            {% if filters.balcony == "on" and name == "balcony" %}checked{% endif %}
-                            {% if filters.air_conditioning == "on" and name == "air_conditioning" %}checked{% endif %}
-                            {% if filters.furnished == "on" and name == "furnished" %}checked{% endif %}
-                            {% if filters.security == "on" and name == "security" %}checked{% endif %}
-                            >
-                            {{ label }}
-                        </label>
-                    {% empty %}
-                        <label class="filter-amenity-label"><input type="checkbox" class="filter-amenity-check" name="kitchen_equipped" {% if filters.kitchen_equipped == "on" %}checked{% endif %}> Cuisine équipée</label>
-                        <label class="filter-amenity-label"><input type="checkbox" class="filter-amenity-check" name="swimming_pool" {% if filters.swimming_pool == "on" %}checked{% endif %}> Piscine</label>
-                        <label class="filter-amenity-label"><input type="checkbox" class="filter-amenity-check" name="garden" {% if filters.garden == "on" %}checked{% endif %}> Jardin</label>
-                        <label class="filter-amenity-label"><input type="checkbox" class="filter-amenity-check" name="garage" {% if filters.garage == "on" %}checked{% endif %}> Garage</label>
-                        <label class="filter-amenity-label"><input type="checkbox" class="filter-amenity-check" name="parking" {% if filters.parking == "on" %}checked{% endif %}> Parking</label>
-                        <label class="filter-amenity-label"><input type="checkbox" class="filter-amenity-check" name="terrace" {% if filters.terrace == "on" %}checked{% endif %}> Terrasse</label>
-                        <label class="filter-amenity-label"><input type="checkbox" class="filter-amenity-check" name="balcony" {% if filters.balcony == "on" %}checked{% endif %}> Balcon</label>
-                        <label class="filter-amenity-label"><input type="checkbox" class="filter-amenity-check" name="air_conditioning" {% if filters.air_conditioning == "on" %}checked{% endif %}> Climatisation</label>
-                        <label class="filter-amenity-label"><input type="checkbox" class="filter-amenity-check" name="furnished" {% if filters.furnished == "on" %}checked{% endif %}> Meublé</label>
-                        <label class="filter-amenity-label"><input type="checkbox" class="filter-amenity-check" name="security" {% if filters.security == "on" %}checked{% endif %}> Gardiennage</label>
-                    {% endfor %}
+                <div class="filter-prem-amenities-grid">
+                    <input type="checkbox" class="filter-amenity-check" id="eq-kitchen_equipped" name="kitchen_equipped" {% if filters.kitchen_equipped == "on" %}checked{% endif %}>
+                    <label class="filter-amenity-label" for="eq-kitchen_equipped">Cuisine équipée</label>
+                    <input type="checkbox" class="filter-amenity-check" id="eq-swimming_pool" name="swimming_pool" {% if filters.swimming_pool == "on" %}checked{% endif %}>
+                    <label class="filter-amenity-label" for="eq-swimming_pool">Piscine</label>
+                    <input type="checkbox" class="filter-amenity-check" id="eq-garden" name="garden" {% if filters.garden == "on" %}checked{% endif %}>
+                    <label class="filter-amenity-label" for="eq-garden">Jardin</label>
+                    <input type="checkbox" class="filter-amenity-check" id="eq-garage" name="garage" {% if filters.garage == "on" %}checked{% endif %}>
+                    <label class="filter-amenity-label" for="eq-garage">Garage</label>
+                    <input type="checkbox" class="filter-amenity-check" id="eq-parking" name="parking" {% if filters.parking == "on" %}checked{% endif %}>
+                    <label class="filter-amenity-label" for="eq-parking">Parking</label>
+                    <input type="checkbox" class="filter-amenity-check" id="eq-terrace" name="terrace" {% if filters.terrace == "on" %}checked{% endif %}>
+                    <label class="filter-amenity-label" for="eq-terrace">Terrasse</label>
+                    <input type="checkbox" class="filter-amenity-check" id="eq-balcony" name="balcony" {% if filters.balcony == "on" %}checked{% endif %}>
+                    <label class="filter-amenity-label" for="eq-balcony">Balcon</label>
+                    <input type="checkbox" class="filter-amenity-check" id="eq-air_conditioning" name="air_conditioning" {% if filters.air_conditioning == "on" %}checked{% endif %}>
+                    <label class="filter-amenity-label" for="eq-air_conditioning">Climatisation</label>
+                    <input type="checkbox" class="filter-amenity-check" id="eq-furnished" name="furnished" {% if filters.furnished == "on" %}checked{% endif %}>
+                    <label class="filter-amenity-label" for="eq-furnished">Meublé</label>
+                    <input type="checkbox" class="filter-amenity-check" id="eq-security" name="security" {% if filters.security == "on" %}checked{% endif %}>
+                    <label class="filter-amenity-label" for="eq-security">Gardiennage</label>
                 </div>
             </div>
 
@@ -198,7 +190,7 @@
                     <a href="{{ listing.get_absolute_url }}">
                         <div class="listing-image-wrapper">
                             {% if listing.image %}
-                                <img src="{{ listing.image.url }}" alt="{{ listing.title }}" loading="lazy">
+                                <img src="{{ listing.image.url }}" alt="{{ listing.title }}" loading="lazy" width="400" height="267">
                             {% else %}
                                 <div class="placeholder">Visuel indisponible</div>
                             {% endif %}

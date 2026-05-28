@@ -244,6 +244,22 @@ class SellerRequestImage(models.Model):
         return f"Photo #{self.pk} — {self.seller_request}"
 
 
+class EstimateEvent(models.Model):
+    city = models.CharField(max_length=100)
+    district = models.CharField(max_length=100, blank=True)
+    property_type = models.CharField(max_length=50, blank=True)
+    surface = models.PositiveIntegerField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created_at']
+        verbose_name = 'Estimation'
+        verbose_name_plural = 'Estimations'
+
+    def __str__(self):
+        return f"{self.city} · {self.district} ({self.created_at:%Y-%m-%d})"
+
+
 class ContactMessage(models.Model):
     SUBJECT_CHOICES = [
         ('acheter', 'Je souhaite acheter un bien'),

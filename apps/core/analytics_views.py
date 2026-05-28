@@ -11,6 +11,7 @@ from django.utils import timezone
 from django.utils.timezone import localtime
 
 from apps.listings.models import Favorite, Listing, PublicInquiry
+from .models import EstimateEvent
 
 User = get_user_model()
 
@@ -121,12 +122,14 @@ def analytics_dashboard(request):
     unread_inquiries = PublicInquiry.objects.filter(is_read=False).count()
     total_favorites  = Favorite.objects.count()
     total_users      = User.objects.count()
+    total_estimates  = EstimateEvent.objects.count()
 
     # KPIs sur la période sélectionnée
     new_listings  = Listing.objects.filter(created_at__gte=since).count()
     new_inquiries = PublicInquiry.objects.filter(created_at__gte=since).count()
     new_users     = User.objects.filter(date_joined__gte=since).count()
     new_favorites = Favorite.objects.filter(created_at__gte=since).count()
+    new_estimates = EstimateEvent.objects.filter(created_at__gte=since).count()
 
     # Top annonces (tous temps)
     top_listings = (
@@ -171,10 +174,12 @@ def analytics_dashboard(request):
         'unread_inquiries': unread_inquiries,
         'total_favorites': total_favorites,
         'total_users': total_users,
+        'total_estimates': total_estimates,
         'new_listings': new_listings,
         'new_inquiries': new_inquiries,
         'new_users': new_users,
         'new_favorites': new_favorites,
+        'new_estimates': new_estimates,
         'top_listings': top_listings,
         'max_views': max_views or 1,
         'bars': bars,

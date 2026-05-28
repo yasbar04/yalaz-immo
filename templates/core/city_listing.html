@@ -1,0 +1,196 @@
+{% extends 'base.html' %}
+{% load humanize %}
+
+{% block title %}{{ page_title }}{% endblock %}
+{% block meta_description %}{{ meta_description }}{% endblock %}
+{% block seo_keywords %}{% if prop_type %}{{ prop_type.sing }} {{ action.label }} {{ city_name }}, {% endif %}immobilier {{ action.label }} {{ city_name }}, agence immobilière {{ city_name }}, Yalaz {% endif %}{% endblock %}
+
+{% block og_title %}{{ page_title }}{% endblock %}
+{% block og_description %}{{ meta_description }}{% endblock %}
+{% block og_type %}website{% endblock %}
+
+{% block canonical_url %}{{ request.scheme }}://{{ request.get_host }}/{{ action_slug }}/{{ city_slug }}/{% if type_slug %}{{ type_slug }}/{% endif %}{% endblock %}
+
+{% block extra_head %}
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    "name": "{{ h1 }}",
+    "description": "{{ meta_description }}",
+    "url": "{{ request.scheme }}://{{ request.get_host }}/{{ action_slug }}/{{ city_slug }}/{% if type_slug %}{{ type_slug }}/{% endif %}",
+    "numberOfItems": {{ count }},
+    "itemListElement": [
+        {% for listing in listings|slice:":10" %}
+        {
+            "@type": "ListItem",
+            "position": {{ forloop.counter }},
+            "url": "{{ request.scheme }}://{{ request.get_host }}{{ listing.get_absolute_url }}",
+            "name": "{{ listing.title }}"
+        }{% if not forloop.last %},{% endif %}
+        {% endfor %}
+    ]
+}
+</script>
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+        {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Accueil",
+            "item": "{{ request.scheme }}://{{ request.get_host }}{% url 'home' %}"
+        },
+        {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "{{ action.verb }}",
+            "item": "{{ request.scheme }}://{{ request.get_host }}/{{ action_slug }}/"
+        },
+        {
+            "@type": "ListItem",
+            "position": 3,
+            "name": "{{ city_name }}",
+            "item": "{{ request.scheme }}://{{ request.get_host }}/{{ action_slug }}/{{ city_slug }}/"
+        }
+        {% if type_slug %},
+        {
+            "@type": "ListItem",
+            "position": 4,
+            "name": "{{ prop_type.plur }}",
+            "item": "{{ request.scheme }}://{{ request.get_host }}/{{ action_slug }}/{{ city_slug }}/{{ type_slug }}/"
+        }
+        {% endif %}
+    ]
+}
+</script>
+{% endblock %}
+
+{% block content %}
+<div class="container" style="padding-top:2rem;padding-bottom:4rem;">
+
+    <!-- Breadcrumb -->
+    <nav aria-label="Fil d'Ariane" style="font-size:.8rem;color:var(--muted);margin-bottom:1.5rem;display:flex;align-items:center;gap:.4rem;flex-wrap:wrap;">
+        <a href="{% url 'home' %}" style="color:var(--muted);text-decoration:none;">Accueil</a>
+        <span>›</span>
+        <a href="/{{ action_slug }}/" style="color:var(--muted);text-decoration:none;">{{ action.verb }}</a>
+        <span>›</span>
+        <a href="/{{ action_slug }}/{{ city_slug }}/" style="color:var(--muted);text-decoration:none;">{{ city_name }}</a>
+        {% if type_slug %}
+        <span>›</span>
+        <span style="color:var(--foreground);">{{ prop_type.plur }}</span>
+        {% endif %}
+    </nav>
+
+    <!-- Hero -->
+    <div style="margin-bottom:2rem;">
+        <h1 style="font-size:clamp(1.5rem,4vw,2.25rem);font-weight:700;margin-bottom:.5rem;">{{ h1 }}</h1>
+        <p style="color:var(--muted);font-size:.95rem;">
+            {% if count == 0 %}
+                Aucune annonce disponible pour le moment — <a href="{% url 'listing_list' %}" style="color:var(--gold-dark);">voir toutes les annonces</a>
+            {% elif count == 1 %}
+                1 annonce disponible
+            {% else %}
+                {{ count }} annonces disponibles
+            {% endif %}
+        </p>
+    </div>
+
+    <!-- Filtres types de biens -->
+    {% if type_links %}
+    <div style="display:flex;flex-wrap:wrap;gap:.5rem;margin-bottom:2rem;">
+        <a href="/{{ action_slug }}/{{ city_slug }}/"
+           class="pill {% if not type_slug %}pill-mint{% endif %}"
+           style="text-decoration:none;{% if not type_slug %}font-weight:600;{% endif %}">
+            Tous types
+        </a>
+        {% for tl in type_links %}
+        <a href="{{ tl.url }}"
+           class="pill {% if tl.active %}pill-mint{% endif %}"
+           style="text-decoration:none;{% if tl.active %}font-weight:600;{% endif %}">
+            {{ tl.label }}
+        </a>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    {% if listings %}
+    <!-- Grille d'annonces -->
+    <div class="listing-grid" style="margin-bottom:3rem;">
+        {% for listing in listings %}
+        <article class="listing-card" data-reveal>
+            <a href="{{ listing.get_absolute_url }}">
+                <div class="listing-image-wrapper">
+                    {% if listing.image %}
+                        <img src="{{ listing.image.url }}" alt="{{ listing.title }}" loading="lazy" width="400" height="267">
+                    {% else %}
+                        <div class="placeholder">Visuel indisponible</div>
+                    {% endif %}
+                    {% if listing.is_featured %}<span class="listing-badge">En vedette</span>{% endif %}
+                </div>
+                <div class="listing-content">
+                    <h3>{{ listing.title }}</h3>
+                    <div class="listing-location">
+                        <span>{{ listing.city }}{% if listing.district %}, {{ listing.district }}{% endif %}</span>
+                    </div>
+                    <div class="listing-meta">
+                        {% if listing.surface_area %}<span>{{ listing.surface_area }} m²</span>{% endif %}
+                        {% if listing.bedrooms %}<span>{{ listing.bedrooms }} ch.</span>{% endif %}
+                    </div>
+                    <div class="listing-footer">
+                        {% if listing.price %}
+                            <strong class="listing-price">{{ listing.price|floatformat:0|intcomma }}&thinsp;MAD</strong>
+                        {% else %}
+                            <strong class="listing-price listing-price--contact">Contactez Yalaz</strong>
+                        {% endif %}
+                        <span class="listing-type-badge">{{ listing.get_property_type_display }}</span>
+                    </div>
+                </div>
+            </a>
+        </article>
+        {% endfor %}
+    </div>
+
+    <!-- Contenu SEO : contexte local -->
+    <div class="admin-panel-card" style="margin-bottom:2rem;padding:1.5rem 2rem;">
+        <h2 style="font-size:1.1rem;margin-bottom:.75rem;">
+            {{ action.verb }} un bien immobilier à {{ city_name }} avec Yalaz
+        </h2>
+        <p style="color:var(--muted);font-size:.9rem;line-height:1.7;margin:0;">
+            Yalaz est votre agence immobilière de confiance à {{ city_name }}.
+            Notre équipe vous accompagne dans votre projet d'{% if action_slug == 'acheter' %}achat{% else %}location{% endif %}
+            immobilier : {% if prop_type %}{{ prop_type.sing }}{% else %}appartement, villa, maison ou terrain{% endif %}
+            à {{ city_name }}.
+            Bénéficiez de notre expertise locale pour trouver le bien idéal au meilleur prix.
+        </p>
+    </div>
+
+    {% else %}
+    <div style="text-align:center;padding:4rem 0;color:var(--muted);">
+        <p style="font-size:1.1rem;margin-bottom:1rem;">
+            Aucune annonce disponible pour "{% if prop_type %}{{ prop_type.sing }} {% endif %}{{ action.label }} à {{ city_name }}" pour le moment.
+        </p>
+        <a href="{% url 'listing_list' %}" class="btn-hero-prim">Voir toutes les annonces</a>
+    </div>
+    {% endif %}
+
+    <!-- Liens internes : autres villes -->
+    {% if city_links %}
+    <div style="margin-top:2rem;">
+        <h2 style="font-size:1rem;font-weight:600;margin-bottom:.75rem;color:var(--muted);">
+            Immobilier {{ action.label }} dans d'autres villes
+        </h2>
+        <div style="display:flex;flex-wrap:wrap;gap:.5rem;">
+            {% for cl in city_links %}
+            <a href="{{ cl.url }}" class="pill" style="text-decoration:none;">
+                {{ cl.name }}
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+</div>
+{% endblock %}

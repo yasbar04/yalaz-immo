@@ -370,7 +370,7 @@ def send_listing_submission_notification(listing):
         'user': owner,
         'listing': listing,
         'dashboard_url': _build_absolute_url(reverse('dashboard')),
-        'listing_url': _build_absolute_url(reverse('listing_detail', kwargs={'pk': listing.pk})),
+        'listing_url': _build_absolute_url(listing.get_absolute_url()),
     }
     send_templated_email(
         subject=f'Votre annonce est en attente de validation sur {settings.PLATFORM_NAME}',
@@ -390,7 +390,7 @@ def send_listing_approved_notification(listing):
         'user': owner,
         'listing': listing,
         'dashboard_url': _build_absolute_url(reverse('dashboard')),
-        'listing_url': _build_absolute_url(reverse('listing_detail', kwargs={'pk': listing.pk})),
+        'listing_url': _build_absolute_url(listing.get_absolute_url()),
     }
     send_templated_email(
         subject=f'Votre annonce a ete validee sur {settings.PLATFORM_NAME}',
@@ -411,7 +411,7 @@ def send_contact_notifications(contact, listing, is_update=False):
         'contact': contact,
         'owner_display_name': owner_display_name,
         'requester_name': requester_name,
-        'listing_url': _build_absolute_url(reverse('listing_detail', kwargs={'pk': listing.pk})),
+        'listing_url': _build_absolute_url(listing.get_absolute_url()),
     }
     send_templated_email(
         subject=(
@@ -427,7 +427,7 @@ def send_contact_notifications(contact, listing, is_update=False):
         'listing': listing,
         'contact': contact,
         'owner_display_name': owner_display_name,
-        'listing_url': _build_absolute_url(reverse('listing_detail', kwargs={'pk': listing.pk})),
+        'listing_url': _build_absolute_url(listing.get_absolute_url()),
     }
     send_templated_email(
         subject=f'Confirmation de votre demande sur {settings.PLATFORM_NAME}',

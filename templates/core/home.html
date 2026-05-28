@@ -160,10 +160,10 @@
         <div class="listing-grid">
             {% for listing in featured_listings %}
                 <article class="listing-card" data-reveal>
-                    <a href="{% url 'listing_detail' listing.pk %}">
+                    <a href="{{ listing.get_absolute_url }}">
                         <div class="listing-image-wrapper">
                             {% if listing.image %}
-                                <img src="{{ listing.image.url }}" alt="{{ listing.title }}" loading="lazy">
+                                <img src="{{ listing.image.url }}" alt="{{ listing.title }}" loading="lazy" width="400" height="267">
                             {% else %}
                                 <div class="placeholder">Pas de photo</div>
                             {% endif %}

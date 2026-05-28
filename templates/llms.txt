@@ -1,0 +1,48 @@
+# Yalaz — Agence Immobilière au Maroc
+
+> Yalaz est une plateforme immobilière professionnelle au Maroc. Achetez, vendez, louez ou estimez votre bien immobilier avec des experts locaux.
+
+Yalaz propose des appartements, villas, maisons, terrains et locaux commerciaux dans les principales villes du Maroc : Casablanca, Marrakech, Rabat, Tanger, Agadir, Fès, Meknès, Oujda, Kénitra et plus encore.
+
+## Services
+
+- **Achat immobilier** : Sélection d'appartements, villas et maisons à vendre au Maroc
+- **Location immobilière** : Biens à louer dans toutes les grandes villes marocaines
+- **Estimation de bien** : Outil d'estimation gratuit basé sur les prix du marché par quartier
+- **Vendre son bien** : Accompagnement pour la mise en vente d'un bien immobilier
+
+## Pages principales
+
+- [Accueil](https://yalaz-immo.com/)
+- [Toutes les annonces](https://yalaz-immo.com/listings/)
+- [Acheter un bien](https://yalaz-immo.com/buy/)
+- [Louer un bien](https://yalaz-immo.com/rent/)
+- [Vendre son bien](https://yalaz-immo.com/sell/)
+- [Estimer son bien](https://yalaz-immo.com/estimate/)
+- [À propos de Yalaz](https://yalaz-immo.com/about/)
+- [Contact](https://yalaz-immo.com/contact/)
+
+## Pages par ville
+
+- [Immobilier à vendre à Casablanca](https://yalaz-immo.com/acheter/casablanca/)
+- [Immobilier à louer à Casablanca](https://yalaz-immo.com/louer/casablanca/)
+- [Appartements à vendre à Casablanca](https://yalaz-immo.com/acheter/casablanca/appartement/)
+- [Immobilier à vendre à Marrakech](https://yalaz-immo.com/acheter/marrakech/)
+- [Immobilier à louer à Marrakech](https://yalaz-immo.com/louer/marrakech/)
+- [Immobilier à vendre à Rabat](https://yalaz-immo.com/acheter/rabat/)
+- [Immobilier à vendre à Tanger](https://yalaz-immo.com/acheter/tanger/)
+- [Immobilier à vendre à Agadir](https://yalaz-immo.com/acheter/agadir/)
+
+## Informations de contact
+
+- Site web : https://yalaz-immo.com
+- Email : contact@yalaz-immo.com
+- Téléphone : +212 648 707 583
+- Réseaux sociaux : Instagram @yalaz_immo · Facebook Yalaz-immo · TikTok @yalaz_immo
+- Zone de service : Maroc (toutes villes)
+- Langues : Français, Arabe
+
+## Sitemap
+
+- [Sitemap XML](https://yalaz-immo.com/sitemap.xml)
+- [Sitemap annonces](https://yalaz-immo.com/sitemap-listings.xml)

@@ -302,7 +302,7 @@ def report_content(request, listing_id=None, user_id=None):
         messages.success(request, 'Merci ! Votre signalement a été envoyé à notre équipe.')
         
         if listing:
-            return redirect('listing_detail', pk=listing.id)
+            return redirect(listing.get_absolute_url())
         return redirect('listing_list')
     
     context = {
@@ -330,7 +330,7 @@ def toggle_favorite(request, listing_id):
     else:
         messages.success(request, 'Annonce ajoutée aux favoris')
     
-    return redirect('listing_detail', pk=listing.id)
+    return redirect(listing.get_absolute_url())
 
 
 @login_required

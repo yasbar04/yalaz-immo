@@ -176,7 +176,12 @@ def listing_list(request):
     return render(request, 'listings/listing_list.html', context)
 
 
-def listing_detail(request, pk):
+def listing_detail_redirect(request, pk):
+    listing = get_object_or_404(Listing, pk=pk)
+    return redirect(listing.get_absolute_url(), permanent=True)
+
+
+def listing_detail(request, pk, slug):
     listing = get_object_or_404(
         Listing.objects.select_related('owner').prefetch_related(
             'images',
@@ -184,6 +189,10 @@ def listing_detail(request, pk):
         ),
         pk=pk,
     )
+
+    # Canonical URL enforcement: redirect if slug doesn't match
+    if listing.slug and listing.slug != slug:
+        return redirect(listing.get_absolute_url(), permanent=True)
 
     is_allowed_private_view = (
         request.user.is_authenticated
@@ -344,7 +353,7 @@ def listing_create(request):
                     )
 
             messages.success(request, 'L annonce a ete publiee.')
-            return redirect('listing_detail', pk=listing.pk)
+            return redirect(listing.get_absolute_url())
         else:
             messages.error(request, 'Veuillez corriger les erreurs dans le formulaire.')
     else:
@@ -411,7 +420,7 @@ def listing_edit(request, pk):
                         logger.error('Erreur sauvegarde image %d : %s', idx, e)
 
             messages.success(request, 'Les modifications ont été enregistrées.')
-            return redirect('listing_detail', pk=listing.pk)
+            return redirect(listing.get_absolute_url())
     else:
         form = ListingForm(instance=listing)
         formset = None
@@ -506,7 +515,7 @@ def contact_owner(request, pk):
                 request,
                 'Votre demande a bien ete envoyee au proprietaire.',
             )
-            return redirect('listing_detail', pk=pk)
+            return redirect(listing.get_absolute_url())
 
     return render(
         request,
@@ -565,7 +574,7 @@ def public_inquiry(request, pk):
                 pass
             messages.success(request, 'Votre demande a bien été envoyée. Nous vous contacterons dans les meilleurs délais.')
 
-    return redirect('listing_detail', pk=pk)
+    return redirect(listing.get_absolute_url())
 
 
 def get_districts_by_city(request):

@@ -13,6 +13,12 @@
 {% block og_image_alt %}{{ listing.title }} — {{ listing.get_property_type_display }} à {{ listing.city }}{% endblock %}
 {% block twitter_image %}{{ gallery_images.0.url }}{% endblock %}
 
+{% block extra_head %}
+{% if gallery_images %}
+<link rel="preload" as="image" href="{{ gallery_images.0.url }}" fetchpriority="high">
+{% endif %}
+{% endblock %}
+
 {% block title %}{{ listing.title }} — {% if listing.listing_type == 'rent' %}Location{% else %}Vente{% endif %} {{ listing.get_property_type_display }} {{ listing.city }} | Yalaz{% endblock %}
 
 {% block content %}
@@ -55,7 +61,7 @@
         <div class="dv2-gallery">
             <div class="dv2-main-img" id="mainImageWrap">
                 {% if gallery_images %}
-                    <img src="{{ gallery_images.0.url }}" alt="{{ gallery_images.0.alt }}" id="mainImage" onclick="openLightbox(0)" loading="eager" onerror="handleBrokenMain(this)">
+                    <img src="{{ gallery_images.0.url }}" alt="{{ gallery_images.0.alt }}" id="mainImage" onclick="openLightbox(0)" loading="eager" fetchpriority="high" onerror="handleBrokenMain(this)">
                     {% if photo_count > 1 %}
                         <button class="dv2-nav-btn dv2-prev" onclick="navImage(-1)" aria-label="Précédent">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="16" height="16"><polyline points="15 18 9 12 15 6"/></svg>

@@ -98,6 +98,17 @@
             </div>
             {% if new_users %}<div class="an-kpi-badge an-kpi-badge--up">+{{ new_users }} sur la période</div>{% endif %}
         </div>
+
+        <div class="an-kpi">
+            <div class="an-kpi-icon an-kpi-icon--violet">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" width="20" height="20"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+            </div>
+            <div class="an-kpi-body">
+                <span class="an-kpi-val">{{ total_estimates|intcomma }}</span>
+                <span class="an-kpi-lbl">Estimations effectuées</span>
+            </div>
+            {% if new_estimates %}<div class="an-kpi-badge an-kpi-badge--up">+{{ new_estimates }} sur la période</div>{% endif %}
+        </div>
     </div>
 
     <!-- ══ ÉVOLUTION + DONUT ══ -->
@@ -288,7 +299,8 @@
 .an-kpi-icon--warn  { background: #fef3c7; color: #d97706; }
 .an-kpi-icon--green { background: #dcfce7; color: #16a34a; }
 .an-kpi-icon--pink  { background: #fce7f3; color: #db2777; }
-.an-kpi-icon--blue  { background: #dbeafe; color: #2563eb; }
+.an-kpi-icon--blue   { background: #dbeafe; color: #2563eb; }
+.an-kpi-icon--violet { background: #ede9fe; color: #7c3aed; }
 .an-kpi-body { display: flex; flex-direction: column; gap: 2px; }
 .an-kpi-val { font-family: var(--font-heading); font-size: 1.7rem; font-weight: 700; color: var(--ink); line-height: 1; }
 .an-kpi-lbl { font-size: .75rem; color: var(--muted); font-weight: 500; }

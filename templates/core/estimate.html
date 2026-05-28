@@ -342,6 +342,11 @@ function doEstimate() {
     showResult(ville, quartier, typeLabel, surface, ppm2, Math.round(ppm2 * surface));
 }
 
+function getCookie(name) {
+    const v = document.cookie.match('(^|;)\\s*' + name + '\\s*=\\s*([^;]+)');
+    return v ? v.pop() : '';
+}
+
 /* ── Résultat ── */
 function showResult(ville, quartier, typeLabel, surface, ppm2, total) {
     const low  = Math.round(total * 0.92);
@@ -396,6 +401,12 @@ function showResult(ville, quartier, typeLabel, surface, ppm2, total) {
     document.getElementById('estMainCard').scrollIntoView({ behavior: 'smooth', block: 'start' });
 
     animateCounter('estAnimPrice', total, 1300);
+
+    fetch('/api/estimate/track/', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken')},
+        body: JSON.stringify({city: ville, district: quartier, property_type: typeLabel, surface: surface}),
+    }).catch(() => {});
 }
 
 /* ── Données insuffisantes ── */

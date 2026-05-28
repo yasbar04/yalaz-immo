@@ -82,7 +82,7 @@
     {
         "@context": "https://schema.org",
         "@type": "RealEstateAgent",
-        "@id": "{% url 'home' %}#organization",
+        "@id": "{{ request.scheme }}://{{ request.get_host }}{% url 'home' %}#organization",
         "name": "Yalaz",
         "alternateName": "Yalaz Agence Immobilière",
         "description": "Agence immobilière professionnelle au Maroc. Achat, vente, location et estimation de biens immobiliers.",
@@ -135,7 +135,7 @@
     {
         "@context": "https://schema.org",
         "@type": "Organization",
-        "@id": "{% url 'home' %}#org",
+        "@id": "{{ request.scheme }}://{{ request.get_host }}{% url 'home' %}#org",
         "name": "Yalaz",
         "url": "{{ request.scheme }}://{{ request.get_host }}{% url 'home' %}",
         "logo": "{{ request.scheme }}://{{ request.get_host }}{% static 'images/logo_yalaz.png' %}",
@@ -164,7 +164,7 @@
     {
         "@context": "https://schema.org",
         "@type": "WebSite",
-        "@id": "{% url 'home' %}#website",
+        "@id": "{{ request.scheme }}://{{ request.get_host }}{% url 'home' %}#website",
         "name": "Yalaz",
         "alternateName": "Yalaz Immobilier Maroc",
         "url": "{{ request.scheme }}://{{ request.get_host }}{% url 'home' %}",

@@ -2,6 +2,7 @@ from django.conf import settings
 from django.core.validators import MinValueValidator
 from django.db import models
 from django.urls import reverse
+from django.utils.text import slugify
 
 # Codes ville 3 lettres pour la référence (CAS-APT-V-0042)
 _CITY_CODES = {
@@ -27,6 +28,12 @@ _PROPERTY_CODES = {
     'apartment': 'APT', 'house': 'MAI', 'villa': 'VIL',
     'land': 'TER', 'office': 'BUR', 'commercial': 'COM',
 }
+
+_PROPERTY_SLUG = {
+    'apartment': 'appartement', 'house': 'maison', 'villa': 'villa',
+    'land': 'terrain', 'office': 'bureau', 'commercial': 'local-commercial',
+}
+_TYPE_SLUG = {'sale': 'vente', 'rent': 'location'}
 
 
 def _city_code(city):
@@ -123,6 +130,7 @@ class Listing(models.Model):
         help_text='Référence unique (ex : CAS-APT-V-0042)',
     )
     is_featured = models.BooleanField(default=False, help_text='Affichee en avant')
+    slug = models.SlugField(max_length=280, unique=True, blank=True, db_index=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     views_count = models.PositiveIntegerField(default=0)
@@ -138,7 +146,15 @@ class Listing(models.Model):
         return self.title
 
     def get_absolute_url(self):
-        return reverse('listing_detail', kwargs={'pk': self.pk})
+        if self.slug:
+            return reverse('listing_detail', kwargs={'pk': self.pk, 'slug': self.slug})
+        return reverse('listing_detail_pk', kwargs={'pk': self.pk})
+
+    def _generate_slug(self):
+        prop = _PROPERTY_SLUG.get(self.property_type, self.property_type)
+        typ = _TYPE_SLUG.get(self.listing_type, self.listing_type)
+        city = slugify(self.city or 'maroc')
+        return f"{prop}-{typ}-{city}-{self.pk}"
 
     def _generate_reference(self):
         city = _city_code(self.city or 'YAL')
@@ -148,9 +164,15 @@ class Listing(models.Model):
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
+        updates = {}
         if not self.reference:
-            self.reference = self._generate_reference()
-            Listing.objects.filter(pk=self.pk).update(reference=self.reference)
+            updates['reference'] = self._generate_reference()
+        if not self.slug:
+            updates['slug'] = self._generate_slug()
+        if updates:
+            for k, v in updates.items():
+                setattr(self, k, v)
+            Listing.objects.filter(pk=self.pk).update(**updates)
 
     def can_edit(self, user):
         if not getattr(user, 'is_authenticated', False):

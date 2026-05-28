@@ -15,6 +15,7 @@ Allow: /sitemap-listings.xml
 Allow: /sitemap-index.xml
 
 Disallow: /admin/
+Disallow: /superadmin/
 Disallow: /api/
 Disallow: /accounts/admin/
 Disallow: /accounts/login/
@@ -41,6 +42,26 @@ Crawl-delay: 1
 
 User-agent: MJ12bot
 Crawl-delay: 10
+
+# Allow AI search crawlers (ChatGPT, Perplexity, Claude, Copilot)
+# These power AI Overview, AI search, and citation in LLMs — critical for GEO visibility
+User-agent: GPTBot
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+User-agent: Applebot
+Allow: /
 
 # Block useless crawlers to preserve crawl budget
 User-agent: AhrefsBot
