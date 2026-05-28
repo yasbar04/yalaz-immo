@@ -19,30 +19,56 @@ def populate_slugs(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-    atomic = False  # each op gets its own deferred-SQL window; prevents duplicate _like index
+    atomic = False
 
     dependencies = [
         ('listings', '0009_listing_price_optional'),
     ]
 
     operations = [
-        migrations.AddField(
-            model_name='listing',
-            name='slug',
-            field=models.SlugField(max_length=280, blank=True, null=True),
+        # Raw SQL: ADD COLUMN IF NOT EXISTS avoids Django's schema editor
+        # which would otherwise queue a deferred CREATE INDEX _like that
+        # conflicts with the one AlterField also queues (duplicate index bug).
+        migrations.RunSQL(
+            sql="ALTER TABLE listings_listing ADD COLUMN IF NOT EXISTS slug varchar(280);",
+            reverse_sql="ALTER TABLE listings_listing DROP COLUMN IF EXISTS slug;",
+        ),
+        # Sync Django's migration state (no DB ops)
+        migrations.SeparateDatabaseAndState(
+            state_operations=[
+                migrations.AddField(
+                    model_name='listing',
+                    name='slug',
+                    field=models.SlugField(max_length=280, blank=True, null=True),
+                ),
+            ],
+            database_operations=[],
         ),
         migrations.RunPython(populate_slugs, migrations.RunPython.noop),
-        # Drop any indexes left by a partial migration run on prod (idempotent)
+        # Drop any pre-existing indexes then recreate cleanly — fully idempotent
         migrations.RunSQL(
             sql="""
                 DROP INDEX IF EXISTS listings_listing_slug_984b866c_like;
                 DROP INDEX IF EXISTS listings_listing_slug_984b866c_uniq;
+                CREATE UNIQUE INDEX listings_listing_slug_984b866c_uniq
+                    ON listings_listing (slug);
+                CREATE INDEX listings_listing_slug_984b866c_like
+                    ON listings_listing (slug varchar_pattern_ops);
             """,
-            reverse_sql=migrations.RunSQL.noop,
+            reverse_sql="""
+                DROP INDEX IF EXISTS listings_listing_slug_984b866c_uniq;
+                DROP INDEX IF EXISTS listings_listing_slug_984b866c_like;
+            """,
         ),
-        migrations.AlterField(
-            model_name='listing',
-            name='slug',
-            field=models.SlugField(max_length=280, unique=True, blank=True),
+        # Sync Django's migration state to reflect unique=True (no DB ops)
+        migrations.SeparateDatabaseAndState(
+            state_operations=[
+                migrations.AlterField(
+                    model_name='listing',
+                    name='slug',
+                    field=models.SlugField(max_length=280, unique=True, blank=True),
+                ),
+            ],
+            database_operations=[],
         ),
     ]
