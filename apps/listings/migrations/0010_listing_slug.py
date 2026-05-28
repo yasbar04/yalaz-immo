@@ -49,6 +49,7 @@ class Migration(migrations.Migration):
         migrations.RunSQL(
             sql="""
                 DROP INDEX IF EXISTS listings_listing_slug_984b866c_like;
+                ALTER TABLE listings_listing DROP CONSTRAINT IF EXISTS listings_listing_slug_984b866c_uniq;
                 DROP INDEX IF EXISTS listings_listing_slug_984b866c_uniq;
                 CREATE UNIQUE INDEX listings_listing_slug_984b866c_uniq
                     ON listings_listing (slug);
