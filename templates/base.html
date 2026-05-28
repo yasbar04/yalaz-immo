@@ -74,7 +74,7 @@
     <meta name="twitter:creator" content="@yalaz">
     <meta name="twitter:title" content="{% block twitter_title %}Yalaz | Agence Immobilière Professionnelle au Maroc{% endblock %}">
     <meta name="twitter:description" content="{% block twitter_description %}Yalaz, votre agence immobilière de confiance. Achetez, vendez, louez ou estimez votre bien au Maroc.{% endblock %}">
-    <meta name="twitter:image" content="{{ request.scheme }}://{{ request.get_host }}{% static 'images/logo_yalaz.png' %}">
+    <meta name="twitter:image" content="{% block twitter_image %}{{ request.scheme }}://{{ request.get_host }}{% static 'images/logo_yalaz.png' %}{% endblock %}">
     <meta name="twitter:image:alt" content="Yalaz — Agence Immobilière au Maroc">
 
     <!-- JSON-LD: LocalBusiness -->
