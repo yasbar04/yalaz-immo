@@ -19,6 +19,7 @@ def populate_slugs(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
+    atomic = False  # each op gets its own deferred-SQL window; prevents duplicate _like index
 
     dependencies = [
         ('listings', '0009_listing_price_optional'),
