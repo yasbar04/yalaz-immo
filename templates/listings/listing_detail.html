@@ -511,8 +511,8 @@ document.querySelectorAll('a[href="#dv2-form-contact"]').forEach(a => {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
     "itemListElement": [
-        { "@type": "ListItem", "position": 1, "name": "Accueil", "item": "{% url 'home' %}" },
-        { "@type": "ListItem", "position": 2, "name": "Annonces", "item": "{% url 'listing_list' %}" },
+        { "@type": "ListItem", "position": 1, "name": "Accueil", "item": "{{ request.scheme }}://{{ request.get_host }}{% url 'home' %}" },
+        { "@type": "ListItem", "position": 2, "name": "Annonces", "item": "{{ request.scheme }}://{{ request.get_host }}{% url 'listing_list' %}" },
         { "@type": "ListItem", "position": 3, "name": "{{ listing.title }}", "item": "{{ request.build_absolute_uri }}" }
     ]
 }
