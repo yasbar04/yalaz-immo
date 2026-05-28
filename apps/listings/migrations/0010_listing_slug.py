@@ -31,6 +31,14 @@ class Migration(migrations.Migration):
             field=models.SlugField(max_length=280, blank=True, null=True),
         ),
         migrations.RunPython(populate_slugs, migrations.RunPython.noop),
+        # Drop any indexes left by a partial migration run on prod (idempotent)
+        migrations.RunSQL(
+            sql="""
+                DROP INDEX IF EXISTS listings_listing_slug_984b866c_like;
+                DROP INDEX IF EXISTS listings_listing_slug_984b866c_uniq;
+            """,
+            reverse_sql=migrations.RunSQL.noop,
+        ),
         migrations.AlterField(
             model_name='listing',
             name='slug',
