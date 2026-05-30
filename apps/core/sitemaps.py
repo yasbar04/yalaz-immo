@@ -1,9 +1,12 @@
 from datetime import date
+from django.conf import settings
 from django.views.generic import TemplateView
 from django.urls import reverse
 from apps.listings.models import Listing
 from urllib.parse import urljoin
 from .seo_views import get_all_city_type_urls
+
+_BASE_URL = getattr(settings, 'APP_BASE_URL', '').rstrip('/')
 
 
 class SitemapView(TemplateView):
@@ -13,7 +16,7 @@ class SitemapView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        base_url = f"{self.request.scheme}://{self.request.get_host()}"
+        base_url = _BASE_URL or f"{self.request.scheme}://{self.request.get_host()}"
         today = date.today().isoformat()
 
         static_pages = [
@@ -70,7 +73,7 @@ class SitemapListingsView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        base_url = f"{self.request.scheme}://{self.request.get_host()}"
+        base_url = _BASE_URL or f"{self.request.scheme}://{self.request.get_host()}"
 
         listings = Listing.objects.filter(status='published').values('pk', 'slug', 'updated_at', 'listing_type', 'city')
         urls = []
@@ -99,7 +102,7 @@ class SitemapIndexView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        base_url = f"{self.request.scheme}://{self.request.get_host()}"
+        base_url = _BASE_URL or f"{self.request.scheme}://{self.request.get_host()}"
         context['sitemaps'] = [
             {'url': urljoin(base_url, '/sitemap.xml')},
             {'url': urljoin(base_url, '/sitemap-listings.xml')},
