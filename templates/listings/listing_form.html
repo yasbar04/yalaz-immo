@@ -194,15 +194,22 @@
                     {% with imgs=listing.images.all %}
                     {% if imgs %}
                     <div>
-                        <p style="font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:.75rem;">Photos enregistrées — cliquez × pour supprimer</p>
-                        <div class="existing-imgs-row">
+                        <p style="font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:.75rem;">
+                            Photos enregistrées — glissez pour réorganiser, × pour supprimer
+                        </p>
+                        <div class="existing-imgs-row" id="sortableGrid">
                             {% for img in imgs %}
-                            <div class="existing-img-tile" id="tile-{{ img.pk }}">
+                            <div class="existing-img-tile" id="tile-{{ img.pk }}" data-id="{{ img.pk }}">
+                                <div class="drag-handle" title="Glisser pour réorganiser">
+                                    <svg viewBox="0 0 20 20" fill="currentColor" width="13" height="13"><circle cx="7" cy="4" r="1.5"/><circle cx="13" cy="4" r="1.5"/><circle cx="7" cy="10" r="1.5"/><circle cx="13" cy="10" r="1.5"/><circle cx="7" cy="16" r="1.5"/><circle cx="13" cy="16" r="1.5"/></svg>
+                                </div>
+                                <span class="img-first-badge" style="{% if not forloop.first %}display:none;{% endif %}">1ère</span>
                                 <img src="{{ img.image.url }}" alt="Photo {{ forloop.counter }}" style="width:100px;height:80px;object-fit:cover;border-radius:.5rem;display:block;border:2px solid var(--border-light);">
                                 <label style="position:absolute;top:-8px;right:-8px;cursor:pointer;" title="Supprimer cette photo">
                                     <input type="checkbox" name="delete_image_{{ img.pk }}" value="1" style="position:absolute;opacity:0;width:0;height:0;" onchange="toggleDeleteTile(this, '{{ img.pk }}')">
                                     <span class="del-badge">×</span>
                                 </label>
+                                <input type="hidden" name="image_order_{{ img.pk }}" value="{{ forloop.counter0 }}">
                             </div>
                             {% endfor %}
                         </div>
@@ -232,6 +239,55 @@
             {% endif %}
         </div>
     </form>
+
+    <style>
+        .drag-handle {
+            position: absolute;
+            bottom: 5px;
+            left: 50%;
+            transform: translateX(-50%);
+            cursor: grab;
+            color: rgba(255,255,255,.9);
+            background: rgba(0,0,0,.38);
+            border-radius: 5px;
+            padding: 3px 7px;
+            display: flex;
+            align-items: center;
+            touch-action: none;
+            -webkit-user-select: none;
+            user-select: none;
+            z-index: 2;
+        }
+        .drag-handle:active { cursor: grabbing; }
+        .img-first-badge {
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            background: var(--gold, #c9a96e);
+            color: #fff;
+            font-size: .58rem;
+            font-weight: 700;
+            padding: 2px 5px;
+            border-radius: 4px;
+            text-transform: uppercase;
+            letter-spacing: .05em;
+            pointer-events: none;
+            z-index: 2;
+        }
+        .existing-img-tile { touch-action: auto; }
+        .existing-img-tile.is-dragging { opacity: .25 !important; }
+        .sortable-ghost {
+            position: fixed;
+            pointer-events: none;
+            z-index: 9000;
+            border-radius: 10px;
+            opacity: .92;
+            transform: scale(1.06);
+            box-shadow: 0 16px 48px rgba(0,0,0,.25);
+            transition: box-shadow .1s;
+            will-change: left, top;
+        }
+    </style>
 
     <script>
         // ===== DISTRICTS DYNAMIQUES =====
@@ -293,6 +349,98 @@
                 });
             });
         }
+        // ===== DRAG-AND-DROP RÉORGANISATION PHOTOS =====
+        (function () {
+            const grid = document.getElementById('sortableGrid');
+            if (!grid) return;
+
+            const tiles = () => [...grid.querySelectorAll('.existing-img-tile')];
+            let dragging = null, ghost = null, offset = { x: 0, y: 0 };
+
+            function startDrag(e) {
+                const tile = e.currentTarget.closest('.existing-img-tile');
+                if (!tile) return;
+                e.preventDefault();
+                dragging = tile;
+
+                const r = tile.getBoundingClientRect();
+                offset = { x: e.clientX - r.left, y: e.clientY - r.top };
+
+                ghost = tile.cloneNode(true);
+                ghost.className = 'sortable-ghost';
+                ghost.style.width = r.width + 'px';
+                ghost.style.height = r.height + 'px';
+                ghost.style.left = r.left + 'px';
+                ghost.style.top = r.top + 'px';
+                document.body.appendChild(ghost);
+
+                tile.classList.add('is-dragging');
+
+                document.addEventListener('pointermove', moveDrag, { passive: false });
+                document.addEventListener('pointerup', endDrag);
+                document.addEventListener('pointercancel', endDrag);
+            }
+
+            function moveDrag(e) {
+                e.preventDefault();
+                if (!ghost || !dragging) return;
+                ghost.style.left = (e.clientX - offset.x) + 'px';
+                ghost.style.top = (e.clientY - offset.y) + 'px';
+
+                const others = tiles().filter(t => t !== dragging);
+                let nearest = null, minD = Infinity;
+                for (const t of others) {
+                    const r = t.getBoundingClientRect();
+                    const d = Math.hypot(e.clientX - (r.left + r.width / 2), e.clientY - (r.top + r.height / 2));
+                    if (d < minD) { minD = d; nearest = t; }
+                }
+                if (nearest) {
+                    const r = nearest.getBoundingClientRect();
+                    if (e.clientX < r.left + r.width / 2) {
+                        grid.insertBefore(dragging, nearest);
+                    } else {
+                        nearest.insertAdjacentElement('afterend', dragging);
+                    }
+                    refreshFirstBadge();
+                }
+            }
+
+            function endDrag() {
+                document.removeEventListener('pointermove', moveDrag);
+                document.removeEventListener('pointerup', endDrag);
+                document.removeEventListener('pointercancel', endDrag);
+                if (ghost) { ghost.remove(); ghost = null; }
+                if (dragging) { dragging.classList.remove('is-dragging'); dragging = null; }
+                saveOrder();
+            }
+
+            function saveOrder() {
+                tiles().forEach((t, i) => {
+                    const id = t.dataset.id;
+                    let inp = t.querySelector('input[name="image_order_' + id + '"]');
+                    if (!inp) {
+                        inp = document.createElement('input');
+                        inp.type = 'hidden';
+                        inp.name = 'image_order_' + id;
+                        t.appendChild(inp);
+                    }
+                    inp.value = i;
+                });
+            }
+
+            function refreshFirstBadge() {
+                tiles().forEach((t, i) => {
+                    const b = t.querySelector('.img-first-badge');
+                    if (b) b.style.display = i === 0 ? '' : 'none';
+                });
+            }
+
+            saveOrder();
+
+            grid.querySelectorAll('.drag-handle').forEach(h => {
+                h.addEventListener('pointerdown', startDrag);
+            });
+        })();
     </script>
 </div>
 {% endblock %}

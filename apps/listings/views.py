@@ -404,6 +404,15 @@ def listing_edit(request, pk):
                         img_id = key.replace('delete_image_', '')
                         listing.images.filter(pk=img_id).delete()
 
+                # Réordonnancement des photos existantes
+                for key, value in request.POST.items():
+                    if key.startswith('image_order_'):
+                        try:
+                            img_id = int(key.replace('image_order_', ''))
+                            updated_listing.images.filter(pk=img_id).update(order=int(value))
+                        except (ValueError, TypeError):
+                            pass
+
                 # Ajout des nouvelles photos
                 extra_images = request.FILES.getlist('extra_images')
                 logger.info('Upload: %d fichier(s) reçu(s) pour annonce pk=%s', len(extra_images), updated_listing.pk)
