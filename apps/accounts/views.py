@@ -66,23 +66,26 @@ def login_view(request):
         if _is_admin(request.user):
             return redirect('dashboard')
         else:
+            # Non-admin users cannot login in v1
             logout(request)
             return render(request, 'accounts/admin_only.html', status=403)
-
+    
     # Show login form
     if request.method == 'POST':
         form = LoginForm(request, data=request.POST)
         if form.is_valid():
             user = form.get_user()
+            # Check if user is admin
             if not _is_admin(user):
-                messages.error(request, 'Accès réservé aux membres de l\'équipe Yalaz.')
+                messages.error(request, 'Acces reserve aux administrateurs.')
                 return render(request, 'accounts/login.html', {'form': form})
-
+            
             login(request, user, backend='django.contrib.auth.backends.ModelBackend')
-
+            
+            # Check if user needs to change password
             if hasattr(user, 'profile') and user.profile.password_change_required:
                 return redirect('change_password_required')
-
+            
             return redirect('dashboard')
     else:
         form = LoginForm()
@@ -283,8 +286,11 @@ def dashboard(request):
     
     # Staff users see back office dashboard
     if request.user.is_staff or request.user.is_superuser:
+        from .admin_views import is_admin as _check_is_admin
+        from apps.core.models import SellerRequest, ContactMessage
+        from apps.listings.models import PublicInquiry
         last_7_days = now() - timedelta(days=7)
-        
+
         stats = {
             'total_users': User.objects.count(),
             'total_listings': Listing.objects.count(),
@@ -294,20 +300,30 @@ def dashboard(request):
             'new_users_7days': User.objects.filter(date_joined__gte=last_7_days).count(),
             'new_listings_7days': Listing.objects.filter(created_at__gte=last_7_days).count(),
             'total_admins': User.objects.filter(is_superuser=True).count(),
+            'new_seller_requests': SellerRequest.objects.filter(status='new').count(),
+            'total_seller_requests': SellerRequest.objects.count(),
+            'unread_contact_messages': ContactMessage.objects.filter(is_read=False).count(),
+            'unread_inquiries': PublicInquiry.objects.filter(is_read=False).count(),
         }
-        
+
         recent_listings = Listing.objects.all()[:10]
         recent_reports = Report.objects.filter(status=Report.Status.PENDING)[:5]
         pending_listings = Listing.objects.filter(status=Listing.Status.PENDING)[:10]
-        
+        recent_seller_requests = SellerRequest.objects.filter(status='new').prefetch_related('images')[:5]
+        recent_contact_messages = ContactMessage.objects.filter(is_read=False)[:5]
+
         context = {
             'stats': stats,
             'recent_listings': recent_listings,
             'recent_reports': recent_reports,
             'pending_listings': pending_listings,
+            'recent_seller_requests': recent_seller_requests,
+            'recent_contact_messages': recent_contact_messages,
             'is_staff_view': True,
+            'user_is_admin': _check_is_admin(request.user),
+            'user_is_superuser': request.user.is_superuser,
         }
-        
+
         return render(request, 'admin/dashboard.html', context)
     
     # Regular user dashboard
@@ -401,9 +417,8 @@ def profile_edit_view(request):
         form = UserProfileForm(request.POST, request.FILES, instance=profile)
         if form.is_valid():
             # Mettre a jour les informations utilisateur
-            parts = form.cleaned_data.get('full_name', '').strip().split(None, 1)
-            request.user.first_name = parts[0] if parts else ''
-            request.user.last_name = parts[1] if len(parts) > 1 else ''
+            request.user.first_name = form.cleaned_data.get('first_name', '')
+            request.user.last_name = form.cleaned_data.get('last_name', '')
             request.user.email = form.cleaned_data.get('email', '')
             request.user.save()
 

@@ -30,6 +30,7 @@
                         <th>Utilisateur</th>
                         <th>Email</th>
                         <th>Nom complet</th>
+                        <th>Rôle</th>
                         <th>Date d'ajout</th>
                         <th>Biens publiés</th>
                         <th>Actions</th>
@@ -41,6 +42,26 @@
                             <td><strong>{{ user.username }}</strong></td>
                             <td class="td-muted">{{ user.email }}</td>
                             <td>{{ user.get_full_name|default:"—" }}</td>
+                            <td>
+                                {% if user == request.user %}
+                                    {% if user.is_superuser %}
+                                        <span class="adm-role-pill adm-role-superadmin">Superadmin</span>
+                                    {% elif user.profile.role == 'admin' %}
+                                        <span class="adm-role-pill adm-role-admin">Admin</span>
+                                    {% else %}
+                                        <span class="adm-role-pill adm-role-staff">Staff</span>
+                                    {% endif %}
+                                {% else %}
+                                <form method="post" action="{% url 'admin_staff_set_role' user.id %}" class="role-form">
+                                    {% csrf_token %}
+                                    <select name="role" class="role-select {% if user.is_superuser %}is-superadmin{% elif user.profile.role == 'admin' %}is-admin{% else %}is-staff{% endif %}" onchange="this.form.submit()" title="Changer le rôle">
+                                        <option value="superadmin" {% if user.is_superuser %}selected{% endif %}>Superadmin</option>
+                                        <option value="admin" {% if not user.is_superuser and user.profile.role == 'admin' %}selected{% endif %}>Admin</option>
+                                        <option value="staff" {% if not user.is_superuser and user.profile.role != 'admin' %}selected{% endif %}>Staff</option>
+                                    </select>
+                                </form>
+                                {% endif %}
+                            </td>
                             <td class="td-muted">{{ user.date_joined|date:"d/m/Y" }}</td>
                             <td class="td-gold">{{ user.published_count }}</td>
                             <td>
@@ -66,4 +87,46 @@
     {% endif %}
 
 </div>
+
+<style>
+.role-form { margin: 0; }
+.role-select {
+    appearance: none;
+    -webkit-appearance: none;
+    padding: .28rem .65rem .28rem .55rem;
+    border-radius: 99px;
+    font-size: .72rem;
+    font-weight: 700;
+    border: 1px solid transparent;
+    cursor: pointer;
+    outline: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23999' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right .45rem center;
+    padding-right: 1.4rem;
+    transition: border-color .15s, background-color .15s;
+}
+.role-select:hover { opacity: .85; }
+.role-select.is-superadmin { background-color: rgba(99,102,241,.1); color: #4338ca; border-color: rgba(99,102,241,.3); }
+.role-select.is-admin      { background-color: rgba(201,169,110,.12); color: var(--gold-dark); border-color: rgba(201,169,110,.3); }
+.role-select.is-staff      { background-color: var(--bg); color: var(--muted); border-color: var(--border-light); }
+
+.adm-role-pill { display:inline-block; padding:.25rem .65rem; border-radius:99px; font-size:.72rem; font-weight:700; border:1px solid transparent; }
+.adm-role-superadmin { background:rgba(99,102,241,.1); color:#4338ca; border-color:rgba(99,102,241,.3); }
+.adm-role-admin      { background:rgba(201,169,110,.12); color:var(--gold-dark); border-color:rgba(201,169,110,.3); }
+.adm-role-staff      { background:var(--bg); color:var(--muted); border-color:var(--border-light); }
+</style>
+
+<script>
+document.querySelectorAll('.role-select').forEach(function(sel) {
+    function update() {
+        sel.classList.remove('is-superadmin', 'is-admin', 'is-staff');
+        if (sel.value === 'superadmin') sel.classList.add('is-superadmin');
+        else if (sel.value === 'admin')  sel.classList.add('is-admin');
+        else                             sel.classList.add('is-staff');
+    }
+    sel.addEventListener('change', update);
+});
+</script>
+
 {% endblock %}

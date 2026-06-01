@@ -43,6 +43,19 @@ class UserProfile(models.Model):
         default=False,
         help_text='Changer le mot de passe obligatoire à la prochaine connexion',
     )
+
+    ROLE_CHOICES = [
+        ('admin', 'Admin'),
+        ('staff', 'Staff'),
+    ]
+    role = models.CharField(
+        max_length=10,
+        choices=ROLE_CHOICES,
+        blank=True,
+        default='staff',
+        help_text='Rôle dans le back office (admin ou staff)',
+    )
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

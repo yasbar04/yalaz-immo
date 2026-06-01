@@ -1,5 +1,6 @@
-﻿{% extends 'base.html' %}
-{% block title %}{{ listing.title }} | Admin Yalaz{% endblock %}
+{% extends 'base.html' %}
+{% load humanize %}
+{% block title %}{{ listing.title }} — Admin | Yalaz{% endblock %}
 
 {% block content %}
 
@@ -12,128 +13,500 @@
             </a>
             <span class="eyebrow" style="display:block;margin-top:.5rem;">Détail annonce</span>
             <h1>{{ listing.title }}</h1>
-            <p class="meta-copy">{{ listing.owner.username }} · {{ listing.city }} · {% if listing.price %}{{ listing.price|floatformat:0|intcomma }} MAD{% else %}Sur demande{% endif %}</p>
+        </div>
+        <div style="display:flex;align-items:center;gap:.625rem;flex-wrap:wrap;">
+            <span class="ld-status-pill ld-status-{{ listing.status }}">{{ listing.get_status_display }}</span>
+            {% if listing.is_featured %}<span class="ld-status-pill ld-status-featured">★ Mise en avant</span>{% endif %}
         </div>
     </div>
 </div>
 
-<div class="container" style="padding-bottom:4rem;">
-    <div style="display:grid;grid-template-columns:1fr 340px;gap:1.5rem;align-items:start;">
+<div class="container ld-wrap">
+    <div class="adm-layout">
 
-        <!-- Main info -->
-        <div class="admin-panel-card">
-            <div class="listing-badges" style="margin-bottom:1rem;">
-                <span class="pill status-{{ listing.status }}">{{ listing.get_status_display }}</span>
-                <span class="pill">{{ listing.get_property_type_display }}</span>
-                <span class="pill pill-mint">{{ listing.get_listing_type_display }}</span>
-                {% if listing.is_featured %}<span class="pill pill-gold">Mise en avant</span>{% endif %}
-            </div>
+        <!-- ── MAIN ── -->
+        <div class="adm-main">
 
-            <div class="admin-stats-4" style="margin-bottom:1.5rem;">
-                <div class="admin-stat-prem" style="padding:1rem;">
-                    <div class="admin-stat-body">
-                        <strong>{{ listing.views_count }}</strong>
-                        <span>Vues</span>
-                    </div>
+            <!-- Stats rapides -->
+            <div class="ld-stats-row">
+                <div class="ld-stat">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" width="18" height="18"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                    <strong>{{ listing.views_count }}</strong>
+                    <span>Vues</span>
                 </div>
-                <div class="admin-stat-prem" style="padding:1rem;">
-                    <div class="admin-stat-body">
-                        <strong>{{ listing.contacts.count }}</strong>
-                        <span>Contacts</span>
-                    </div>
+                <div class="ld-stat">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" width="18" height="18"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                    <strong>{{ listing.contacts.count }}</strong>
+                    <span>Contacts</span>
                 </div>
-                <div class="admin-stat-prem" style="padding:1rem;">
-                    <div class="admin-stat-body">
-                        <strong>{{ listing.favorited_by.count }}</strong>
-                        <span>Favoris</span>
-                    </div>
+                <div class="ld-stat">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" width="18" height="18"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                    <strong>{{ listing.favorited_by.count }}</strong>
+                    <span>Favoris</span>
                 </div>
-                <div class="admin-stat-prem" style="padding:1rem;">
-                    <div class="admin-stat-body">
-                        <strong>{{ listing.created_at|date:"d/m/Y" }}</strong>
-                        <span>Création</span>
-                    </div>
+                <div class="ld-stat">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" width="18" height="18"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                    <strong>{{ listing.created_at|date:"d/m/Y" }}</strong>
+                    <span>Créée le</span>
                 </div>
             </div>
 
-            <div class="description-content">
-                {{ listing.description|linebreaks }}
+            <!-- Détails du bien -->
+            <div class="admin-panel-card">
+                <div class="admin-panel-head">
+                    <div>
+                        <span class="eyebrow" style="color:var(--gold);display:block;margin-bottom:.2rem;">Informations</span>
+                        <h2>{{ listing.get_property_type_display }} · {{ listing.get_listing_type_display }}</h2>
+                    </div>
+                </div>
+                <div class="ld-info-grid">
+                    <div class="adm-info-block">
+                        <p class="adm-label">Prix</p>
+                        <p class="adm-value" style="font-family:var(--font-heading);font-size:1.15rem;font-weight:700;color:var(--ink);">
+                            {% if listing.price %}{{ listing.price|floatformat:0|intcomma }} MAD{% else %}Sur demande{% endif %}
+                        </p>
+                    </div>
+                    <div class="adm-info-block">
+                        <p class="adm-label">Surface</p>
+                        <p class="adm-value">{{ listing.surface_area }} m²</p>
+                    </div>
+                    <div class="adm-info-block">
+                        <p class="adm-label">Chambres</p>
+                        <p class="adm-value">{{ listing.bedrooms }}</p>
+                    </div>
+                    <div class="adm-info-block">
+                        <p class="adm-label">Salles de bain</p>
+                        <p class="adm-value">{{ listing.bathrooms }}</p>
+                    </div>
+                    <div class="adm-info-block">
+                        <p class="adm-label">Ville</p>
+                        <p class="adm-value">{{ listing.city }}{% if listing.district %}, {{ listing.district }}{% endif %}</p>
+                    </div>
+                    <div class="adm-info-block">
+                        <p class="adm-label">Dernière modif.</p>
+                        <p class="adm-value">{{ listing.updated_at|date:"d/m/Y à H:i" }}</p>
+                    </div>
+                </div>
+
+                <!-- Équipements -->
+                <div class="ld-equip-section">
+                    <p class="adm-label" style="margin-bottom:.625rem;">Équipements</p>
+                    <div class="ld-equip-row">
+                        {% if listing.swimming_pool %}<span class="ld-equip-tag">🏊 Piscine</span>{% endif %}
+                        {% if listing.garden %}<span class="ld-equip-tag">🌿 Jardin</span>{% endif %}
+                        {% if listing.garage %}<span class="ld-equip-tag">🚗 Garage</span>{% endif %}
+                        {% if listing.parking %}<span class="ld-equip-tag">🅿 Parking</span>{% endif %}
+                        {% if listing.terrace %}<span class="ld-equip-tag">☀️ Terrasse</span>{% endif %}
+                        {% if listing.balcony %}<span class="ld-equip-tag">🏠 Balcon</span>{% endif %}
+                        {% if listing.air_conditioning %}<span class="ld-equip-tag">❄️ Clim</span>{% endif %}
+                        {% if listing.furnished %}<span class="ld-equip-tag">🛋️ Meublé</span>{% endif %}
+                        {% if listing.security %}<span class="ld-equip-tag">🔒 Sécurité</span>{% endif %}
+                        {% if listing.kitchen_equipped %}<span class="ld-equip-tag">🍳 Cuisine équip.</span>{% endif %}
+                        {% if not listing.swimming_pool and not listing.garden and not listing.garage and not listing.parking and not listing.terrace and not listing.balcony and not listing.air_conditioning and not listing.furnished and not listing.security and not listing.kitchen_equipped %}
+                        <span style="font-size:.82rem;color:var(--muted);">Aucun équipement renseigné</span>
+                        {% endif %}
+                    </div>
+                </div>
             </div>
+
+            <!-- Propriétaire -->
+            <div class="admin-panel-card">
+                <div class="admin-panel-head">
+                    <div>
+                        <span class="eyebrow" style="color:var(--gold);display:block;margin-bottom:.2rem;">Propriétaire</span>
+                        <h2>{{ listing.owner.get_full_name|default:listing.owner.username }}</h2>
+                    </div>
+                </div>
+                <div class="ld-info-grid">
+                    <div class="adm-info-block">
+                        <p class="adm-label">Compte</p>
+                        <p class="adm-value">@{{ listing.owner.username }}</p>
+                    </div>
+                    {% if listing.owner_email or listing.owner.email %}
+                    <div class="adm-info-block">
+                        <p class="adm-label">Email</p>
+                        <a href="mailto:{{ listing.owner_email|default:listing.owner.email }}" class="adm-value-link">{{ listing.owner_email|default:listing.owner.email }}</a>
+                    </div>
+                    {% endif %}
+                    {% if listing.owner_phone %}
+                    <div class="adm-info-block">
+                        <p class="adm-label">Téléphone</p>
+                        <a href="tel:{{ listing.owner_phone }}" class="adm-value-link">{{ listing.owner_phone }}</a>
+                    </div>
+                    {% endif %}
+                    {% if listing.owner_whatsapp %}
+                    <div class="adm-info-block">
+                        <p class="adm-label">WhatsApp</p>
+                        <a href="https://wa.me/{{ listing.owner_whatsapp|cut:' '|cut:'+' }}" target="_blank" rel="noopener" class="adm-value-link">{{ listing.owner_whatsapp }}</a>
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="adm-card-actions">
+                    {% if listing.owner_email or listing.owner.email %}
+                    <a href="mailto:{{ listing.owner_email|default:listing.owner.email }}" class="btn-hero-prim" style="font-size:.82rem;padding:.55rem 1.1rem;">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                        Envoyer un email
+                    </a>
+                    {% endif %}
+                    {% if listing.owner_phone %}
+                    <a href="tel:{{ listing.owner_phone }}" class="btn-hero-sec" style="font-size:.82rem;padding:.55rem 1.1rem;">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 1.26h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9a16 16 0 0 0 6 6l1.8-1.81a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                        Appeler
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Description -->
+            <div class="admin-panel-card">
+                <div class="admin-panel-head">
+                    <div>
+                        <span class="eyebrow" style="color:var(--gold);display:block;margin-bottom:.2rem;">Contenu</span>
+                        <h2>Description</h2>
+                    </div>
+                </div>
+                <div class="adm-message-body">{{ listing.description }}</div>
+            </div>
+
+            <!-- Photos -->
+            {% if listing.images.all %}
+            <div class="admin-panel-card">
+                <div class="admin-panel-head">
+                    <div>
+                        <span class="eyebrow" style="color:var(--gold);display:block;margin-bottom:.2rem;">Médias</span>
+                        <h2>Photos <span style="font-size:.8rem;font-weight:500;color:var(--muted);">({{ listing.images.count }})</span></h2>
+                    </div>
+                </div>
+                <div class="ld-photos-grid">
+                    {% for img in listing.images.all %}
+                    <button type="button" class="ld-photo-thumb" onclick="ldOpenPhoto({{ forloop.counter0 }})">
+                        <img src="{{ img.image.url }}" alt="{{ img.alt_text|default:listing.title }}" loading="lazy">
+                        <div class="ld-photo-overlay">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M1 6l5 5-5 5"/><path d="M23 6l-5 5 5 5"/><path d="M8 12h8"/></svg>
+                        </div>
+                    </button>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
         </div>
 
-        <!-- Actions -->
-        <div class="admin-panel-card">
-            <div class="admin-panel-head"><h2>Actions admin</h2></div>
-            <div style="padding:.75rem 1.25rem 0;">
-                <a href="{% url 'listing_edit' listing.pk %}" class="btn-hero-prim" style="display:flex;align-items:center;gap:.5rem;border-radius:.5rem;justify-content:center;text-decoration:none;margin-bottom:.75rem;">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-                    Modifier le contenu
-                </a>
-            </div>
-            <form method="post" style="display:flex;flex-direction:column;gap:.75rem;padding:0 1.25rem 1.25rem;">
-                {% csrf_token %}
-                {% if listing.status == 'pending' %}
-                    <button type="submit" name="action" value="approve" class="btn-hero-prim" style="border-radius:.5rem;">
+        <!-- ── SIDEBAR ── -->
+        <div class="adm-sidebar">
+
+            <!-- Actions admin -->
+            <div class="admin-panel-card">
+                <div class="admin-panel-head">
+                    <div>
+                        <span class="eyebrow" style="color:var(--gold);display:block;margin-bottom:.2rem;">Administration</span>
+                        <h2>Actions</h2>
+                    </div>
+                </div>
+                <div style="padding:0 1.25rem 1.25rem;display:flex;flex-direction:column;gap:.5rem;">
+                    <a href="{% url 'listing_edit' listing.pk %}" class="ld-action-btn ld-action-edit">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                        Modifier le contenu
+                    </a>
+                    <a href="{{ listing.get_absolute_url }}" target="_blank" class="ld-action-btn">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                        Voir l'annonce
+                    </a>
+                </div>
+
+                <form method="post" style="padding:0 1.25rem 1.25rem;display:flex;flex-direction:column;gap:.5rem;border-top:1px solid var(--border-light);padding-top:1rem;margin-top:.25rem;">
+                    {% csrf_token %}
+                    {% if listing.status == 'pending' %}
+                    <button type="submit" name="action" value="approve" class="ld-action-btn ld-action-approve">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><polyline points="20 6 9 17 4 12"/></svg>
                         Approuver et publier
                     </button>
-                    <button type="submit" name="action" value="reject" class="admin-action-btn-prem is-danger">
+                    <button type="submit" name="action" value="reject" class="ld-action-btn ld-action-danger">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
                         Rejeter
                     </button>
-                {% endif %}
-                <button type="submit" name="action" value="feature" class="admin-action-btn-prem">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-                    {% if listing.is_featured %}Retirer la mise en avant{% else %}Mettre en avant{% endif %}
-                </button>
-                <button type="submit" name="action" value="delete" class="admin-action-btn-prem is-danger" onclick="return confirm('Supprimer cette annonce ?');">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>
-                    Supprimer l'annonce
-                </button>
-            </form>
+                    {% endif %}
+                    {% if listing.status == 'published' %}
+                    <button type="submit" name="action" value="reject" class="ld-action-btn ld-action-warn">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>
+                        Dépublier
+                    </button>
+                    {% endif %}
+                    <button type="submit" name="action" value="feature" class="ld-action-btn ld-action-feature">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                        {% if listing.is_featured %}Retirer la mise en avant{% else %}Mettre en avant{% endif %}
+                    </button>
+                </form>
+
+                <form method="post" style="padding:0 1.25rem 1.25rem;" onsubmit="return confirm('Supprimer définitivement cette annonce ?')">
+                    {% csrf_token %}
+                    <button type="submit" name="action" value="delete" class="ld-action-btn ld-action-danger" style="width:100%;">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg>
+                        Supprimer l'annonce
+                    </button>
+                </form>
+            </div>
+
+            <!-- Métadonnées -->
+            <div class="admin-panel-card">
+                <div class="admin-panel-head"><div><h2>Métadonnées</h2></div></div>
+                <div style="padding:0 1.5rem 1.5rem;display:flex;flex-direction:column;gap:.75rem;">
+                    <div class="adm-info-block">
+                        <p class="adm-label">Statut</p>
+                        <span class="ld-status-pill ld-status-{{ listing.status }}">{{ listing.get_status_display }}</span>
+                    </div>
+                    <div class="adm-info-block">
+                        <p class="adm-label">Type de bien</p>
+                        <p class="adm-value">{{ listing.get_property_type_display }}</p>
+                    </div>
+                    <div class="adm-info-block">
+                        <p class="adm-label">Type de transaction</p>
+                        <p class="adm-value">{{ listing.get_listing_type_display }}</p>
+                    </div>
+                    <div class="adm-info-block">
+                        <p class="adm-label">Créée le</p>
+                        <p class="adm-value">{{ listing.created_at|date:"d/m/Y à H:i" }}</p>
+                    </div>
+                    <div class="adm-info-block">
+                        <p class="adm-label">Modifiée le</p>
+                        <p class="adm-value">{{ listing.updated_at|date:"d/m/Y à H:i" }}</p>
+                    </div>
+                    <div class="adm-info-block">
+                        <p class="adm-label">ID</p>
+                        <p class="adm-value" style="font-family:monospace;font-size:.82rem;">#{{ listing.pk }}</p>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </div>
-
-    {% if listing.images.all %}
-        <div class="admin-panel-card" style="margin-top:1.5rem;">
-            <div class="admin-panel-head">
-                <h2>Galerie photos</h2>
-                <span class="meta-copy">{{ listing.images.count }} photo{{ listing.images.count|pluralize }}</span>
-            </div>
-            <div class="listing-grid" style="grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:1rem;">
-                {% for image in listing.images.all %}
-                    <div style="border-radius:.75rem;overflow:hidden;aspect-ratio:4/3;">
-                        <img src="{{ image.image.url }}" alt="{{ image.alt_text|default:listing.title }}" style="width:100%;height:100%;object-fit:cover;">
-                    </div>
-                {% endfor %}
-            </div>
-        </div>
-    {% endif %}
-
-    {% if listing.contacts.all %}
-        <div class="admin-panel-card" style="margin-top:1.5rem;">
-            <div class="admin-panel-head">
-                <h2>Demandes de contact</h2>
-                <span class="meta-copy">{{ listing.contacts.count }} message{{ listing.contacts.count|pluralize }}</span>
-            </div>
-            <div class="admin-prem-list">
-                {% for contact in listing.contacts.all %}
-                    <div class="admin-prem-item" style="flex-direction:column;align-items:flex-start;gap:.5rem;">
-                        <div style="display:flex;justify-content:space-between;width:100%;">
-                            <strong>{{ contact.from_user.username }}</strong>
-                            <span class="meta-copy" style="font-size:.8rem;">{{ contact.created_at|date:"d/m/Y H:i" }}</span>
-                        </div>
-                        <div class="admin-item-meta">
-                            <span>{{ contact.email }}</span>
-                            {% if contact.phone %}<span>{{ contact.phone }}</span>{% endif %}
-                            <span>{% if contact.is_read %}Lu{% else %}<em style="color:var(--gold-dark);">Non lu</em>{% endif %}</span>
-                        </div>
-                        <p style="font-size:.875rem;color:var(--muted);margin:0;">{{ contact.message|truncatewords:30 }}</p>
-                    </div>
-                {% endfor %}
-            </div>
-        </div>
-    {% endif %}
-
 </div>
+
+<!-- ── LIGHTBOX ── -->
+{% if listing.images.all %}
+<div id="ldLightbox" class="ld-lb" onclick="if(event.target===this)ldCloseLb()">
+    <button class="ld-lb-close" onclick="ldCloseLb()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+    <button class="ld-lb-nav ld-lb-prev" onclick="ldNavLb(-1)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="22" height="22"><polyline points="15 18 9 12 15 6"/></svg>
+    </button>
+    <img id="ldLbImg" src="" alt="" class="ld-lb-img">
+    <button class="ld-lb-nav ld-lb-next" onclick="ldNavLb(1)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="22" height="22"><polyline points="9 18 15 12 9 6"/></svg>
+    </button>
+    <div id="ldLbCount" class="ld-lb-count"></div>
+</div>
+<script>
+var ldPhotos = [{% for img in listing.images.all %}"{{ img.image.url }}"{% if not forloop.last %},{% endif %}{% endfor %}];
+var ldCurrent = 0;
+var ldLb = document.getElementById('ldLightbox');
+var ldImg = document.getElementById('ldLbImg');
+var ldCount = document.getElementById('ldLbCount');
+
+function ldOpenPhoto(idx) {
+    ldCurrent = idx;
+    ldImg.src = ldPhotos[ldCurrent];
+    ldCount.textContent = (ldCurrent + 1) + ' / ' + ldPhotos.length;
+    ldLb.classList.add('is-open');
+    document.body.style.overflow = 'hidden';
+}
+function ldCloseLb() {
+    ldLb.classList.remove('is-open');
+    document.body.style.overflow = '';
+}
+function ldNavLb(dir) {
+    ldCurrent = (ldCurrent + dir + ldPhotos.length) % ldPhotos.length;
+    ldImg.src = ldPhotos[ldCurrent];
+    ldCount.textContent = (ldCurrent + 1) + ' / ' + ldPhotos.length;
+}
+document.addEventListener('keydown', function(e) {
+    if (!ldLb.classList.contains('is-open')) return;
+    if (e.key === 'ArrowLeft') ldNavLb(-1);
+    if (e.key === 'ArrowRight') ldNavLb(1);
+    if (e.key === 'Escape') ldCloseLb();
+});
+</script>
+{% endif %}
+
+<style>
+.ld-wrap { padding-bottom: 4rem; }
+
+/* Stats row */
+.ld-stats-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: .75rem;
+    margin-bottom: 1.25rem;
+}
+.ld-stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: .35rem;
+    padding: 1rem .75rem;
+    background: #fff;
+    border: 1px solid var(--border-light);
+    border-radius: var(--r-lg);
+    box-shadow: var(--shadow-xs);
+    text-align: center;
+    color: var(--muted);
+}
+.ld-stat strong { font-size: 1.15rem; font-weight: 800; color: var(--ink); font-family: var(--font-heading); line-height: 1; }
+.ld-stat span   { font-size: .68rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; }
+.ld-stat svg    { color: var(--gold); }
+
+/* Layout */
+.adm-layout { display:grid; grid-template-columns:1fr 300px; gap:1.5rem; align-items:start; }
+.adm-main   { display:flex; flex-direction:column; gap:1.25rem; }
+.adm-sidebar{ display:flex; flex-direction:column; gap:1.25rem; }
+
+/* Info grid */
+.ld-info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    padding: 0 1.5rem 1.5rem;
+}
+.adm-info-block { display:flex; flex-direction:column; gap:.2rem; }
+.adm-label { font-size:.68rem; font-weight:700; text-transform:uppercase; letter-spacing:.08em; color:var(--muted); margin:0; }
+.adm-value { font-size:.9rem; font-weight:500; color:var(--ink); margin:0; }
+.adm-value-link { font-size:.9rem; font-weight:600; color:var(--gold-dark); text-decoration:none; }
+.adm-value-link:hover { text-decoration:underline; }
+
+/* Equipment */
+.ld-equip-section { padding: 0 1.5rem 1.25rem; border-top: 1px solid var(--border-light); padding-top: 1.25rem; }
+.ld-equip-row { display:flex; flex-wrap:wrap; gap:.5rem; margin-top:.5rem; }
+.ld-equip-tag {
+    display:inline-flex; align-items:center; gap:.3rem;
+    padding:.3rem .65rem;
+    background:rgba(201,169,110,.08); border:1px solid rgba(201,169,110,.2);
+    border-radius:99px; font-size:.75rem; font-weight:600; color:var(--gold-dark);
+}
+
+/* Status pills */
+.ld-status-pill {
+    display:inline-block; padding:.3rem .75rem;
+    border-radius:99px; font-size:.73rem; font-weight:700;
+    border:1px solid transparent; white-space:nowrap;
+}
+.ld-status-published { background:rgba(16,185,129,.1); color:#065f46; border-color:rgba(16,185,129,.25); }
+.ld-status-pending   { background:rgba(245,158,11,.1); color:#92400e; border-color:rgba(245,158,11,.25); }
+.ld-status-rejected  { background:rgba(239,68,68,.08); color:#991b1b; border-color:rgba(239,68,68,.2); }
+.ld-status-draft     { background:var(--bg); color:var(--muted); border-color:var(--border-light); }
+.ld-status-featured  { background:rgba(201,169,110,.1); color:var(--gold-dark); border-color:rgba(201,169,110,.3); }
+
+/* Action buttons */
+.ld-action-btn {
+    display:flex; align-items:center; justify-content:center; gap:.5rem;
+    width:100%; padding:.65rem 1rem;
+    border-radius:var(--r-md);
+    border:1px solid var(--border-light);
+    background:var(--bg); color:var(--text);
+    font-size:.85rem; font-weight:600;
+    cursor:pointer; text-decoration:none;
+    transition:background .18s, border-color .18s, transform .12s;
+}
+.ld-action-btn:hover { background:#f0f0ec; border-color:var(--border); transform:translateY(-1px); }
+.ld-action-edit    { border-color:rgba(99,102,241,.2); background:rgba(99,102,241,.04); color:#4338ca; }
+.ld-action-edit:hover { background:rgba(99,102,241,.08); border-color:rgba(99,102,241,.3); }
+.ld-action-approve { background:rgba(16,185,129,.08); border-color:rgba(16,185,129,.25); color:#065f46; }
+.ld-action-approve:hover { background:rgba(16,185,129,.15); }
+.ld-action-warn  { background:rgba(245,158,11,.08); border-color:rgba(245,158,11,.25); color:#92400e; }
+.ld-action-warn:hover { background:rgba(245,158,11,.15); }
+.ld-action-feature { background:rgba(201,169,110,.08); border-color:rgba(201,169,110,.2); color:var(--gold-dark); }
+.ld-action-feature:hover { background:rgba(201,169,110,.15); }
+.ld-action-danger { background:rgba(239,68,68,.05); border-color:rgba(239,68,68,.2); color:#991b1b; }
+.ld-action-danger:hover { background:rgba(239,68,68,.1); }
+
+/* Description */
+.adm-message-body { padding:1.25rem 1.5rem 1.5rem; font-size:.9rem; line-height:1.8; color:var(--text); white-space:pre-wrap; }
+
+/* adm-card-actions override for owner contact buttons */
+.adm-card-actions {
+    display:flex; gap:.625rem; flex-wrap:wrap;
+    padding:.875rem 1.5rem;
+    border-top:1px solid var(--border-light);
+}
+.adm-card-actions .btn-hero-sec {
+    border-color: var(--border) !important;
+    color: var(--text) !important;
+    background: transparent !important;
+    letter-spacing: 0 !important;
+    text-transform: none !important;
+}
+.adm-card-actions .btn-hero-sec:hover {
+    border-color: var(--gold) !important;
+    color: var(--gold-dark) !important;
+    background: rgba(201,169,110,.08) !important;
+}
+.adm-card-actions .btn-hero-prim { letter-spacing:0 !important; text-transform:none !important; }
+
+/* Photos */
+.ld-photos-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: .75rem;
+    padding: 0 1.5rem 1.5rem;
+}
+.ld-photo-thumb {
+    aspect-ratio: 4/3;
+    border-radius: .625rem;
+    overflow: hidden;
+    border: none; padding: 0; cursor: pointer;
+    position: relative; background: var(--bg);
+}
+.ld-photo-thumb img { width:100%; height:100%; object-fit:cover; transition:transform .2s; display:block; }
+.ld-photo-thumb:hover img { transform:scale(1.05); }
+.ld-photo-overlay {
+    position:absolute; inset:0;
+    background:rgba(11,28,46,.35);
+    display:flex; align-items:center; justify-content:center;
+    color:#fff; opacity:0; transition:opacity .2s;
+}
+.ld-photo-thumb:hover .ld-photo-overlay { opacity:1; }
+
+/* Lightbox */
+.ld-lb {
+    display:none; position:fixed; inset:0; z-index:9999;
+    background:rgba(11,28,46,.92); align-items:center; justify-content:center;
+    flex-direction:column;
+}
+.ld-lb.is-open { display:flex; }
+.ld-lb-img { max-width:90vw; max-height:82vh; border-radius:.75rem; object-fit:contain; box-shadow:0 8px 48px rgba(0,0,0,.5); }
+.ld-lb-close {
+    position:absolute; top:1.25rem; right:1.25rem;
+    background:rgba(255,255,255,.15); border:none; border-radius:50%;
+    width:42px; height:42px; cursor:pointer; color:#fff;
+    display:flex; align-items:center; justify-content:center;
+    transition:background .18s;
+}
+.ld-lb-close:hover { background:rgba(255,255,255,.28); }
+.ld-lb-nav {
+    position:absolute; top:50%; transform:translateY(-50%);
+    background:rgba(255,255,255,.12); border:none; border-radius:50%;
+    width:48px; height:48px; cursor:pointer; color:#fff;
+    display:flex; align-items:center; justify-content:center;
+    transition:background .18s;
+}
+.ld-lb-nav:hover { background:rgba(255,255,255,.25); }
+.ld-lb-prev { left:1.25rem; }
+.ld-lb-next { right:1.25rem; }
+.ld-lb-count { position:absolute; bottom:1.25rem; color:rgba(255,255,255,.7); font-size:.85rem; font-weight:600; }
+
+/* Responsive */
+@media (max-width: 860px) {
+    .adm-layout { grid-template-columns: 1fr; }
+    .adm-sidebar { order: -1; }
+    .ld-stats-row { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 480px) {
+    .ld-stats-row { grid-template-columns: repeat(2, 1fr); }
+    .ld-info-grid { grid-template-columns: 1fr; }
+    .adm-card-actions { flex-direction:column; }
+    .adm-card-actions .btn-hero-prim,
+    .adm-card-actions .btn-hero-sec { width:100%; justify-content:center; }
+}
+</style>
+
 {% endblock %}

@@ -74,12 +74,34 @@ def is_staff_user(user):
     return user.is_authenticated and user.is_staff
 
 
+def is_staff_role_only(user):
+    """True si l'utilisateur a le rôle staff (pas admin, pas superuser)."""
+    if not user.is_staff or user.is_superuser:
+        return False
+    try:
+        return user.profile.role != 'admin'
+    except Exception:
+        return True
+
+
 def staff_required(view_func):
-    """Redirige les anonymes vers login, lève 403 pour les connectés sans accès staff."""
+    """N'importe quel utilisateur back-office (admin ou staff)."""
     @wraps(view_func)
     @login_required
     def _wrapped(request, *args, **kwargs):
         if not request.user.is_staff:
+            raise PermissionDenied
+        return view_func(request, *args, **kwargs)
+    return _wrapped
+
+
+def admin_required(view_func):
+    """Admin role + superuser uniquement (pas staff seul)."""
+    @wraps(view_func)
+    @login_required
+    def _wrapped(request, *args, **kwargs):
+        from apps.accounts.admin_views import is_admin
+        if not is_admin(request.user):
             raise PermissionDenied
         return view_func(request, *args, **kwargs)
     return _wrapped
@@ -276,6 +298,12 @@ def financial_queryset(request):
         'listing',
     )
 
+    # Staff role : uniquement ses propres transactions
+    if is_staff_role_only(request.user):
+        queryset = queryset.filter(
+            Q(created_by=request.user) | Q(assigned_to=request.user)
+        )
+
     type_filter = request.GET.get('type', '').strip()
     status_filter = request.GET.get('status', '').strip()
     category_filter = request.GET.get('category', '').strip()
@@ -312,7 +340,7 @@ def _compute_summary(queryset):
     }
 
 
-@staff_required
+@admin_required
 def financial_dashboard(request):
     date_filter = request.GET.get('date_range', '30')
     try:
@@ -335,7 +363,7 @@ def financial_dashboard(request):
     return render(request, 'admin/financial_dashboard.html', context)
 
 
-@staff_required
+@admin_required
 def financial_stats_api(request):
     transactions = financial_queryset(request)
     summary = _compute_summary(transactions)
@@ -426,8 +454,19 @@ class FinancialTransactionCreateView(StaffRequiredMixin, CreateView):
 
     def form_valid(self, form):
         form.instance.created_by = self.request.user
+        # Staff role : s'assigne automatiquement si aucun responsable défini
+        if is_staff_role_only(self.request.user) and not form.instance.assigned_to_id:
+            form.instance.assigned_to = self.request.user
         messages.success(self.request, 'Transaction créée avec succès.')
         return super().form_valid(form)
+
+
+def _staff_own_qs(view):
+    """Mixin helper : filtre queryset sur propres transactions pour staff role."""
+    qs = view.model.objects.all()
+    if is_staff_role_only(view.request.user):
+        return qs.filter(Q(created_by=view.request.user) | Q(assigned_to=view.request.user))
+    return qs
 
 
 class FinancialTransactionUpdateView(StaffRequiredMixin, UpdateView):
@@ -435,6 +474,9 @@ class FinancialTransactionUpdateView(StaffRequiredMixin, UpdateView):
     form_class = FinancialTransactionForm
     template_name = 'admin/financial_transaction_form.html'
     success_url = reverse_lazy('financial_transactions_list')
+
+    def get_queryset(self):
+        return _staff_own_qs(self)
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
@@ -451,11 +493,17 @@ class FinancialTransactionDetailView(StaffRequiredMixin, DetailView):
     template_name = 'admin/financial_transaction_detail.html'
     context_object_name = 'transaction'
 
+    def get_queryset(self):
+        return _staff_own_qs(self)
+
 
 class FinancialTransactionDeleteView(StaffRequiredMixin, DeleteView):
     model = FinancialTransaction
     template_name = 'admin/financial_transaction_confirm_delete.html'
     success_url = reverse_lazy('financial_transactions_list')
+
+    def get_queryset(self):
+        return _staff_own_qs(self)
 
     def form_valid(self, form):
         messages.success(self.request, 'Transaction supprimée avec succès.')

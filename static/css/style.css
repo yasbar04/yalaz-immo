@@ -5824,6 +5824,32 @@ tbody tr:hover td { background: var(--gold-mist); }
     background: #fff; border: 1px solid var(--border-light);
     border-radius: 1.125rem; overflow: hidden;
 }
+
+/* btn-hero-sec est conçu pour fond sombre — override dans les panels admin blancs */
+.admin-panel-card .btn-hero-sec,
+.adm-card-actions .btn-hero-sec,
+.srd-contact-actions .btn-hero-sec {
+    border-color: var(--border) !important;
+    color: var(--text) !important;
+    background: transparent !important;
+    letter-spacing: 0 !important;
+    text-transform: none !important;
+}
+.admin-panel-card .btn-hero-sec:hover,
+.adm-card-actions .btn-hero-sec:hover,
+.srd-contact-actions .btn-hero-sec:hover {
+    border-color: var(--gold) !important;
+    color: var(--gold-dark) !important;
+    background: rgba(201,169,110,.08) !important;
+    transform: translateY(-1px);
+}
+.admin-panel-card .btn-hero-prim,
+.adm-card-actions .btn-hero-prim,
+.srd-contact-actions .btn-hero-prim {
+    letter-spacing: 0 !important;
+    text-transform: none !important;
+}
+
 .admin-panel-head {
     padding: 1.125rem 1.5rem;
     border-bottom: 1px solid var(--border-light);

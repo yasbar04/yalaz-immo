@@ -51,6 +51,14 @@
                             {{ form.email }}
                             {% if form.email.errors %}<span class="auth-field-error">{{ form.email.errors.0 }}</span>{% endif %}
                         </div>
+
+                        <div class="filter-prem-field" style="grid-column:1/-1;">
+                            <label for="{{ form.role.id_for_label }}">Rôle *</label>
+                            {{ form.role }}
+                            {% if form.role.errors %}<span class="auth-field-error">{{ form.role.errors.0 }}</span>{% endif %}
+                            <small style="font-size:.75rem;color:var(--muted);">Admin : accès complet sauf gestion users. Staff : annonces + demandes + messages + ses propres transactions.</small>
+                        </div>
+
                         <div class="filter-prem-field">
                             <label for="{{ form.password.id_for_label }}">Mot de passe</label>
                             {{ form.password }}

@@ -34,11 +34,13 @@ PERIODS_NAV = [
 ]
 
 
-def superuser_required(view_func):
+def admin_required(view_func):
+    """Admin role + superuser (analytics accessible aux admins)."""
     @wraps(view_func)
     @login_required
     def _wrapped(request, *args, **kwargs):
-        if not request.user.is_superuser:
+        from apps.accounts.admin_views import is_admin
+        if not is_admin(request.user):
             raise PermissionDenied
         return view_func(request, *args, **kwargs)
     return _wrapped
@@ -104,7 +106,7 @@ def _build_bars(trunc, n_bars, now, since):
     return bars
 
 
-@superuser_required
+@admin_required
 def analytics_dashboard(request):
     now = timezone.now()
 

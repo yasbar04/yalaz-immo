@@ -6,6 +6,7 @@ from .admin_views import (
     admin_user_detail, admin_reports, admin_report_detail, report_content,
     toggle_favorite, favorites,
     admin_staff_list, admin_staff_create, admin_staff_edit, admin_staff_delete,
+    admin_staff_set_role,
     change_password_required,
     admin_inquiries, admin_inquiry_detail,
 )
@@ -53,6 +54,7 @@ urlpatterns = [
     path('admin/staff/', admin_staff_list, name='admin_staff_list'),
     path('admin/staff/add/', admin_staff_create, name='admin_staff_create'),
     path('admin/staff/<int:user_id>/edit/', admin_staff_edit, name='admin_staff_edit'),
+    path('admin/staff/<int:user_id>/role/', admin_staff_set_role, name='admin_staff_set_role'),
     path('admin/staff/<int:user_id>/delete/', admin_staff_delete, name='admin_staff_delete'),
 
     # Demandes vendeurs (admin/staff)

@@ -17,7 +17,20 @@ from .services import send_listing_approved_notification
 
 
 def is_admin(user):
-    return user.is_staff or user.is_superuser or user.groups.filter(name='Administrators').exists()
+    """Admin role (profile.role='admin') ou superuser."""
+    if user.is_superuser:
+        return True
+    if not user.is_staff:
+        return False
+    try:
+        return user.profile.role == 'admin'
+    except Exception:
+        return False
+
+
+def is_staff_member(user):
+    """N'importe quel utilisateur back-office (admin ou staff)."""
+    return user.is_staff or user.is_superuser
 
 
 def is_superuser(user):
@@ -25,11 +38,22 @@ def is_superuser(user):
 
 
 def admin_required(view_func):
-    """Redirige les anonymes vers login, lève 403 pour les connectés sans accès."""
+    """Admin role + superuser uniquement (pas staff seul)."""
     @wraps(view_func)
     @login_required
     def _wrapped(request, *args, **kwargs):
         if not is_admin(request.user):
+            raise PermissionDenied
+        return view_func(request, *args, **kwargs)
+    return _wrapped
+
+
+def staff_required(view_func):
+    """N'importe quel utilisateur back-office (admin ou staff)."""
+    @wraps(view_func)
+    @login_required
+    def _wrapped(request, *args, **kwargs):
+        if not is_staff_member(request.user):
             raise PermissionDenied
         return view_func(request, *args, **kwargs)
     return _wrapped
@@ -46,7 +70,7 @@ def superuser_required(view_func):
     return _wrapped
 
 
-@admin_required
+@staff_required
 def admin_dashboard(request):
     """Dashboard admin avec stats"""
     from apps.core.models import SellerRequest, ContactMessage
@@ -81,12 +105,14 @@ def admin_dashboard(request):
         'pending_listings': pending_listings,
         'recent_seller_requests': recent_seller_requests,
         'recent_contact_messages': recent_contact_messages,
+        'user_is_admin': is_admin(request.user),
+        'user_is_superuser': request.user.is_superuser,
     }
 
     return render(request, 'admin/dashboard.html', context)
 
 
-@admin_required
+@staff_required
 def admin_listings(request):
     """Gérer toutes les annonces"""
     status_filter = request.GET.get('status', '')
@@ -104,7 +130,7 @@ def admin_listings(request):
     return render(request, 'admin/listings.html', context)
 
 
-@admin_required
+@staff_required
 def admin_listing_detail(request, pk):
     """Détails d'une annonce pour l'admin"""
     listing = get_object_or_404(Listing, pk=pk)
@@ -216,7 +242,7 @@ def admin_user_detail(request, user_id):
     return render(request, 'admin/user_detail.html', context)
 
 
-@admin_required
+@staff_required
 def admin_reports(request):
     """Gérer les signalements"""
     status_filter = request.GET.get('status', 'pending')
@@ -234,7 +260,7 @@ def admin_reports(request):
     return render(request, 'admin/reports.html', context)
 
 
-@admin_required
+@staff_required
 def admin_report_detail(request, report_id):
     """Détails d'un signalement"""
     report = get_object_or_404(Report, id=report_id)
@@ -356,10 +382,12 @@ def favorites(request):
 
 @superuser_required
 def admin_staff_list(request):
-    """Lister tous les utilisateurs staff"""
-    staff_users = User.objects.filter(is_staff=True).annotate(
+    """Lister tous les utilisateurs staff (admin, staff, superadmin)"""
+    staff_users = User.objects.filter(
+        models.Q(is_staff=True) | models.Q(is_superuser=True)
+    ).distinct().annotate(
         published_count=Count('listings', filter=models.Q(listings__status=Listing.Status.PUBLISHED))
-    ).order_by('-date_joined')
+    ).order_by('-is_superuser', '-date_joined')
     
     context = {
         'staff_users': staff_users,
@@ -379,6 +407,11 @@ class StaffForm(forms.ModelForm):
         widget=forms.PasswordInput(attrs={'autocomplete': 'new-password'}),
         required=False,
         label='Confirmer le mot de passe',
+    )
+    role = forms.ChoiceField(
+        choices=[('admin', 'Admin'), ('staff', 'Staff')],
+        initial='staff',
+        label='Rôle',
     )
 
     class Meta:
@@ -412,12 +445,14 @@ def admin_staff_create(request):
             user.is_staff = True
             user.set_password(form.cleaned_data['password'])
             user.save()
-            # Le signal crée le profil — on active le changement de mdp obligatoire
+            # Le signal crée le profil — on active le changement de mdp obligatoire et on définit le rôle
             user.profile.password_change_required = True
+            user.profile.role = form.cleaned_data['role']
             user.profile.save()
+            role_label = dict(StaffForm.base_fields['role'].choices).get(form.cleaned_data['role'], form.cleaned_data['role'])
             messages.success(
                 request,
-                f"Compte staff '{user.username}' créé. "
+                f"Compte {role_label} '{user.username}' créé. "
                 "Il devra changer son mot de passe à la première connexion."
             )
             return redirect('admin_staff_list')
@@ -436,30 +471,63 @@ def admin_staff_create(request):
 def admin_staff_edit(request, user_id):
     """Modifier un utilisateur staff"""
     user = get_object_or_404(User, id=user_id, is_staff=True)
-    
+
     if request.method == 'POST':
         form = StaffForm(request.POST, instance=user)
         if form.is_valid():
             user = form.save(commit=False)
             user.is_staff = True
-            
+
             if form.cleaned_data.get('password'):
                 user.set_password(form.cleaned_data['password'])
-            
+
             user.save()
-            messages.success(request, f"Utilisateur staff '{user.username}' modifié avec succès")
+            user.profile.role = form.cleaned_data['role']
+            user.profile.save(update_fields=['role', 'updated_at'])
+            messages.success(request, f"Utilisateur '{user.username}' modifié avec succès")
             return redirect('admin_staff_list')
     else:
-        form = StaffForm(instance=user)
-    
+        current_role = getattr(user.profile, 'role', 'staff') or 'staff'
+        form = StaffForm(instance=user, initial={'role': current_role})
+
     context = {
         'form': form,
         'staff_user': user,
         'page_title': f'Modifier {user.get_full_name() or user.username}',
         'submit_label': 'Enregistrer les modifications',
     }
-    
+
     return render(request, 'admin/staff_form.html', context)
+
+
+@superuser_required
+def admin_staff_set_role(request, user_id):
+    """Changer le rôle d'un utilisateur staff (action rapide depuis la liste)."""
+    user = get_object_or_404(User, id=user_id, is_staff=True)
+    if request.method == 'POST':
+        if user == request.user:
+            messages.error(request, "Vous ne pouvez pas modifier votre propre rôle.")
+            return redirect('admin_staff_list')
+
+        new_role = request.POST.get('role', '')
+        labels = {'superadmin': 'Superadmin', 'admin': 'Admin', 'staff': 'Staff'}
+
+        if new_role == 'superadmin':
+            user.is_superuser = True
+            user.is_staff = True
+            user.save(update_fields=['is_superuser', 'is_staff'])
+        elif new_role in ('admin', 'staff'):
+            user.is_superuser = False
+            user.is_staff = True
+            user.save(update_fields=['is_superuser', 'is_staff'])
+            user.profile.role = new_role
+            user.profile.save(update_fields=['role', 'updated_at'])
+        else:
+            messages.error(request, 'Rôle invalide.')
+            return redirect('admin_staff_list')
+
+        messages.success(request, f"Rôle de '{user.username}' changé en {labels[new_role]}.")
+    return redirect('admin_staff_list')
 
 
 @superuser_required
@@ -546,7 +614,7 @@ def change_password_required(request):
 
 # ── Demandes publiques (PublicInquiry) ──
 
-@admin_required
+@staff_required
 def admin_inquiries(request):
     from apps.listings.models import PublicInquiry
     read_filter = request.GET.get('read', '')
@@ -570,7 +638,7 @@ def admin_inquiries(request):
     })
 
 
-@admin_required
+@staff_required
 def admin_inquiry_detail(request, pk):
     from apps.listings.models import PublicInquiry
     inquiry = get_object_or_404(PublicInquiry, pk=pk)
