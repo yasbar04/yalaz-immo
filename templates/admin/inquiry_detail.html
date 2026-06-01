@@ -91,7 +91,7 @@
                     <p style="font-size:.8rem;color:var(--muted);">{{ inquiry.listing.surface_area }} m² · {{ inquiry.listing.bedrooms }} ch. · {{ inquiry.listing.get_listing_type_display }}</p>
                 </div>
                 <div style="padding:.75rem 1.5rem;border-top:1px solid var(--border-light);display:flex;gap:.625rem;">
-                    <a href="{% url 'listing_detail' inquiry.listing.pk %}" target="_blank" class="btn-hero-sec" style="font-size:.82rem;padding:.5rem 1rem;flex:1;justify-content:center;">
+                    <a href="{{ inquiry.listing.get_absolute_url }}" target="_blank" class="btn-hero-sec" style="font-size:.82rem;padding:.5rem 1rem;flex:1;justify-content:center;">
                         Voir l'annonce
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
                     </a>

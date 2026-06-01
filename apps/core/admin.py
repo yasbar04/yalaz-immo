@@ -31,10 +31,8 @@ class FinancialTransactionAdmin(admin.ModelAdmin):
     
     def type_badge(self, obj):
         colors = {
-            'income': '#10b981',      # Vert
-            'expense': '#ef4444',     # Rouge
-            'commission': '#3b82f6',  # Bleu
-            'refund': '#f59e0b',      # Orange
+            'entry': '#10b981',   # Vert
+            'exit': '#ef4444',    # Rouge
         }
         color = colors.get(obj.type, '#6b7280')
         return format_html(
@@ -61,8 +59,8 @@ class FinancialTransactionAdmin(admin.ModelAdmin):
     status_badge.short_description = 'Statut'
     
     def amount_display(self, obj):
-        color = '#10b981' if obj.type in ['income', 'commission'] else '#ef4444'
-        sign = '+' if obj.type in ['income', 'commission'] else '−'
+        color = '#10b981' if obj.type == 'entry' else '#ef4444'
+        sign = '+' if obj.type == 'entry' else '−'
         return format_html(
             '<span style="color: {}; font-weight: bold;">{} {:.2f} DH</span>',
             color,
