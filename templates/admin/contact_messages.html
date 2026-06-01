@@ -1,5 +1,5 @@
-﻿{% extends 'base.html' %}
-{% block title %}Messages de contact — Back-office Yalaz{% endblock %}
+{% extends 'base.html' %}
+{% block title %}Messages de contact — Admin | Yalaz{% endblock %}
 
 {% block content %}
 
@@ -10,9 +10,9 @@
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><path d="M15 18l-6-6 6-6"/></svg>
                 Dashboard
             </a>
-            <span class="eyebrow" style="display:block;margin-top:.5rem;">Back-office</span>
+            <span class="eyebrow" style="display:block;margin-top:.5rem;">Administration</span>
             <h1>Messages de contact
-                {% if unread_count %}<span class="pill pill-warning" style="margin-left:.5rem;font-size:.875rem;">{{ unread_count }} non lu{{ unread_count|pluralize }}</span>{% endif %}
+                {% if unread_count %}<span class="adm-count-badge">{{ unread_count }} non lu{{ unread_count|pluralize }}</span>{% endif %}
             </h1>
         </div>
     </div>
@@ -20,135 +20,145 @@
 
 <div class="container" style="padding-bottom:4rem;">
 
-    <!-- Filter pills -->
-    <div style="display:flex;gap:.5rem;margin-bottom:1.5rem;flex-wrap:wrap;">
-        <a href="{% url 'admin_contact_messages' %}" class="pill {% if not current_status %}pill-active{% endif %}" style="text-decoration:none;padding:.4rem .9rem;cursor:pointer;">Tous</a>
-        <a href="?status=unread" class="pill {% if current_status == 'unread' %}pill-warning{% endif %}" style="text-decoration:none;padding:.4rem .9rem;cursor:pointer;">Non lus</a>
-        <a href="?status=read" class="pill {% if current_status == 'read' %}pill-success{% endif %}" style="text-decoration:none;padding:.4rem .9rem;cursor:pointer;">Lus</a>
+    <div class="admin-filter-bar" style="margin-bottom:1.5rem;">
+        <a href="{% url 'admin_contact_messages' %}" class="admin-filter-tab {% if not current_status %}is-active{% endif %}">Tous</a>
+        <a href="?status=unread" class="admin-filter-tab {% if current_status == 'unread' %}is-active{% endif %}">Non lus</a>
+        <a href="?status=read" class="admin-filter-tab {% if current_status == 'read' %}is-active{% endif %}">Lus</a>
     </div>
 
-    <div class="admin-panel-card">
-        <div class="admin-panel-head">
-            <h2>{{ contact_messages|length }} message{{ contact_messages|length|pluralize }}</h2>
-        </div>
+    {% if contact_messages %}
+    <div class="adm-card-list">
+        {% for msg in contact_messages %}
+        <a href="{% url 'admin_contact_message_detail' msg.id %}" class="adm-row {% if not msg.is_read %}adm-row-unread{% endif %}">
 
-        {% if contact_messages %}
-        <div class="admin-prem-list cmsgs-list">
-            {% for msg in contact_messages %}
-            <a href="{% url 'admin_contact_message_detail' msg.id %}" class="cmsgs-row {% if not msg.is_read %}cmsgs-unread{% endif %}">
-                <div class="cmsgs-left">
-                    <div class="cmsgs-title">
-                        {% if not msg.is_read %}<span class="cmsgs-dot" aria-hidden="true"></span>{% endif %}
-                        <strong>{{ msg.name }}</strong>
-                        <span class="cmsgs-subject">{{ msg.get_subject_display }}</span>
-                    </div>
-                    <p class="cmsgs-preview">{{ msg.message|truncatewords:18 }}</p>
+            <div class="adm-row-identity">
+                <div class="adm-avatar">{{ msg.name|slice:":1" }}</div>
+                <div class="adm-identity-info">
+                    <div class="adm-name">{{ msg.name }}</div>
+                    <div class="adm-sub">{{ msg.phone }}</div>
                 </div>
-                <div class="cmsgs-right">
-                    <div class="cmsgs-contact-info">
-                        <span>{{ msg.email }}</span>
-                        <span>{{ msg.phone }}</span>
-                        <span class="cmsgs-date">{{ msg.created_at|date:"d M Y, H:i" }}</span>
-                    </div>
-                    <span class="pill {% if msg.is_read %}pill-success{% else %}pill-warning{% endif %}">
-                        {% if msg.is_read %}Lu{% else %}Nouveau{% endif %}
-                    </span>
-                </div>
-            </a>
-            {% endfor %}
-        </div>
-        {% else %}
-        <div class="dash-empty" style="padding:3rem 0;">
-            <div class="dash-empty-icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="28" height="28"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
             </div>
-            <h3>Aucun message{% if current_status %} dans ce filtre{% endif %}</h3>
-            <p>Les messages envoyés via le formulaire de contact apparaîtront ici.</p>
-        </div>
-        {% endif %}
+
+            <div class="adm-row-middle">
+                <div class="adm-row-subject">{{ msg.get_subject_display }}</div>
+                <div class="adm-row-preview">{{ msg.message|truncatewords:12 }}</div>
+            </div>
+
+            <div class="adm-row-contact">
+                <span class="adm-email-text">{{ msg.email }}</span>
+                <span class="adm-date-text">{{ msg.created_at|date:"d/m/Y H:i" }}</span>
+            </div>
+
+            <div class="adm-row-status">
+                {% if not msg.is_read %}
+                    <span class="adm-pill adm-pill-new">Nouveau</span>
+                {% else %}
+                    <span class="adm-pill adm-pill-read">Lu</span>
+                {% endif %}
+            </div>
+
+            <div class="adm-row-arrow">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><polyline points="9 18 15 12 9 6"/></svg>
+            </div>
+
+        </a>
+        {% endfor %}
     </div>
+    {% else %}
+    <div class="dash-empty">
+        <div class="dash-empty-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="28" height="28"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+        </div>
+        <h3>Aucun message{% if current_status %} dans ce filtre{% endif %}</h3>
+        <p>Les messages envoyés via le formulaire de contact apparaîtront ici.</p>
+    </div>
+    {% endif %}
+
 </div>
 
 <style>
-.cmsgs-list { gap: .5rem; }
+{% include 'admin/includes/_adm_shared.css' ignore missing %}
 
-.cmsgs-row {
-    display: flex;
+.adm-row-middle { flex:1; min-width:0; }
+.adm-row-subject { font-size:.85rem; font-weight:600; color:var(--ink); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.adm-row-preview { font-size:.78rem; color:var(--muted); margin-top:.15rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+
+.adm-row-contact { display:flex; flex-direction:column; gap:.2rem; align-items:flex-end; flex-shrink:0; }
+.adm-email-text { font-size:.77rem; color:var(--muted); white-space:nowrap; }
+.adm-date-text  { font-size:.73rem; color:var(--light-text); white-space:nowrap; }
+
+/* Card layout for this page */
+.adm-card-list { display:flex; flex-direction:column; gap:.5rem; }
+.adm-row {
+    display: grid;
+    grid-template-columns: minmax(150px,1.5fr) 2fr minmax(140px,1fr) auto auto;
     align-items: center;
-    gap: 1.25rem;
+    gap: .875rem;
     padding: 1rem 1.25rem;
-    background: var(--bg);
+    background: #fff;
     border: 1px solid var(--border-light);
-    border-radius: .875rem;
+    border-radius: var(--r-lg);
+    box-shadow: var(--shadow-xs);
     text-decoration: none;
-    transition: border-color .2s, background .2s;
-    color: var(--ink);
+    color: var(--text);
+    transition: border-color .18s, box-shadow .18s, transform .12s;
 }
-.cmsgs-row:hover { border-color: var(--gold); background: var(--gold-mist); }
-.cmsgs-row.cmsgs-unread { border-left: 3px solid var(--gold); background: rgba(201,169,110,.04); }
+.adm-row:hover { border-color:var(--gold); box-shadow:0 2px 12px rgba(201,169,110,.12); transform:translateY(-1px); }
+.adm-row-unread { border-left:3px solid var(--gold); }
 
-.cmsgs-left {
-    flex: 1;
-    min-width: 0;
-    display: flex;
-    flex-direction: column;
-    gap: .25rem;
+.adm-row-identity { display:flex; align-items:center; gap:.75rem; min-width:0; }
+.adm-avatar {
+    width:38px; height:38px; border-radius:50%;
+    background:var(--ink); color:var(--gold);
+    font-family:var(--font-heading); font-size:.9rem; font-weight:700;
+    display:flex; align-items:center; justify-content:center; flex-shrink:0;
+    text-transform:uppercase;
 }
-.cmsgs-title {
-    display: flex;
-    align-items: center;
-    gap: .5rem;
-    flex-wrap: wrap;
+.adm-identity-info { min-width:0; }
+.adm-name { font-weight:700; font-size:.9rem; color:var(--ink); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.adm-sub  { font-size:.78rem; color:var(--muted); margin-top:.1rem; }
+
+.adm-row-status { flex-shrink:0; }
+.adm-row-arrow  { color:var(--muted); flex-shrink:0; }
+.adm-row:hover .adm-row-arrow { color:var(--gold-dark); }
+
+.adm-pill {
+    display:inline-block; padding:.3rem .75rem;
+    border-radius:99px; font-size:.73rem; font-weight:700;
+    border:1px solid transparent; white-space:nowrap;
 }
-.cmsgs-title strong { font-size: .875rem; font-weight: 700; color: var(--ink); white-space: nowrap; }
-.cmsgs-subject {
-    font-size: .78rem;
-    color: var(--muted);
-    font-weight: 400;
-}
-.cmsgs-preview {
-    font-size: .78rem;
-    color: var(--muted);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: 55ch;
-    margin: 0;
-    line-height: 1.4;
+.adm-pill-new  { background:rgba(201,169,110,.1); color:var(--gold-dark); border-color:rgba(201,169,110,.3); }
+.adm-pill-read { background:var(--bg); color:var(--muted); border-color:var(--border-light); }
+.adm-pill-ok   { background:rgba(16,185,129,.1); color:#065f46; border-color:rgba(16,185,129,.25); }
+.adm-pill-warn { background:rgba(245,158,11,.1); color:#92400e; border-color:rgba(245,158,11,.25); }
+.adm-pill-ko   { background:rgba(239,68,68,.08); color:#991b1b; border-color:rgba(239,68,68,.2); }
+
+.adm-count-badge {
+    display:inline-block; margin-left:.625rem;
+    padding:.2rem .6rem;
+    background:rgba(201,169,110,.15); border:1px solid rgba(201,169,110,.3);
+    border-radius:99px; font-size:.72rem; font-weight:700; color:var(--gold-dark);
+    vertical-align:middle; font-family:var(--font-body);
 }
 
-.cmsgs-right {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    gap: .5rem;
-    flex-shrink: 0;
-    min-width: 180px;
+@media (max-width: 768px) {
+    .adm-row {
+        grid-template-columns: 1fr auto;
+        grid-template-rows: auto auto;
+        gap: .5rem .75rem;
+    }
+    .adm-row-identity { grid-column:1; grid-row:1; }
+    .adm-row-status   { grid-column:2; grid-row:1; align-self:start; }
+    .adm-row-middle   { grid-column:1; grid-row:2; }
+    .adm-row-contact  { grid-column:2; grid-row:2; align-items:flex-end; }
+    .adm-row-arrow    { display:none; }
 }
-.cmsgs-contact-info {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    gap: .1rem;
-    font-size: .73rem;
-    color: var(--muted);
-}
-.cmsgs-date { font-size: .7rem; color: var(--light-text); }
-
-.cmsgs-dot {
-    display: inline-block;
-    width: 7px; height: 7px;
-    border-radius: 50%;
-    background: var(--gold, #C9A96E);
-    flex-shrink: 0;
-}
-.pill-active { background: rgba(11,28,46,.12); color: var(--ink); border-color: var(--ink-30); }
-
-@media (max-width: 640px) {
-    .cmsgs-row { flex-direction: column; align-items: flex-start; gap: .75rem; }
-    .cmsgs-right { flex-direction: row; align-items: center; justify-content: space-between; width: 100%; min-width: 0; }
-    .cmsgs-contact-info { align-items: flex-start; flex-direction: row; flex-wrap: wrap; gap: .35rem; }
-    .cmsgs-preview { max-width: 100%; }
+@media (max-width: 480px) {
+    .adm-row { grid-template-columns: 1fr; grid-template-rows: auto; }
+    .adm-row-identity { grid-column:1; grid-row:1; }
+    .adm-row-status   { grid-column:1; grid-row:2; }
+    .adm-row-middle   { grid-column:1; grid-row:3; }
+    .adm-row-contact  { grid-column:1; grid-row:4; align-items:flex-start; flex-direction:row; gap:.5rem; }
 }
 </style>
 

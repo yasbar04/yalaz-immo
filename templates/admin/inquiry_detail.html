@@ -1,5 +1,6 @@
-﻿{% extends 'base.html' %}
-{% block title %}Demande de {{ inquiry.first_name }} {{ inquiry.last_name }} — Admin | Yalaz{% endblock %}
+{% extends 'base.html' %}
+{% load humanize %}
+{% block title %}{{ inquiry.first_name }} {{ inquiry.last_name }} — Demande | Yalaz{% endblock %}
 
 {% block content %}
 
@@ -13,69 +14,80 @@
             <span class="eyebrow" style="display:block;margin-top:.5rem;">Demande de contact</span>
             <h1>{{ inquiry.first_name }} {{ inquiry.last_name }}</h1>
         </div>
+        <div>
+            <span class="adm-pill adm-pill-read">Lu</span>
+        </div>
     </div>
 </div>
 
-<div class="container" style="padding-bottom:4rem;max-width:860px;">
+<div class="container adm-detail-wrap">
+    <div class="adm-layout">
 
-    <div style="display:grid;grid-template-columns:1fr 320px;gap:1.5rem;align-items:start;">
+        <!-- ── MAIN ── -->
+        <div class="adm-main">
 
-        <!-- Message -->
-        <div class="admin-panel-card">
-            <div class="admin-panel-head">
-                <div>
-                    <span class="eyebrow" style="color:var(--gold);display:block;margin-bottom:.2rem;">Message</span>
-                    <h2>Contenu de la demande</h2>
-                </div>
-            </div>
-            <div style="padding:1.5rem;font-size:.9rem;color:var(--text);line-height:1.85;white-space:pre-wrap;">{{ inquiry.message }}</div>
-            {% if inquiry.want_similar %}
-            <div style="padding:.75rem 1.5rem;border-top:1px solid var(--border-light);background:rgba(201,169,110,.05);">
-                <span style="display:inline-flex;align-items:center;gap:.5rem;font-size:.8rem;font-weight:600;color:var(--gold-dark);">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
-                    Ce contact souhaite recevoir des propositions de biens similaires.
-                </span>
-            </div>
-            {% endif %}
-        </div>
-
-        <!-- Sidebar -->
-        <div style="display:flex;flex-direction:column;gap:1rem;">
-
-            <!-- Contact info -->
+            <!-- Coordonnées -->
             <div class="admin-panel-card">
                 <div class="admin-panel-head">
                     <div>
-                        <span class="eyebrow" style="color:var(--gold);display:block;margin-bottom:.2rem;">Coordonnées</span>
+                        <span class="eyebrow" style="color:var(--gold);display:block;margin-bottom:.2rem;">Expéditeur</span>
                         <h2>{{ inquiry.first_name }} {{ inquiry.last_name }}</h2>
                     </div>
                 </div>
-                <div style="padding:1rem 1.5rem;display:flex;flex-direction:column;gap:.75rem;">
-                    <div>
-                        <p style="font-size:.65rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:.2rem;">Email</p>
-                        <a href="mailto:{{ inquiry.email }}" style="font-size:.875rem;color:var(--gold-dark);font-weight:600;">{{ inquiry.email }}</a>
+                <div class="adm-info-grid">
+                    <div class="adm-info-block">
+                        <p class="adm-label">Email</p>
+                        <a href="mailto:{{ inquiry.email }}" class="adm-value-link">{{ inquiry.email }}</a>
                     </div>
                     {% if inquiry.phone %}
-                    <div>
-                        <p style="font-size:.65rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:.2rem;">Téléphone</p>
-                        <a href="tel:{{ inquiry.phone }}" style="font-size:.875rem;color:var(--ink);font-weight:600;">{{ inquiry.phone }}</a>
+                    <div class="adm-info-block">
+                        <p class="adm-label">Téléphone</p>
+                        <a href="tel:{{ inquiry.phone }}" class="adm-value-link">{{ inquiry.phone }}</a>
                     </div>
                     {% endif %}
-                    <div>
-                        <p style="font-size:.65rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:.2rem;">Date</p>
-                        <p style="font-size:.875rem;color:var(--ink);">{{ inquiry.created_at|date:"d/m/Y à H:i" }}</p>
+                    <div class="adm-info-block">
+                        <p class="adm-label">Date</p>
+                        <p class="adm-value">{{ inquiry.created_at|date:"d/m/Y à H:i" }}</p>
                     </div>
+                    {% if inquiry.want_similar %}
+                    <div class="adm-info-block">
+                        <p class="adm-label">Biens similaires</p>
+                        <span class="adm-similar-pill">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="11" height="11"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+                            Souhaite des propositions
+                        </span>
+                    </div>
+                    {% endif %}
                 </div>
-                <div style="padding:.875rem 1.5rem;border-top:1px solid var(--border-light);display:flex;gap:.625rem;flex-wrap:wrap;">
-                    <a href="mailto:{{ inquiry.email }}" class="btn-hero-prim" style="font-size:.82rem;padding:.5rem 1rem;flex:1;justify-content:center;">
+                <div class="adm-card-actions">
+                    <a href="mailto:{{ inquiry.email }}" class="btn-hero-prim" style="font-size:.82rem;padding:.55rem 1.1rem;">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-                        Répondre
+                        Répondre par email
                     </a>
                     {% if inquiry.phone %}
-                    <a href="tel:{{ inquiry.phone }}" class="btn-hero-sec" style="font-size:.82rem;padding:.5rem 1rem;flex:1;justify-content:center;">Appeler</a>
+                    <a href="tel:{{ inquiry.phone }}" class="btn-hero-sec" style="font-size:.82rem;padding:.55rem 1.1rem;">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.13 11.5 19.79 19.79 0 0 1 1.06 2.84 2 2 0 0 1 3 .66h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.09 8.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21 16z"/></svg>
+                        Appeler
+                    </a>
                     {% endif %}
                 </div>
             </div>
+
+            <!-- Message -->
+            <div class="admin-panel-card">
+                <div class="admin-panel-head">
+                    <div>
+                        <span class="eyebrow" style="color:var(--gold);display:block;margin-bottom:.2rem;">Contenu</span>
+                        <h2>Message</h2>
+                    </div>
+                </div>
+                <div class="adm-message-body">{{ inquiry.message }}</div>
+            </div>
+
+        </div>
+
+        <!-- ── SIDEBAR ── -->
+        <div class="adm-sidebar">
 
             <!-- Bien concerné -->
             <div class="admin-panel-card">
@@ -85,22 +97,95 @@
                         <h2>{{ inquiry.listing.title|truncatewords:6 }}</h2>
                     </div>
                 </div>
-                <div style="padding:1rem 1.5rem;display:flex;flex-direction:column;gap:.5rem;">
-                    <p style="font-size:.8rem;color:var(--muted);">{{ inquiry.listing.city }}{% if inquiry.listing.district %}, {{ inquiry.listing.district }}{% endif %}</p>
-                    <p style="font-family:var(--font-heading);font-size:1.1rem;font-weight:700;color:var(--ink);">{% if inquiry.listing.price %}{{ inquiry.listing.price|floatformat:0|intcomma }} MAD{% else %}Sur demande{% endif %}</p>
-                    <p style="font-size:.8rem;color:var(--muted);">{{ inquiry.listing.surface_area }} m² · {{ inquiry.listing.bedrooms }} ch. · {{ inquiry.listing.get_listing_type_display }}</p>
+                <div style="padding:0 1.5rem 1rem;">
+                    <div class="adm-info-block" style="margin-bottom:.75rem;">
+                        <p class="adm-label">Localisation</p>
+                        <p class="adm-value">{{ inquiry.listing.city }}{% if inquiry.listing.district %}, {{ inquiry.listing.district }}{% endif %}</p>
+                    </div>
+                    <div class="adm-info-block" style="margin-bottom:.75rem;">
+                        <p class="adm-label">Prix</p>
+                        <p class="adm-value" style="font-family:var(--font-heading);font-size:1.1rem;font-weight:700;">
+                            {% if inquiry.listing.price %}{{ inquiry.listing.price|floatformat:0|intcomma }} MAD{% else %}Sur demande{% endif %}
+                        </p>
+                    </div>
+                    <div class="adm-info-block">
+                        <p class="adm-label">Détails</p>
+                        <p class="adm-value">{{ inquiry.listing.surface_area }} m² · {{ inquiry.listing.bedrooms }} ch. · {{ inquiry.listing.get_listing_type_display }}</p>
+                    </div>
                 </div>
-                <div style="padding:.75rem 1.5rem;border-top:1px solid var(--border-light);display:flex;gap:.625rem;">
-                    <a href="{{ inquiry.listing.get_absolute_url }}" target="_blank" class="btn-hero-sec" style="font-size:.82rem;padding:.5rem 1rem;flex:1;justify-content:center;">
+                <div class="adm-card-actions" style="flex-direction:column;gap:.5rem;">
+                    <a href="{{ inquiry.listing.get_absolute_url }}" target="_blank" class="btn-hero-sec" style="font-size:.82rem;padding:.55rem 1rem;display:flex;align-items:center;justify-content:center;gap:.4rem;">
                         Voir l'annonce
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
                     </a>
-                    <a href="{% url 'admin_listing_detail' inquiry.listing.pk %}" class="btn-hero-sec" style="font-size:.82rem;padding:.5rem 1rem;flex:1;justify-content:center;">Admin</a>
+                    <a href="{% url 'admin_listing_detail' inquiry.listing.pk %}" class="btn-hero-sec" style="font-size:.82rem;padding:.55rem 1rem;display:flex;align-items:center;justify-content:center;">
+                        Gérer dans l'admin
+                    </a>
                 </div>
             </div>
 
         </div>
     </div>
-
 </div>
+
+<style>
+.adm-detail-wrap { padding-bottom:4rem; }
+.adm-layout {
+    display: grid;
+    grid-template-columns: 1fr 300px;
+    gap: 1.5rem;
+    align-items: start;
+}
+.adm-main    { display:flex; flex-direction:column; gap:1.25rem; }
+.adm-sidebar { display:flex; flex-direction:column; gap:1.25rem; }
+
+.adm-info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    padding: 0 1.5rem 1.5rem;
+}
+.adm-info-block { display:flex; flex-direction:column; gap:.2rem; }
+.adm-label { font-size:.68rem; font-weight:700; text-transform:uppercase; letter-spacing:.08em; color:var(--muted); margin:0; }
+.adm-value { font-size:.9rem; font-weight:500; color:var(--ink); margin:0; }
+.adm-value-link { font-size:.9rem; font-weight:600; color:var(--gold-dark); text-decoration:none; }
+.adm-value-link:hover { text-decoration:underline; }
+
+.adm-card-actions {
+    display:flex; gap:.625rem; flex-wrap:wrap;
+    padding:.875rem 1.5rem;
+    border-top:1px solid var(--border-light);
+}
+
+.adm-message-body {
+    padding: 1.25rem 1.5rem 1.5rem;
+    font-size:.9rem; line-height:1.8;
+    color:var(--text);
+    white-space: pre-wrap;
+}
+
+.adm-similar-pill {
+    display:inline-flex; align-items:center; gap:.35rem;
+    padding:.3rem .75rem;
+    background:rgba(201,169,110,.08); border:1px solid rgba(201,169,110,.2);
+    border-radius:99px; font-size:.78rem; font-weight:600; color:var(--gold-dark);
+    margin-top:.15rem;
+}
+
+.adm-pill { display:inline-block; padding:.3rem .75rem; border-radius:99px; font-size:.75rem; font-weight:700; border:1px solid transparent; }
+.adm-pill-new  { background:rgba(201,169,110,.1); color:var(--gold-dark); border-color:rgba(201,169,110,.3); }
+.adm-pill-read { background:var(--bg); color:var(--muted); border-color:var(--border-light); }
+
+@media (max-width: 860px) {
+    .adm-layout { grid-template-columns: 1fr; }
+    .adm-sidebar { order: -1; }
+}
+@media (max-width: 540px) {
+    .adm-info-grid { grid-template-columns: 1fr; }
+    .adm-card-actions { flex-direction:column; }
+    .adm-card-actions .btn-hero-prim,
+    .adm-card-actions .btn-hero-sec { width:100%; }
+}
+</style>
+
 {% endblock %}

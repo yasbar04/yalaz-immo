@@ -120,7 +120,6 @@
                 </div>
 
                 <!-- Équipements -->
-                {% with has_any=seller_request.has_parking|or_:seller_request.has_pool %}
                 <div class="srd-equip-section">
                     <p class="srd-label" style="margin-bottom:.625rem;">Équipements</p>
                     <div class="srd-equip-row">
@@ -135,7 +134,6 @@
                         {% endif %}
                     </div>
                 </div>
-                {% endwith %}
 
                 {% if seller_request.description %}
                 <div class="srd-desc-section">
