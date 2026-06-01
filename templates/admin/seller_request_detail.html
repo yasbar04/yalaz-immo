@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
-{% block title %}Dépôt vendeur — {{ seller_request.full_name }}{% endblock %}
+{% load humanize %}
+{% block title %}{{ seller_request.full_name }} — Dépôt vendeur | Yalaz{% endblock %}
 
 {% block content %}
 
@@ -14,107 +15,132 @@
             <h1>{{ seller_request.full_name }}</h1>
         </div>
         <div>
-            {% if seller_request.status == 'new' %}
-                <span class="pill pill-seller" style="font-size:.9rem;padding:.5rem 1rem;">Nouveau</span>
-            {% elif seller_request.status == 'in_progress' %}
-                <span class="pill pill-warning" style="font-size:.9rem;padding:.5rem 1rem;">En cours</span>
-            {% elif seller_request.status == 'accepted' %}
-                <span class="pill pill-success" style="font-size:.9rem;padding:.5rem 1rem;">Accepté</span>
-            {% else %}
-                <span class="pill pill-danger" style="font-size:.9rem;padding:.5rem 1rem;">Refusé</span>
-            {% endif %}
+            {% if seller_request.status == 'new' %}<span class="sr-pill sr-pill-new" style="font-size:.88rem;padding:.45rem 1rem;">Nouveau</span>
+            {% elif seller_request.status == 'in_progress' %}<span class="sr-pill sr-pill-warn" style="font-size:.88rem;padding:.45rem 1rem;">En cours</span>
+            {% elif seller_request.status == 'accepted' %}<span class="sr-pill sr-pill-ok" style="font-size:.88rem;padding:.45rem 1rem;">Accepté</span>
+            {% else %}<span class="sr-pill sr-pill-ko" style="font-size:.88rem;padding:.45rem 1rem;">Refusé</span>{% endif %}
         </div>
     </div>
 </div>
 
-<div class="container" style="padding-bottom:4rem;">
-    <div style="display:grid;grid-template-columns:1fr 340px;gap:1.5rem;align-items:start;">
+<div class="container srd-wrap">
+    <div class="srd-layout">
 
-        <!-- Main info -->
-        <div style="display:flex;flex-direction:column;gap:1.25rem;">
+        <!-- ── MAIN ── -->
+        <div class="srd-main">
 
             <!-- Contact -->
             <div class="admin-panel-card">
-                <div class="admin-panel-head"><h2>Coordonnées du vendeur</h2></div>
-                <div class="sr-info-grid">
-                    <div class="sr-info-item">
-                        <span class="sr-info-label">Prénom</span>
-                        <span class="sr-info-value">{{ seller_request.first_name }}</span>
+                <div class="admin-panel-head">
+                    <div>
+                        <span class="eyebrow" style="color:var(--gold);display:block;margin-bottom:.2rem;">Coordonnées</span>
+                        <h2>{{ seller_request.full_name }}</h2>
                     </div>
-                    <div class="sr-info-item">
-                        <span class="sr-info-label">Nom</span>
-                        <span class="sr-info-value">{{ seller_request.last_name }}</span>
+                </div>
+                <div class="srd-contact-grid">
+                    <div class="srd-info-block">
+                        <p class="srd-label">Email</p>
+                        <a href="mailto:{{ seller_request.email }}" class="srd-value-link">{{ seller_request.email }}</a>
                     </div>
-                    <div class="sr-info-item">
-                        <span class="sr-info-label">Email</span>
-                        <span class="sr-info-value"><a href="mailto:{{ seller_request.email }}" style="color:var(--coral,#ff6b6b);">{{ seller_request.email }}</a></span>
+                    <div class="srd-info-block">
+                        <p class="srd-label">Téléphone</p>
+                        <a href="tel:{{ seller_request.phone }}" class="srd-value-link">{{ seller_request.phone }}</a>
                     </div>
-                    <div class="sr-info-item">
-                        <span class="sr-info-label">Téléphone</span>
-                        <span class="sr-info-value"><a href="tel:{{ seller_request.phone }}" style="color:var(--coral,#ff6b6b);">{{ seller_request.phone }}</a></span>
+                    <div class="srd-info-block">
+                        <p class="srd-label">Reçu le</p>
+                        <p class="srd-value">{{ seller_request.created_at|date:"d/m/Y à H:i" }}</p>
                     </div>
+                    <div class="srd-info-block">
+                        <p class="srd-label">Mis à jour</p>
+                        <p class="srd-value">{{ seller_request.updated_at|date:"d/m/Y à H:i" }}</p>
+                    </div>
+                </div>
+                <div class="srd-contact-actions">
+                    <a href="mailto:{{ seller_request.email }}" class="btn-hero-prim" style="font-size:.82rem;padding:.55rem 1.1rem;">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                        Envoyer un email
+                    </a>
+                    <a href="tel:{{ seller_request.phone }}" class="btn-hero-sec" style="font-size:.82rem;padding:.55rem 1.1rem;">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 1.26h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9a16 16 0 0 0 6 6l1.8-1.81a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                        Appeler
+                    </a>
+                    <a href="https://wa.me/{{ seller_request.phone|cut:' '|cut:'+' }}" target="_blank" rel="noopener" class="btn-hero-sec" style="font-size:.82rem;padding:.55rem 1.1rem;">
+                        <svg viewBox="0 0 24 24" fill="currentColor" width="13" height="13"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/></svg>
+                        WhatsApp
+                    </a>
                 </div>
             </div>
 
-            <!-- Property -->
+            <!-- Property details -->
             <div class="admin-panel-card">
-                <div class="admin-panel-head"><h2>Informations du bien</h2></div>
-                <div class="sr-info-grid">
-                    <div class="sr-info-item">
-                        <span class="sr-info-label">Type d'opération</span>
-                        <span class="sr-info-value">{{ seller_request.get_listing_type_display }}</span>
+                <div class="admin-panel-head">
+                    <div>
+                        <span class="eyebrow" style="color:var(--gold);display:block;margin-bottom:.2rem;">Bien immobilier</span>
+                        <h2>{{ seller_request.get_property_type_display }} à {{ seller_request.get_listing_type_display|lower }}</h2>
                     </div>
-                    <div class="sr-info-item">
-                        <span class="sr-info-label">Type de bien</span>
-                        <span class="sr-info-value">{{ seller_request.get_property_type_display }}</span>
+                    {% if seller_request.price %}
+                    <div style="font-family:var(--font-heading);font-size:1.3rem;font-weight:700;color:var(--ink);">
+                        {{ seller_request.price|floatformat:0|intcomma }} <span style="font-size:.85rem;font-weight:500;color:var(--muted);">MAD</span>
                     </div>
-                    <div class="sr-info-item">
-                        <span class="sr-info-label">Ville</span>
-                        <span class="sr-info-value">{{ seller_request.city }}</span>
+                    {% endif %}
+                </div>
+                <div class="srd-prop-grid">
+                    <div class="srd-info-block">
+                        <p class="srd-label">Type d'opération</p>
+                        <p class="srd-value">{{ seller_request.get_listing_type_display }}</p>
                     </div>
-                    <div class="sr-info-item">
-                        <span class="sr-info-label">Quartier</span>
-                        <span class="sr-info-value">{{ seller_request.district|default:"—" }}</span>
+                    <div class="srd-info-block">
+                        <p class="srd-label">Type de bien</p>
+                        <p class="srd-value">{{ seller_request.get_property_type_display }}</p>
                     </div>
-                    <div class="sr-info-item">
-                        <span class="sr-info-label">Surface</span>
-                        <span class="sr-info-value">{% if seller_request.surface %}{{ seller_request.surface }} m²{% else %}—{% endif %}</span>
+                    <div class="srd-info-block">
+                        <p class="srd-label">Ville</p>
+                        <p class="srd-value">{{ seller_request.city }}</p>
                     </div>
-                    <div class="sr-info-item">
-                        <span class="sr-info-label">Pièces</span>
-                        <span class="sr-info-value">{{ seller_request.rooms|default:"—" }}</span>
+                    <div class="srd-info-block">
+                        <p class="srd-label">Quartier</p>
+                        <p class="srd-value">{{ seller_request.district|default:"—" }}</p>
                     </div>
-                    <div class="sr-info-item">
-                        <span class="sr-info-label">Salles de bain</span>
-                        <span class="sr-info-value">{{ seller_request.bathrooms|default:"—" }}</span>
+                    <div class="srd-info-block">
+                        <p class="srd-label">Surface</p>
+                        <p class="srd-value">{% if seller_request.surface %}{{ seller_request.surface }} m²{% else %}—{% endif %}</p>
                     </div>
-                    <div class="sr-info-item">
-                        <span class="sr-info-label">Prix souhaité</span>
-                        <span class="sr-info-value">{% if seller_request.price %}{{ seller_request.price|floatformat:0|intcomma }} MAD{% else %}—{% endif %}</span>
+                    <div class="srd-info-block">
+                        <p class="srd-label">Pièces</p>
+                        <p class="srd-value">{{ seller_request.rooms|default:"—" }}</p>
+                    </div>
+                    <div class="srd-info-block">
+                        <p class="srd-label">Salles de bain</p>
+                        <p class="srd-value">{{ seller_request.bathrooms|default:"—" }}</p>
+                    </div>
+                    <div class="srd-info-block">
+                        <p class="srd-label">Prix souhaité</p>
+                        <p class="srd-value">{% if seller_request.price %}{{ seller_request.price|floatformat:0|intcomma }} MAD{% else %}—{% endif %}</p>
                     </div>
                 </div>
 
                 <!-- Équipements -->
-                <div style="margin-top:1.25rem;">
-                    <p class="sr-info-label" style="margin-bottom:.75rem;">Équipements</p>
-                    <div style="display:flex;flex-wrap:wrap;gap:.5rem;">
-                        {% if seller_request.has_parking %}<span class="sr-equip-tag">Parking</span>{% endif %}
-                        {% if seller_request.has_pool %}<span class="sr-equip-tag">Piscine</span>{% endif %}
-                        {% if seller_request.has_garden %}<span class="sr-equip-tag">Jardin</span>{% endif %}
-                        {% if seller_request.has_terrace %}<span class="sr-equip-tag">Terrasse</span>{% endif %}
-                        {% if seller_request.has_elevator %}<span class="sr-equip-tag">Ascenseur</span>{% endif %}
-                        {% if seller_request.has_security %}<span class="sr-equip-tag">Sécurité</span>{% endif %}
+                {% with has_any=seller_request.has_parking|or_:seller_request.has_pool %}
+                <div class="srd-equip-section">
+                    <p class="srd-label" style="margin-bottom:.625rem;">Équipements</p>
+                    <div class="srd-equip-row">
+                        {% if seller_request.has_parking %}<span class="srd-equip-tag">Parking</span>{% endif %}
+                        {% if seller_request.has_pool %}<span class="srd-equip-tag">Piscine</span>{% endif %}
+                        {% if seller_request.has_garden %}<span class="srd-equip-tag">Jardin</span>{% endif %}
+                        {% if seller_request.has_terrace %}<span class="srd-equip-tag">Terrasse</span>{% endif %}
+                        {% if seller_request.has_elevator %}<span class="srd-equip-tag">Ascenseur</span>{% endif %}
+                        {% if seller_request.has_security %}<span class="srd-equip-tag">Sécurité</span>{% endif %}
                         {% if not seller_request.has_parking and not seller_request.has_pool and not seller_request.has_garden and not seller_request.has_terrace and not seller_request.has_elevator and not seller_request.has_security %}
-                            <span style="font-size:.84rem;color:var(--text-muted,#888);">Aucun équipement renseigné</span>
+                            <span style="font-size:.84rem;color:var(--muted);">Aucun équipement renseigné</span>
                         {% endif %}
                     </div>
                 </div>
+                {% endwith %}
 
-                <!-- Description -->
                 {% if seller_request.description %}
-                <div style="margin-top:1.25rem;">
-                    <p class="sr-info-label" style="margin-bottom:.5rem;">Description</p>
-                    <p style="font-size:.88rem;line-height:1.7;color:var(--text,#eee);">{{ seller_request.description }}</p>
+                <div class="srd-desc-section">
+                    <p class="srd-label" style="margin-bottom:.5rem;">Description</p>
+                    <p class="srd-desc-text">{{ seller_request.description }}</p>
                 </div>
                 {% endif %}
             </div>
@@ -123,13 +149,19 @@
             {% if seller_request.images.all %}
             <div class="admin-panel-card">
                 <div class="admin-panel-head">
-                    <h2>Photos ({{ seller_request.images.count }})</h2>
+                    <div>
+                        <span class="eyebrow" style="color:var(--gold);display:block;margin-bottom:.2rem;">Galerie</span>
+                        <h2>Photos <span style="font-weight:400;color:var(--muted);font-size:.9rem;">({{ seller_request.images.count }})</span></h2>
+                    </div>
                 </div>
-                <div class="sr-photos-grid">
+                <div class="srd-photos-grid" id="srd-photos-grid">
                     {% for img in seller_request.images.all %}
-                        <a href="{{ img.image.url }}" target="_blank" class="sr-photo-thumb">
-                            <img src="{{ img.image.url }}" alt="Photo {{ forloop.counter }}">
-                        </a>
+                    <button type="button" class="srd-photo-btn" data-src="{{ img.image.url }}" data-idx="{{ forloop.counter0 }}" onclick="openSrdPhoto({{ forloop.counter0 }})">
+                        <img src="{{ img.image.url }}" alt="Photo {{ forloop.counter }}" loading="lazy">
+                        <div class="srd-photo-overlay">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
+                        </div>
+                    </button>
                     {% endfor %}
                 </div>
             </div>
@@ -137,38 +169,49 @@
 
         </div>
 
-        <!-- Sidebar: actions -->
-        <div style="display:flex;flex-direction:column;gap:1.25rem;">
+        <!-- ── SIDEBAR ── -->
+        <div class="srd-sidebar">
 
             <!-- Change status -->
             <div class="admin-panel-card">
-                <div class="admin-panel-head"><h2>Changer le statut</h2></div>
-                <form method="post" style="display:flex;flex-direction:column;gap:.625rem;">
+                <div class="admin-panel-head">
+                    <div>
+                        <span class="eyebrow" style="color:var(--gold);display:block;margin-bottom:.2rem;">Gestion</span>
+                        <h2>Changer le statut</h2>
+                    </div>
+                </div>
+                <form method="post" style="padding:0 1.5rem 1.5rem;display:flex;flex-direction:column;gap:.5rem;">
                     {% csrf_token %}
-                    <button type="submit" name="action" value="in_progress" class="sr-action-btn is-warn" {% if seller_request.status == 'in_progress' %}disabled{% endif %}>
+                    <button type="submit" name="action" value="in_progress" class="srd-btn srd-btn-warn" {% if seller_request.status == 'in_progress' %}disabled{% endif %}>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
                         En cours de traitement
                     </button>
-                    <button type="submit" name="action" value="accepted" class="sr-action-btn is-success" {% if seller_request.status == 'accepted' %}disabled{% endif %}>
+                    <button type="submit" name="action" value="accepted" class="srd-btn srd-btn-ok" {% if seller_request.status == 'accepted' %}disabled{% endif %}>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><polyline points="20 6 9 17 4 12"/></svg>
                         Accepter le dépôt
                     </button>
-                    <button type="submit" name="action" value="rejected" class="sr-action-btn is-danger" {% if seller_request.status == 'rejected' %}disabled{% endif %}>
+                    <button type="submit" name="action" value="rejected" class="srd-btn srd-btn-ko" {% if seller_request.status == 'rejected' %}disabled{% endif %}>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
                         Refuser le dépôt
                     </button>
                     {% if seller_request.status != 'new' %}
-                    <button type="submit" name="action" value="new" class="sr-action-btn" style="margin-top:.25rem;">
-                        Remettre en Nouveau
-                    </button>
+                    <button type="submit" name="action" value="new" class="srd-btn" style="margin-top:.25rem;">Remettre en Nouveau</button>
                     {% endif %}
                 </form>
             </div>
 
             <!-- Note interne -->
             <div class="admin-panel-card">
-                <div class="admin-panel-head"><h2>Note interne</h2></div>
-                <form method="post">
+                <div class="admin-panel-head">
+                    <div>
+                        <span class="eyebrow" style="color:var(--gold);display:block;margin-bottom:.2rem;">Équipe</span>
+                        <h2>Note interne</h2>
+                    </div>
+                </div>
+                <form method="post" style="padding:0 1.5rem 1.5rem;">
                     {% csrf_token %}
-                    <textarea name="admin_note" class="sr-note-area" placeholder="Note privée pour l'équipe…" rows="5">{{ seller_request.admin_note }}</textarea>
-                    <button type="submit" name="action" value="save_note" class="sr-action-btn" style="margin-top:.75rem;width:100%;">
+                    <textarea name="admin_note" class="srd-note-area" placeholder="Note privée pour l'équipe…" rows="4">{{ seller_request.admin_note }}</textarea>
+                    <button type="submit" name="action" value="save_note" class="srd-btn" style="margin-top:.625rem;width:100%;">
                         Enregistrer la note
                     </button>
                 </form>
@@ -176,22 +219,36 @@
 
             <!-- Metadata -->
             <div class="admin-panel-card">
-                <div class="admin-panel-head"><h2>Métadonnées</h2></div>
-                <div style="display:flex;flex-direction:column;gap:.5rem;font-size:.82rem;">
-                    <div><span class="sr-info-label">Reçu le</span><br>{{ seller_request.created_at|date:"d M Y à H:i" }}</div>
-                    <div><span class="sr-info-label">Mis à jour</span><br>{{ seller_request.updated_at|date:"d M Y à H:i" }}</div>
+                <div class="admin-panel-head">
+                    <div><h2>Métadonnées</h2></div>
+                </div>
+                <div style="padding:0 1.5rem 1.5rem;display:flex;flex-direction:column;gap:.75rem;">
+                    <div class="srd-info-block">
+                        <p class="srd-label">Reçu le</p>
+                        <p class="srd-value">{{ seller_request.created_at|date:"d/m/Y à H:i" }}</p>
+                    </div>
+                    <div class="srd-info-block">
+                        <p class="srd-label">Mis à jour</p>
+                        <p class="srd-value">{{ seller_request.updated_at|date:"d/m/Y à H:i" }}</p>
+                    </div>
                     {% if seller_request.ip_address %}
-                    <div><span class="sr-info-label">IP</span><br>{{ seller_request.ip_address }}</div>
+                    <div class="srd-info-block">
+                        <p class="srd-label">Adresse IP</p>
+                        <p class="srd-value" style="font-family:monospace;">{{ seller_request.ip_address }}</p>
+                    </div>
                     {% endif %}
                 </div>
             </div>
 
             <!-- Delete -->
-            <div class="admin-panel-card" style="border-color:rgba(239,68,68,.2);">
-                <div class="admin-panel-head"><h2 style="color:#ef4444;">Zone dangereuse</h2></div>
-                <form method="post" onsubmit="return confirm('Supprimer définitivement ce dépôt ?')">
+            <div class="admin-panel-card" style="border-color:rgba(239,68,68,.25);">
+                <div class="admin-panel-head">
+                    <div><h2 style="color:#dc2626;">Zone dangereuse</h2></div>
+                </div>
+                <form method="post" style="padding:0 1.5rem 1.5rem;" onsubmit="return confirm('Supprimer définitivement ce dépôt ?')">
                     {% csrf_token %}
-                    <button type="submit" name="action" value="delete" class="sr-action-btn is-danger" style="width:100%;">
+                    <button type="submit" name="action" value="delete" class="srd-btn srd-btn-ko" style="width:100%;">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
                         Supprimer ce dépôt
                     </button>
                 </form>
@@ -201,82 +258,265 @@
     </div>
 </div>
 
+<!-- ── Lightbox ── -->
+<div class="srd-lb" id="srd-lb" aria-hidden="true">
+    <button class="srd-lb-close" onclick="closeSrdLb()" aria-label="Fermer">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="20" height="20"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+    <button class="srd-lb-nav srd-lb-prev" id="srd-lb-prev" onclick="srdLbNav(-1)" aria-label="Précédente">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="22" height="22"><polyline points="15 18 9 12 15 6"/></svg>
+    </button>
+    <div class="srd-lb-content" id="srd-lb-content">
+        <img id="srd-lb-img" src="" alt="">
+    </div>
+    <button class="srd-lb-nav srd-lb-next" id="srd-lb-next" onclick="srdLbNav(1)" aria-label="Suivante">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="22" height="22"><polyline points="9 18 15 12 9 6"/></svg>
+    </button>
+    <div class="srd-lb-counter" id="srd-lb-counter"></div>
+</div>
+
 <style>
-.sr-info-grid {
+/* ── Layout ── */
+.srd-wrap { padding-bottom:4rem; }
+.srd-layout {
+    display: grid;
+    grid-template-columns: 1fr 300px;
+    gap: 1.5rem;
+    align-items: start;
+}
+.srd-main { display:flex; flex-direction:column; gap:1.25rem; }
+.srd-sidebar { display:flex; flex-direction:column; gap:1.25rem; }
+
+/* ── Info blocks ── */
+.srd-contact-grid,
+.srd-prop-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: .875rem;
+    gap: 1rem;
+    padding: 0 1.5rem 1.5rem;
 }
-.sr-info-item { display:flex;flex-direction:column;gap:.25rem; }
-.sr-info-label { font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--text-muted,#888); }
-.sr-info-value { font-size:.9rem;font-weight:500; }
+.srd-info-block { display:flex; flex-direction:column; gap:.2rem; }
+.srd-label { font-size:.68rem; font-weight:700; text-transform:uppercase; letter-spacing:.08em; color:var(--muted); margin:0; }
+.srd-value { font-size:.9rem; font-weight:500; color:var(--ink); margin:0; }
+.srd-value-link { font-size:.9rem; font-weight:600; color:var(--gold-dark); text-decoration:none; }
+.srd-value-link:hover { text-decoration:underline; }
 
-.sr-equip-tag {
+.srd-contact-actions {
+    display:flex; gap:.625rem; flex-wrap:wrap;
+    padding:.875rem 1.5rem;
+    border-top:1px solid var(--border-light);
+}
+
+/* ── Equip ── */
+.srd-equip-section { padding: 0 1.5rem 1.25rem; border-top:1px solid var(--border-light); padding-top:1.25rem; }
+.srd-equip-row { display:flex; flex-wrap:wrap; gap:.5rem; }
+.srd-equip-tag {
     padding:.3rem .75rem;
-    background:rgba(16,185,129,.1);
-    border:1px solid rgba(16,185,129,.25);
+    background:rgba(201,169,110,.08);
+    border:1px solid rgba(201,169,110,.25);
     border-radius:99px;
-    font-size:.78rem;
-    font-weight:600;
-    color:#10b981;
+    font-size:.78rem; font-weight:600;
+    color:var(--gold-dark);
 }
 
-.sr-photos-grid {
-    display:grid;
-    grid-template-columns:repeat(auto-fill, minmax(120px, 1fr));
-    gap:.75rem;
+/* ── Description ── */
+.srd-desc-section { padding: 0 1.5rem 1.5rem; border-top:1px solid var(--border-light); padding-top:1.25rem; }
+.srd-desc-text { font-size:.88rem; line-height:1.75; color:var(--text); margin:0; }
+
+/* ── Photos ── */
+.srd-photos-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+    gap: .75rem;
+    padding: 0 1.5rem 1.5rem;
 }
-.sr-photo-thumb {
+.srd-photo-btn {
+    position:relative;
     display:block;
     aspect-ratio:1;
-    border-radius:10px;
+    border-radius:var(--r-md);
     overflow:hidden;
-    border:1px solid rgba(255,255,255,.1);
-    transition:transform .2s;
+    border:1px solid var(--border-light);
+    cursor:pointer;
+    background:var(--bg);
+    padding:0;
+    transition:transform .18s, border-color .18s;
 }
-.sr-photo-thumb:hover { transform:scale(1.03); }
-.sr-photo-thumb img { width:100%;height:100%;object-fit:cover;display:block; }
+.srd-photo-btn:hover { transform:scale(1.03); border-color:var(--gold); }
+.srd-photo-btn img { width:100%; height:100%; object-fit:cover; display:block; }
+.srd-photo-overlay {
+    position:absolute; inset:0;
+    background:rgba(11,28,46,.4);
+    display:flex; align-items:center; justify-content:center;
+    color:#fff;
+    opacity:0;
+    transition:opacity .18s;
+}
+.srd-photo-btn:hover .srd-photo-overlay { opacity:1; }
 
-.sr-action-btn {
-    display:block;
+/* ── Sidebar buttons ── */
+.srd-btn {
+    display:flex; align-items:center; justify-content:center; gap:.5rem;
     width:100%;
     padding:.65rem 1rem;
-    border-radius:10px;
-    border:1px solid rgba(255,255,255,.1);
-    background:rgba(255,255,255,.04);
-    color:inherit;
-    font-size:.88rem;
-    font-weight:600;
+    border-radius:var(--r-md);
+    border:1px solid var(--border-light);
+    background:var(--bg);
+    color:var(--text);
+    font-size:.85rem; font-weight:600;
     cursor:pointer;
-    text-align:center;
-    transition:background .2s, border-color .2s;
+    transition:background .18s, border-color .18s;
 }
-.sr-action-btn:hover:not(:disabled) { background:rgba(255,255,255,.08); }
-.sr-action-btn:disabled { opacity:.4; cursor:not-allowed; }
-.sr-action-btn.is-warn { border-color:rgba(245,158,11,.3);background:rgba(245,158,11,.06);color:#f59e0b; }
-.sr-action-btn.is-warn:hover:not(:disabled) { background:rgba(245,158,11,.12); }
-.sr-action-btn.is-success { border-color:rgba(34,197,94,.3);background:rgba(34,197,94,.06);color:#22c55e; }
-.sr-action-btn.is-success:hover:not(:disabled) { background:rgba(34,197,94,.12); }
-.sr-action-btn.is-danger { border-color:rgba(239,68,68,.3);background:rgba(239,68,68,.06);color:#ef4444; }
-.sr-action-btn.is-danger:hover:not(:disabled) { background:rgba(239,68,68,.12); }
+.srd-btn:hover:not(:disabled) { background:#f0f0ec; border-color:var(--border); }
+.srd-btn:disabled { opacity:.4; cursor:not-allowed; }
+.srd-btn-warn { border-color:rgba(245,158,11,.3); background:rgba(245,158,11,.06); color:#92400e; }
+.srd-btn-warn:hover:not(:disabled) { background:rgba(245,158,11,.12); }
+.srd-btn-ok   { border-color:rgba(16,185,129,.3); background:rgba(16,185,129,.06); color:#065f46; }
+.srd-btn-ok:hover:not(:disabled)   { background:rgba(16,185,129,.12); }
+.srd-btn-ko   { border-color:rgba(239,68,68,.25); background:rgba(239,68,68,.05); color:#991b1b; }
+.srd-btn-ko:hover:not(:disabled)   { background:rgba(239,68,68,.1); }
 
-.sr-note-area {
-    width:100%;
+/* ── Note area ── */
+.srd-note-area {
+    width:100%; box-sizing:border-box;
     padding:.75rem;
-    background:rgba(255,255,255,.04);
-    border:1px solid rgba(255,255,255,.1);
-    border-radius:10px;
-    color:inherit;
-    font-size:.88rem;
-    line-height:1.6;
+    background:var(--bg);
+    border:1px solid var(--border);
+    border-radius:var(--r-md);
+    color:var(--text);
+    font-size:.88rem; line-height:1.6;
     resize:vertical;
-    box-sizing:border-box;
+    font-family:var(--font-body);
 }
-.sr-note-area:focus { outline:none;border-color:var(--coral,#ff6b6b); }
+.srd-note-area:focus { outline:none; border-color:var(--gold); box-shadow:0 0 0 3px rgba(201,169,110,.1); }
 
-.pill-seller { background:rgba(16,185,129,.12);color:#10b981;border-color:rgba(16,185,129,.25); }
-.pill-success { background:rgba(34,197,94,.12);color:#22c55e;border-color:rgba(34,197,94,.25); }
-.pill-danger  { background:rgba(239,68,68,.12);color:#ef4444;border-color:rgba(239,68,68,.25); }
+/* ── Status pills ── */
+.sr-pill { display:inline-block; padding:.3rem .75rem; border-radius:99px; font-size:.75rem; font-weight:700; border:1px solid transparent; }
+.sr-pill-new  { background:rgba(201,169,110,.1); color:var(--gold-dark); border-color:rgba(201,169,110,.3); }
+.sr-pill-warn { background:rgba(245,158,11,.1);  color:#92400e; border-color:rgba(245,158,11,.25); }
+.sr-pill-ok   { background:rgba(16,185,129,.1);  color:#065f46; border-color:rgba(16,185,129,.25); }
+.sr-pill-ko   { background:rgba(239,68,68,.08);  color:#991b1b; border-color:rgba(239,68,68,.2); }
+
+/* ── Lightbox ── */
+.srd-lb {
+    display:none;
+    position:fixed; inset:0; z-index:9999;
+    background:rgba(0,0,0,.92);
+    align-items:center; justify-content:center;
+}
+.srd-lb.is-open { display:flex; }
+.srd-lb-content {
+    max-width:90vw; max-height:88vh;
+    display:flex; align-items:center; justify-content:center;
+}
+.srd-lb-content img {
+    max-width:90vw; max-height:88vh;
+    object-fit:contain;
+    border-radius:var(--r-md);
+    box-shadow:0 8px 40px rgba(0,0,0,.5);
+}
+.srd-lb-close {
+    position:fixed; top:1.25rem; right:1.25rem;
+    width:40px; height:40px;
+    border-radius:50%;
+    background:rgba(255,255,255,.1);
+    border:1px solid rgba(255,255,255,.2);
+    color:#fff; cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
+    transition:background .18s;
+    z-index:1;
+}
+.srd-lb-close:hover { background:rgba(255,255,255,.2); }
+.srd-lb-nav {
+    position:fixed; top:50%; transform:translateY(-50%);
+    width:44px; height:44px;
+    border-radius:50%;
+    background:rgba(255,255,255,.1);
+    border:1px solid rgba(255,255,255,.2);
+    color:#fff; cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
+    transition:background .18s;
+    z-index:1;
+}
+.srd-lb-nav:hover { background:rgba(255,255,255,.2); }
+.srd-lb-prev { left:1.25rem; }
+.srd-lb-next { right:1.25rem; }
+.srd-lb-counter {
+    position:fixed; bottom:1.5rem; left:50%; transform:translateX(-50%);
+    color:rgba(255,255,255,.7); font-size:.82rem; font-weight:600;
+    background:rgba(0,0,0,.4);
+    padding:.3rem .875rem; border-radius:99px;
+}
+
+/* ── Responsive ── */
+@media (max-width: 860px) {
+    .srd-layout { grid-template-columns: 1fr; }
+    .srd-sidebar { order: -1; }
+    .srd-contact-grid,
+    .srd-prop-grid { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 540px) {
+    .srd-contact-grid,
+    .srd-prop-grid { grid-template-columns: 1fr; }
+    .srd-photos-grid { grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: .5rem; }
+    .srd-contact-actions { flex-direction:column; }
+    .srd-contact-actions .btn-hero-prim,
+    .srd-contact-actions .btn-hero-sec { width:100%; justify-content:center; }
+}
 </style>
+
+<script>
+(function () {
+    const photos = Array.from(document.querySelectorAll('.srd-photo-btn')).map(b => b.dataset.src);
+    const lb = document.getElementById('srd-lb');
+    const lbImg = document.getElementById('srd-lb-img');
+    const lbCounter = document.getElementById('srd-lb-counter');
+    const lbPrev = document.getElementById('srd-lb-prev');
+    const lbNext = document.getElementById('srd-lb-next');
+    let current = 0;
+
+    window.openSrdPhoto = function(idx) {
+        current = idx;
+        lbImg.src = photos[current];
+        lbCounter.textContent = (current + 1) + ' / ' + photos.length;
+        lbPrev.style.display = photos.length > 1 ? '' : 'none';
+        lbNext.style.display = photos.length > 1 ? '' : 'none';
+        lb.classList.add('is-open');
+        document.body.style.overflow = 'hidden';
+    };
+
+    window.closeSrdLb = function() {
+        lb.classList.remove('is-open');
+        document.body.style.overflow = '';
+        lbImg.src = '';
+    };
+
+    window.srdLbNav = function(dir) {
+        current = (current + dir + photos.length) % photos.length;
+        lbImg.src = '';
+        lbImg.src = photos[current];
+        lbCounter.textContent = (current + 1) + ' / ' + photos.length;
+    };
+
+    lb.addEventListener('click', function(e) {
+        if (e.target === lb) closeSrdLb();
+    });
+
+    document.addEventListener('keydown', function(e) {
+        if (!lb.classList.contains('is-open')) return;
+        if (e.key === 'Escape') closeSrdLb();
+        if (e.key === 'ArrowLeft' && photos.length > 1) srdLbNav(-1);
+        if (e.key === 'ArrowRight' && photos.length > 1) srdLbNav(1);
+    });
+
+    // Touch swipe
+    let tx = 0;
+    lb.addEventListener('touchstart', e => { tx = e.touches[0].clientX; }, { passive:true });
+    lb.addEventListener('touchend', e => {
+        const dx = e.changedTouches[0].clientX - tx;
+        if (Math.abs(dx) > 50 && photos.length > 1) srdLbNav(dx < 0 ? 1 : -1);
+    }, { passive:true });
+})();
+</script>
 
 {% endblock %}
