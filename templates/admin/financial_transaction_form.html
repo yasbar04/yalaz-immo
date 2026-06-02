@@ -1,425 +1,735 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}{% if object %}Modifier{% else %}Nouvelle{% endif %} Transaction - Yalaz Agence{% endblock %}
+{% block title %}{% if object %}Modifier{% else %}Nouvelle{% endif %} Transaction — Yalaz{% endblock %}
 
 {% block content %}
-<div class="container" style="padding-top: var(--sp-8); padding-bottom: var(--sp-16); max-width: 900px;">
-    
-    <!-- Header -->
-    <div style="margin-bottom: var(--sp-8);">
-        <a href="{% url 'financial_dashboard' %}" style="color: var(--gold-dark); text-decoration: none; font-size: var(--text-sm); display: flex; align-items: center; gap: 4px; margin-bottom: var(--sp-2);">
-            ← Retour
-        </a>
-        <h1 style="font-size: clamp(1.5rem, 3vw, 2.5rem); margin: 0 0 var(--sp-2) 0; font-weight: 700;">
-            {% if object %}Modifier la Transaction{% else %}Nouvelle Transaction{% endif %}
-        </h1>
-        <p style="color: var(--muted); margin: 0;">Enregistrez une entrée ou sortie d'argent</p>
-    </div>
 
-    <!-- Formulaire -->
-    <form method="post" class="card" style="padding: var(--sp-8);">
-        {% csrf_token %}
-        
-        <!-- Messages d'erreur -->
-        {% if form.non_field_errors %}
-        <div style="background: rgba(239, 68, 68, 0.1); border: 1px solid var(--danger-light); border-radius: var(--r-md); padding: var(--sp-4); margin-bottom: var(--sp-6);">
-            <p style="color: var(--danger); margin: 0; font-weight: 500;">Erreurs détectées :</p>
-            {% for error in form.non_field_errors %}
-            <p style="color: var(--danger); margin: var(--sp-1) 0 0;">• {{ error }}</p>
-            {% endfor %}
+<div class="admin-prem-header">
+    <div class="container admin-header-inner">
+        <div>
+            <a href="{% url 'financial_dashboard' %}" class="admin-back-pill">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><path d="M15 18l-6-6 6-6"/></svg>
+                Finances
+            </a>
+            <span class="eyebrow" style="display:block;margin-top:.5rem;">
+                {% if object %}Modification{% else %}Nouvelle transaction{% endif %}
+            </span>
+            <h1>{% if object %}{{ object.description|truncatewords:6 }}{% else %}Enregistrer une transaction{% endif %}</h1>
+        </div>
+        {% if object %}
+        <div style="display:flex;align-items:center;gap:.625rem;">
+            <span class="tf-type-pill tf-type-{{ object.type }}">{{ object.get_type_display }}</span>
         </div>
         {% endif %}
-
-        <!-- Type et Statut -->
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-6); margin-bottom: var(--sp-8);">
-            
-            <div>
-                <label for="{{ form.type.id_for_label }}" style="display: block; font-weight: 600; margin-bottom: var(--sp-2); color: var(--text);">
-                    {{ form.type.label }} *
-                </label>
-                {{ form.type }}
-                {% if form.type.errors %}
-                <p style="color: var(--danger); font-size: var(--text-xs); margin: var(--sp-1) 0 0;">{{ form.type.errors.0 }}</p>
-                {% endif %}
-                <p style="color: var(--muted); font-size: var(--text-xs); margin: var(--sp-1) 0 0;">Sélectionnez le type de transaction</p>
-            </div>
-
-            <div>
-                <label for="{{ form.status.id_for_label }}" style="display: block; font-weight: 600; margin-bottom: var(--sp-2); color: var(--text);">
-                    {{ form.status.label }} *
-                </label>
-                {{ form.status }}
-                {% if form.status.errors %}
-                <p style="color: var(--danger); font-size: var(--text-xs); margin: var(--sp-1) 0 0;">{{ form.status.errors.0 }}</p>
-                {% endif %}
-            </div>
-
-        </div>
-
-        <!-- Montant et Date -->
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-6); margin-bottom: var(--sp-8);">
-            
-            <div>
-                <label for="{{ form.amount.id_for_label }}" style="display: block; font-weight: 600; margin-bottom: var(--sp-2); color: var(--text);">
-                    {{ form.amount.label }} *
-                </label>
-                <div style="display: flex; align-items: center; gap: var(--sp-2);">
-                    {{ form.amount }}
-                    <span style="color: var(--muted); font-weight: 600; min-width: 40px;">DH</span>
-                </div>
-                {% if form.amount.errors %}
-                <p style="color: var(--danger); font-size: var(--text-xs); margin: var(--sp-1) 0 0;">{{ form.amount.errors.0 }}</p>
-                {% endif %}
-            </div>
-
-            <div>
-                <label for="{{ form.transaction_date.id_for_label }}" style="display: block; font-weight: 600; margin-bottom: var(--sp-2); color: var(--text);">
-                    {{ form.transaction_date.label }} *
-                </label>
-                {{ form.transaction_date }}
-                {% if form.transaction_date.errors %}
-                <p style="color: var(--danger); font-size: var(--text-xs); margin: var(--sp-1) 0 0;">{{ form.transaction_date.errors.0 }}</p>
-                {% endif %}
-            </div>
-
-        </div>
-
-        <!-- Description et Catégorie -->
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-6); margin-bottom: var(--sp-8);">
-            
-            <div>
-                <label for="{{ form.description.id_for_label }}" style="display: block; font-weight: 600; margin-bottom: var(--sp-2); color: var(--text);">
-                    {{ form.description.label }} *
-                </label>
-                {{ form.description }}
-                {% if form.description.errors %}
-                <p style="color: var(--danger); font-size: var(--text-xs); margin: var(--sp-1) 0 0;">{{ form.description.errors.0 }}</p>
-                {% endif %}
-                <p style="color: var(--muted); font-size: var(--text-xs); margin: var(--sp-1) 0 0;">Exemples: Vidéo 500dh, Commission vente bien, Déplacement, etc.</p>
-            </div>
-
-            <div>
-                <label for="{{ form.category.id_for_label }}" style="display: block; font-weight: 600; margin-bottom: var(--sp-2); color: var(--text);">
-                    {{ form.category.label }}
-                </label>
-                {{ form.category }}
-                {% if form.category.errors %}
-                <p style="color: var(--danger); font-size: var(--text-xs); margin: var(--sp-1) 0 0;">{{ form.category.errors.0 }}</p>
-                {% endif %}
-                <p style="color: var(--muted); font-size: var(--text-xs); margin: var(--sp-1) 0 0;">Exemples: Vidéo, Photographie, Commission, etc.</p>
-            </div>
-
-        </div>
-
-        <!-- Bien Immobilier et Personnes -->
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-6); margin-bottom: var(--sp-8);">
-            
-            <div>
-                <label for="{{ form.listing.id_for_label }}" style="display: block; font-weight: 600; margin-bottom: var(--sp-2); color: var(--text);">
-                    {{ form.listing.label }}
-                </label>
-                {{ form.listing }}
-                {% if form.listing.errors %}
-                <p style="color: var(--danger); font-size: var(--text-xs); margin: var(--sp-1) 0 0;">{{ form.listing.errors.0 }}</p>
-                {% endif %}
-                <p style="color: var(--muted); font-size: var(--text-xs); margin: var(--sp-1) 0 0;">Lier à un bien (optionnel)</p>
-            </div>
-
-            <div>
-                <label for="{{ form.assigned_to.id_for_label }}" style="display: block; font-weight: 600; margin-bottom: var(--sp-2); color: var(--text);">
-                    {{ form.assigned_to.label }}
-                </label>
-                {{ form.assigned_to }}
-                {% if form.assigned_to.errors %}
-                <p style="color: var(--danger); font-size: var(--text-xs); margin: var(--sp-1) 0 0;">{{ form.assigned_to.errors.0 }}</p>
-                {% endif %}
-                <p style="color: var(--muted); font-size: var(--text-xs); margin: var(--sp-1) 0 0;">Personne concernée (optionnel)</p>
-            </div>
-
-        </div>
-
-        <!-- Récurrence -->
-        <div style="margin-bottom: var(--sp-8);">
-            <div class="recur-toggle-row">
-                <div class="recur-toggle-label">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
-                    <span>Transaction récurrente ?</span>
-                </div>
-                <label class="recur-switch">
-                    {{ form.is_recurring }}
-                    <span class="recur-slider"></span>
-                </label>
-            </div>
-
-            <div id="recur-options" class="recur-options{% if not form.is_recurring.value %} recur-hidden{% endif %}">
-                <p style="font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin:0 0 .75rem;">Fréquence</p>
-                <div class="recur-freq-row">
-                    <label class="recur-freq-btn">
-                        <input type="radio" name="recurrence" value="monthly"
-                            {% if form.recurrence.value == 'monthly' %}checked{% endif %}>
-                        <span>
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-                            Par mois
-                        </span>
-                    </label>
-                    <label class="recur-freq-btn">
-                        <input type="radio" name="recurrence" value="quarterly"
-                            {% if form.recurrence.value == 'quarterly' %}checked{% endif %}>
-                        <span>
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-                            Par trimestre
-                        </span>
-                    </label>
-                    <label class="recur-freq-btn">
-                        <input type="radio" name="recurrence" value="yearly"
-                            {% if form.recurrence.value == 'yearly' %}checked{% endif %}>
-                        <span>
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                            Par an
-                        </span>
-                    </label>
-                </div>
-                {% if form.recurrence.errors %}
-                <p style="color: var(--danger); font-size: var(--text-xs); margin: .5rem 0 0;">{{ form.recurrence.errors.0 }}</p>
-                {% endif %}
-            </div>
-        </div>
-
-        <!-- Notes -->
-        <div style="margin-bottom: var(--sp-8);">
-            <label for="{{ form.notes.id_for_label }}" style="display: block; font-weight: 600; margin-bottom: var(--sp-2); color: var(--text);">
-                {{ form.notes.label }}
-            </label>
-            {{ form.notes }}
-            {% if form.notes.errors %}
-            <p style="color: var(--danger); font-size: var(--text-xs); margin: var(--sp-1) 0 0;">{{ form.notes.errors.0 }}</p>
-            {% endif %}
-            <p style="color: var(--muted); font-size: var(--text-xs); margin: var(--sp-1) 0 0;">Notes supplémentaires ou détails importants</p>
-        </div>
-
-        <!-- Boutons -->
-        <div style="display: flex; gap: var(--sp-4); justify-content: flex-end; padding-top: var(--sp-6); border-top: 1px solid var(--border-color);">
-            <a href="{% url 'financial_dashboard' %}" class="btn btn-ghost" style="border: 1px solid var(--border-color);">
-                Annuler
-            </a>
-            <button type="submit" class="btn btn-primary">
-                {% if object %}Mettre à jour{% else %}Créer{% endif %} la Transaction
-            </button>
-        </div>
-
-    </form>
-
-    <!-- Carte Info -->
-    <div class="card" style="margin-top: var(--sp-8); padding: var(--sp-6); background: rgba(251, 146, 60, 0.05); border: 1px solid rgba(251, 146, 60, 0.2);">
-        <p style="margin: 0; color: var(--text);">
-            <strong>💡 Conseil:</strong> Assurez-vous que les informations sont exactes. Chaque transaction est enregistrée avec le nom de la personne qui l'a créée.
-        </p>
     </div>
+</div>
 
+<div class="container tf-wrap">
+    <form method="post" id="tf-form">
+        {% csrf_token %}
+
+        <div class="adm-layout">
+
+            <!-- ── MAIN ── -->
+            <div class="adm-main">
+
+                {% if form.non_field_errors %}
+                <div class="tf-error-banner">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                    <span>{% for e in form.non_field_errors %}{{ e }}{% endfor %}</span>
+                </div>
+                {% endif %}
+
+                <!-- ── Bloc 1 : Identité ── -->
+                <div class="admin-panel-card">
+                    <div class="admin-panel-head">
+                        <div>
+                            <span class="eyebrow" style="color:var(--gold);display:block;margin-bottom:.2rem;">Identité</span>
+                            <h2>Type & Statut</h2>
+                        </div>
+                    </div>
+
+                    <!-- Type selector -->
+                    <div style="padding:0 1.5rem 1.5rem;">
+                        <p class="adm-label" style="margin-bottom:.75rem;">Type de transaction *</p>
+                        <div class="tf-type-row">
+                            <label class="tf-type-card tf-type-card-entry">
+                                <input type="radio" name="type" value="entry"
+                                    {% if form.type.value == 'entry' or not form.type.value %}checked{% endif %}>
+                                <span class="tf-type-inner">
+                                    <span class="tf-type-icon">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="22" height="22"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg>
+                                    </span>
+                                    <span class="tf-type-text">
+                                        <strong>Entrée</strong>
+                                        <small>Revenu, commission, paiement reçu</small>
+                                    </span>
+                                    <span class="tf-type-check">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="14" height="14"><polyline points="20 6 9 17 4 12"/></svg>
+                                    </span>
+                                </span>
+                            </label>
+                            <label class="tf-type-card tf-type-card-exit">
+                                <input type="radio" name="type" value="exit"
+                                    {% if form.type.value == 'exit' %}checked{% endif %}>
+                                <span class="tf-type-inner">
+                                    <span class="tf-type-icon">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="22" height="22"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></svg>
+                                    </span>
+                                    <span class="tf-type-text">
+                                        <strong>Sortie</strong>
+                                        <small>Dépense, frais, charge</small>
+                                    </span>
+                                    <span class="tf-type-check">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="14" height="14"><polyline points="20 6 9 17 4 12"/></svg>
+                                    </span>
+                                </span>
+                            </label>
+                        </div>
+                        {% if form.type.errors %}
+                        <p class="tf-field-error">{{ form.type.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+
+                    <!-- Statut -->
+                    <div style="padding:0 1.5rem 1.5rem;">
+                        <div class="tf-status-row">
+                            {% for val, label in form.fields.status.choices %}
+                            <label class="tf-status-btn tf-status-{{ val }}">
+                                <input type="radio" name="status" value="{{ val }}"
+                                    {% if form.status.value == val %}checked{% elif not form.status.value and val == 'completed' %}checked{% endif %}>
+                                <span>{{ label }}</span>
+                            </label>
+                            {% endfor %}
+                        </div>
+                        {% if form.status.errors %}
+                        <p class="tf-field-error">{{ form.status.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- ── Bloc 2 : Montant & Date ── -->
+                <div class="admin-panel-card">
+                    <div class="admin-panel-head">
+                        <div>
+                            <span class="eyebrow" style="color:var(--gold);display:block;margin-bottom:.2rem;">Valeur</span>
+                            <h2>Montant & Date</h2>
+                        </div>
+                    </div>
+                    <div class="adm-info-grid" style="padding:0 1.5rem 1.5rem;">
+                        <div>
+                            <label class="adm-label" for="{{ form.amount.id_for_label }}">Montant (DH) *</label>
+                            <div class="tf-amount-wrap">
+                                <span class="tf-amount-currency">DH</span>
+                                {{ form.amount }}
+                            </div>
+                            {% if form.amount.errors %}<p class="tf-field-error">{{ form.amount.errors.0 }}</p>{% endif %}
+                        </div>
+                        <div>
+                            <label class="adm-label" for="{{ form.transaction_date.id_for_label }}">Date *</label>
+                            {{ form.transaction_date }}
+                            {% if form.transaction_date.errors %}<p class="tf-field-error">{{ form.transaction_date.errors.0 }}</p>{% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ── Bloc 3 : Description & Catégorie ── -->
+                <div class="admin-panel-card">
+                    <div class="admin-panel-head">
+                        <div>
+                            <span class="eyebrow" style="color:var(--gold);display:block;margin-bottom:.2rem;">Détails</span>
+                            <h2>Description & Catégorie</h2>
+                        </div>
+                    </div>
+                    <div style="padding:0 1.5rem 1.5rem;display:flex;flex-direction:column;gap:1.25rem;">
+                        <div>
+                            <label class="adm-label" for="{{ form.description.id_for_label }}" style="margin-bottom:.5rem;display:block;">Description *</label>
+                            {{ form.description }}
+                            {% if form.description.errors %}<p class="tf-field-error">{{ form.description.errors.0 }}</p>{% endif %}
+                            <p class="tf-hint">Ex : Vidéo shooting annonce, Commission vente villa…</p>
+                        </div>
+                        <div>
+                            <label class="adm-label" for="{{ form.category.id_for_label }}" style="margin-bottom:.5rem;display:block;">Catégorie</label>
+                            {{ form.category }}
+                            {% if form.category.errors %}<p class="tf-field-error">{{ form.category.errors.0 }}</p>{% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ── Bloc 4 : Récurrence ── -->
+                <div class="admin-panel-card">
+                    <div class="admin-panel-head">
+                        <div>
+                            <span class="eyebrow" style="color:var(--gold);display:block;margin-bottom:.2rem;">Planification</span>
+                            <h2>Récurrence</h2>
+                        </div>
+                    </div>
+                    <div style="padding:0 1.5rem 1.5rem;">
+
+                        <div class="tf-recur-toggle-row">
+                            <div class="tf-recur-toggle-label">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
+                                <div>
+                                    <p style="font-weight:600;font-size:.9rem;margin:0;">Transaction récurrente</p>
+                                    <p style="font-size:.75rem;color:var(--muted);margin:.1rem 0 0;">Se répète automatiquement à la fréquence choisie</p>
+                                </div>
+                            </div>
+                            <label class="tf-switch">
+                                {{ form.is_recurring }}
+                                <span class="tf-slider"></span>
+                            </label>
+                        </div>
+
+                        <div id="tf-recur-panel" class="tf-recur-panel{% if not form.is_recurring.value %} tf-recur-hidden{% endif %}">
+                            <p class="adm-label" style="margin-bottom:.875rem;">Fréquence de répétition</p>
+                            <div class="tf-freq-grid">
+                                <label class="tf-freq-card">
+                                    <input type="radio" name="recurrence" value="monthly"
+                                        {% if form.recurrence.value == 'monthly' %}checked{% endif %}>
+                                    <span class="tf-freq-inner">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" width="24" height="24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                                        <strong>Par mois</strong>
+                                        <small>Chaque mois</small>
+                                    </span>
+                                </label>
+                                <label class="tf-freq-card">
+                                    <input type="radio" name="recurrence" value="quarterly"
+                                        {% if form.recurrence.value == 'quarterly' %}checked{% endif %}>
+                                    <span class="tf-freq-inner">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" width="24" height="24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                                        <strong>Par trimestre</strong>
+                                        <small>Tous les 3 mois</small>
+                                    </span>
+                                </label>
+                                <label class="tf-freq-card">
+                                    <input type="radio" name="recurrence" value="yearly"
+                                        {% if form.recurrence.value == 'yearly' %}checked{% endif %}>
+                                    <span class="tf-freq-inner">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" width="24" height="24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                                        <strong>Par an</strong>
+                                        <small>Une fois par an</small>
+                                    </span>
+                                </label>
+                            </div>
+                            {% if form.recurrence.errors %}<p class="tf-field-error" style="margin-top:.5rem;">{{ form.recurrence.errors.0 }}</p>{% endif %}
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- ── Bloc 5 : Liaisons ── -->
+                <div class="admin-panel-card">
+                    <div class="admin-panel-head">
+                        <div>
+                            <span class="eyebrow" style="color:var(--gold);display:block;margin-bottom:.2rem;">Liaisons</span>
+                            <h2>Bien & Personnel</h2>
+                        </div>
+                    </div>
+                    <div class="adm-info-grid" style="padding:0 1.5rem 1.5rem;">
+                        <div>
+                            <label class="adm-label" for="{{ form.listing.id_for_label }}" style="margin-bottom:.5rem;display:block;">Bien immobilier</label>
+                            {{ form.listing }}
+                            {% if form.listing.errors %}<p class="tf-field-error">{{ form.listing.errors.0 }}</p>{% endif %}
+                            <p class="tf-hint">Lier à un bien (optionnel)</p>
+                        </div>
+                        <div>
+                            <label class="adm-label" for="{{ form.assigned_to.id_for_label }}" style="margin-bottom:.5rem;display:block;">Attribué à</label>
+                            {{ form.assigned_to }}
+                            {% if form.assigned_to.errors %}<p class="tf-field-error">{{ form.assigned_to.errors.0 }}</p>{% endif %}
+                            <p class="tf-hint">Membre du staff concerné (optionnel)</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ── Bloc 6 : Notes ── -->
+                <div class="admin-panel-card">
+                    <div class="admin-panel-head">
+                        <div>
+                            <span class="eyebrow" style="color:var(--gold);display:block;margin-bottom:.2rem;">Complément</span>
+                            <h2>Notes</h2>
+                        </div>
+                    </div>
+                    <div style="padding:0 1.5rem 1.5rem;">
+                        {{ form.notes }}
+                        {% if form.notes.errors %}<p class="tf-field-error">{{ form.notes.errors.0 }}</p>{% endif %}
+                        <p class="tf-hint">Informations supplémentaires, références, contexte…</p>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- ── SIDEBAR ── -->
+            <div class="adm-sidebar">
+
+                <!-- Résumé -->
+                <div class="admin-panel-card" id="tf-summary-card">
+                    <div class="admin-panel-head">
+                        <div>
+                            <span class="eyebrow" style="color:var(--gold);display:block;margin-bottom:.2rem;">Résumé</span>
+                            <h2>Aperçu</h2>
+                        </div>
+                    </div>
+                    <div style="padding:0 1.5rem 1.5rem;display:flex;flex-direction:column;gap:1rem;">
+                        <div class="tf-preview-amount" id="tf-preview-amount">
+                            <span id="tf-preview-sign">+</span><span id="tf-preview-val">0</span> DH
+                        </div>
+                        <div class="tf-preview-meta">
+                            <div class="adm-info-block">
+                                <p class="adm-label">Type</p>
+                                <p class="adm-value" id="tf-preview-type">—</p>
+                            </div>
+                            <div class="adm-info-block">
+                                <p class="adm-label">Statut</p>
+                                <p class="adm-value" id="tf-preview-status">—</p>
+                            </div>
+                            <div class="adm-info-block">
+                                <p class="adm-label">Date</p>
+                                <p class="adm-value" id="tf-preview-date">—</p>
+                            </div>
+                            <div class="adm-info-block" id="tf-preview-recur-block" style="display:none;">
+                                <p class="adm-label">Récurrence</p>
+                                <p class="adm-value" id="tf-preview-recur">—</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Actions -->
+                <div class="admin-panel-card">
+                    <div class="admin-panel-head">
+                        <div>
+                            <span class="eyebrow" style="color:var(--gold);display:block;margin-bottom:.2rem;">Actions</span>
+                            <h2>Enregistrement</h2>
+                        </div>
+                    </div>
+                    <div style="padding:0 1.5rem 1.5rem;display:flex;flex-direction:column;gap:.625rem;">
+                        <button type="submit" class="tf-submit-btn">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15"><polyline points="20 6 9 17 4 12"/></svg>
+                            {% if object %}Mettre à jour{% else %}Créer la transaction{% endif %}
+                        </button>
+                        <a href="{% url 'financial_dashboard' %}" class="tf-cancel-btn">
+                            Annuler
+                        </a>
+                        {% if object %}
+                        <div style="margin-top:.5rem;padding-top:.875rem;border-top:1px solid var(--border-light);">
+                            <a href="{% url 'financial_transaction_delete' object.pk %}"
+                               onclick="return confirm('Supprimer définitivement cette transaction ?')"
+                               class="tf-delete-btn">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+                                Supprimer
+                            </a>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Conseil -->
+                <div class="tf-tip-card">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" width="18" height="18" style="flex-shrink:0;color:var(--gold);margin-top:.1rem;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                    <p>Chaque transaction est horodatée et liée à votre compte. Les récurrentes sont à créer manuellement à chaque période.</p>
+                </div>
+
+            </div>
+        </div>
+    </form>
 </div>
 
 <style>
-    .card {
-        background: white;
-        border: 1px solid var(--border-color);
-        border-radius: var(--r-xl);
-        box-shadow: var(--shadow-sm);
-    }
-    
-    .btn {
-        display: inline-block;
-        padding: var(--sp-3) var(--sp-6);
-        border-radius: var(--r-md);
-        text-decoration: none;
-        font-weight: 500;
-        cursor: pointer;
-        border: none;
-        transition: all 0.2s;
-    }
-    
-    .btn-primary {
-        background: var(--gold-dark);
-        color: white;
-    }
-    
-    .btn-primary:hover {
-        background: var(--gold-darker);
-    }
-    
-    .btn-ghost {
-        background: transparent;
-        color: var(--muted);
-    }
-    
-    .btn-ghost:hover {
-        background: var(--bg-sand);
-        color: var(--text);
-    }
+/* ── Layout ── */
+.tf-wrap { padding-top:2rem; padding-bottom:4rem; }
+.adm-layout { display:grid; grid-template-columns:1fr 300px; gap:1.5rem; align-items:start; }
+.adm-main { display:flex; flex-direction:column; gap:1.25rem; }
+.adm-sidebar { display:flex; flex-direction:column; gap:1.25rem; }
 
-    /* Styles des champs de formulaire */
-    input[type="text"],
-    input[type="number"],
-    input[type="date"],
-    select,
-    textarea {
-        width: 100%;
-        padding: var(--sp-3) var(--sp-4);
-        border: 1px solid var(--border-color);
-        border-radius: var(--r-md);
-        font-size: var(--text-sm);
-        font-family: inherit;
-        background: white;
-        color: var(--text);
-        transition: all 0.2s;
-    }
-    
-    input[type="text"]:focus,
-    input[type="number"]:focus,
-    input[type="date"]:focus,
-    select:focus,
-    textarea:focus {
-        outline: none;
-        border-color: var(--gold-dark);
-        box-shadow: 0 0 0 3px rgba(217, 119, 6, 0.1);
-    }
-    
-    textarea {
-        resize: vertical;
-        min-height: 120px;
-    }
+/* ── Error banner ── */
+.tf-error-banner {
+    display:flex; align-items:center; gap:.625rem;
+    padding:.875rem 1.25rem;
+    background:var(--danger-bg); border:1px solid rgba(153,27,27,.2);
+    border-radius:var(--r-md); color:var(--danger);
+    font-size:.875rem; font-weight:600;
+}
 
-    select {
-        cursor: pointer;
-        appearance: none;
-        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
-        background-repeat: no-repeat;
-        background-position: right 8px center;
-        background-size: 20px;
-        padding-right: 32px;
-    }
+/* ── Type selector cards ── */
+.tf-type-row { display:grid; grid-template-columns:1fr 1fr; gap:.75rem; }
+.tf-type-card { cursor:pointer; }
+.tf-type-card input { display:none; }
+.tf-type-inner {
+    display:flex; align-items:center; gap:.875rem;
+    padding:1rem 1.125rem;
+    border:1.5px solid var(--border);
+    border-radius:var(--r-md);
+    background:var(--bg);
+    transition:border-color var(--t-base), background var(--t-base), box-shadow var(--t-base);
+    position:relative;
+}
+.tf-type-icon {
+    width:40px; height:40px;
+    border-radius:var(--r-md);
+    display:flex; align-items:center; justify-content:center;
+    flex-shrink:0;
+    transition:background var(--t-base);
+}
+.tf-type-card-entry .tf-type-icon { background:rgba(22,101,52,.08); color:#166534; }
+.tf-type-card-exit  .tf-type-icon { background:rgba(153,27,27,.08); color:#991b1b; }
+.tf-type-text { flex:1; }
+.tf-type-text strong { display:block; font-size:.9rem; font-weight:700; color:var(--ink); }
+.tf-type-text small { font-size:.75rem; color:var(--muted); }
+.tf-type-check {
+    width:20px; height:20px; border-radius:50%;
+    background:var(--border-light); border:1.5px solid var(--border);
+    display:flex; align-items:center; justify-content:center;
+    flex-shrink:0; opacity:0;
+    transition:opacity var(--t-base), background var(--t-base), border-color var(--t-base);
+}
 
-    /* ── Récurrence ── */
-    .recur-toggle-row {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: .875rem 1.25rem;
-        background: var(--bg-sand, #faf9f6);
-        border: 1px solid var(--border-color);
-        border-radius: var(--r-md);
-        margin-bottom: 0;
-    }
-    .recur-toggle-label {
-        display: flex;
-        align-items: center;
-        gap: .5rem;
-        font-weight: 600;
-        font-size: .9rem;
-        color: var(--text);
-    }
+/* Entry selected */
+.tf-type-card-entry input:checked ~ .tf-type-inner {
+    border-color: #16a34a;
+    background: rgba(22,101,52,.04);
+    box-shadow: 0 0 0 3px rgba(22,101,52,.1);
+}
+.tf-type-card-entry input:checked ~ .tf-type-inner .tf-type-check {
+    background:#16a34a; border-color:#16a34a; opacity:1; color:#fff;
+}
+.tf-type-card-entry input:checked ~ .tf-type-inner .tf-type-icon {
+    background:rgba(22,101,52,.14);
+}
 
-    /* Toggle switch */
-    .recur-switch {
-        position: relative;
-        display: inline-block;
-        width: 42px;
-        height: 24px;
-        flex-shrink: 0;
-    }
-    .recur-switch input { opacity: 0; width: 0; height: 0; }
-    .recur-slider {
-        position: absolute;
-        inset: 0;
-        background: #d1d5db;
-        border-radius: 99px;
-        cursor: pointer;
-        transition: background .2s;
-    }
-    .recur-slider::before {
-        content: '';
-        position: absolute;
-        width: 18px; height: 18px;
-        left: 3px; top: 3px;
-        background: white;
-        border-radius: 50%;
-        transition: transform .2s;
-        box-shadow: 0 1px 3px rgba(0,0,0,.2);
-    }
-    .recur-switch input:checked + .recur-slider { background: var(--gold-dark, #b45309); }
-    .recur-switch input:checked + .recur-slider::before { transform: translateX(18px); }
+/* Exit selected */
+.tf-type-card-exit input:checked ~ .tf-type-inner {
+    border-color: #dc2626;
+    background: rgba(153,27,27,.04);
+    box-shadow: 0 0 0 3px rgba(153,27,27,.1);
+}
+.tf-type-card-exit input:checked ~ .tf-type-inner .tf-type-check {
+    background:#dc2626; border-color:#dc2626; opacity:1; color:#fff;
+}
+.tf-type-card-exit input:checked ~ .tf-type-inner .tf-type-icon {
+    background:rgba(153,27,27,.14);
+}
 
-    /* Options panel */
-    .recur-options {
-        padding: 1.25rem;
-        border: 1px solid var(--border-color);
-        border-top: none;
-        border-radius: 0 0 var(--r-md) var(--r-md);
-        background: white;
-        overflow: hidden;
-        max-height: 200px;
-        transition: max-height .25s ease, padding .25s ease, opacity .2s;
-        opacity: 1;
-    }
-    .recur-hidden {
-        max-height: 0;
-        padding-top: 0;
-        padding-bottom: 0;
-        opacity: 0;
-        border-color: transparent;
-    }
+/* ── Status row ── */
+.tf-status-row { display:flex; gap:.5rem; flex-wrap:wrap; }
+.tf-status-btn { cursor:pointer; }
+.tf-status-btn input { display:none; }
+.tf-status-btn span {
+    display:inline-block; padding:.45rem 1rem;
+    border-radius:var(--r-full); font-size:.8rem; font-weight:700;
+    border:1.5px solid var(--border); color:var(--muted); background:var(--bg);
+    transition:all var(--t-fast); cursor:pointer;
+}
+.tf-status-btn.tf-status-completed input:checked + span { background:rgba(22,101,52,.1); border-color:#16a34a; color:#166534; }
+.tf-status-btn.tf-status-pending  input:checked + span { background:rgba(146,64,14,.1); border-color:#d97706; color:#92400e; }
+.tf-status-btn.tf-status-cancelled input:checked + span { background:rgba(153,27,27,.1); border-color:#dc2626; color:#991b1b; }
+.tf-status-btn span:hover { border-color:var(--gold); color:var(--gold-dark); }
 
-    /* Frequency buttons */
-    .recur-freq-row {
-        display: flex;
-        gap: .625rem;
-        flex-wrap: wrap;
-    }
-    .recur-freq-btn { cursor: pointer; }
-    .recur-freq-btn input { display: none; }
-    .recur-freq-btn span {
-        display: inline-flex;
-        align-items: center;
-        gap: .4rem;
-        padding: .55rem 1rem;
-        border: 1.5px solid var(--border-color);
-        border-radius: var(--r-md);
-        font-size: .85rem;
-        font-weight: 600;
-        color: var(--muted);
-        background: var(--bg-sand, #faf9f6);
-        transition: border-color .15s, color .15s, background .15s;
-        -webkit-user-select: none;
-        user-select: none;
-    }
-    .recur-freq-btn input:checked + span {
-        border-color: var(--gold-dark, #b45309);
-        color: var(--gold-dark, #b45309);
-        background: rgba(180, 83, 9, .06);
-    }
-    .recur-freq-btn span:hover {
-        border-color: var(--gold-dark, #b45309);
-        color: var(--gold-dark, #b45309);
-    }
+/* ── Amount field ── */
+.tf-amount-wrap {
+    display:flex; align-items:center;
+    border:1.5px solid var(--border);
+    border-radius:var(--r-md);
+    overflow:hidden;
+    transition:border-color var(--t-fast), box-shadow var(--t-fast);
+    background:#fff;
+}
+.tf-amount-wrap:focus-within { border-color:var(--gold); box-shadow:var(--glow-gold); }
+.tf-amount-currency {
+    padding:.7rem 1rem;
+    background:var(--bg-sand); color:var(--muted);
+    font-size:.82rem; font-weight:700;
+    border-right:1px solid var(--border);
+    white-space:nowrap;
+}
+.tf-amount-wrap input {
+    border:none !important; outline:none !important;
+    box-shadow:none !important;
+    border-radius:0 !important;
+    padding:.7rem .875rem !important;
+    font-size:1.1rem !important; font-weight:700 !important;
+    color:var(--ink) !important;
+    flex:1; min-width:0;
+    background:transparent !important;
+}
+
+/* ── Recurring toggle ── */
+.tf-recur-toggle-row {
+    display:flex; align-items:center; justify-content:space-between;
+    gap:1rem;
+    padding:.875rem 1.125rem;
+    background:var(--bg); border:1.5px solid var(--border);
+    border-radius:var(--r-md); margin-bottom:0;
+}
+.tf-recur-toggle-label { display:flex; align-items:flex-start; gap:.625rem; }
+
+/* Toggle switch */
+.tf-switch { position:relative; display:inline-block; width:44px; height:25px; flex-shrink:0; cursor:pointer; }
+.tf-switch input { opacity:0; width:0; height:0; }
+.tf-slider {
+    position:absolute; inset:0;
+    background:#d1d5db; border-radius:99px;
+    transition:background .2s;
+}
+.tf-slider::before {
+    content:''; position:absolute;
+    width:19px; height:19px;
+    left:3px; top:3px;
+    background:#fff; border-radius:50%;
+    transition:transform .2s;
+    box-shadow:0 1px 3px rgba(0,0,0,.2);
+}
+.tf-switch input:checked + .tf-slider { background:var(--gold-dark); }
+.tf-switch input:checked + .tf-slider::before { transform:translateX(19px); }
+
+/* Frequency cards */
+.tf-recur-panel {
+    margin-top:1rem;
+    overflow:hidden;
+    max-height:260px;
+    opacity:1;
+    transition:max-height .28s ease, opacity .22s ease, margin-top .28s ease;
+}
+.tf-recur-hidden { max-height:0; opacity:0; margin-top:0; pointer-events:none; }
+
+.tf-freq-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:.625rem; }
+.tf-freq-card { cursor:pointer; }
+.tf-freq-card input { display:none; }
+.tf-freq-inner {
+    display:flex; flex-direction:column; align-items:center;
+    gap:.4rem; padding:.875rem .625rem;
+    border:1.5px solid var(--border);
+    border-radius:var(--r-md);
+    background:var(--bg); text-align:center;
+    transition:border-color var(--t-fast), background var(--t-fast), box-shadow var(--t-fast);
+    color:var(--muted);
+}
+.tf-freq-inner strong { font-size:.82rem; font-weight:700; color:var(--ink); }
+.tf-freq-inner small  { font-size:.72rem; color:var(--muted); }
+.tf-freq-card input:checked + .tf-freq-inner {
+    border-color:var(--gold);
+    background:var(--gold-mist);
+    box-shadow:var(--glow-gold);
+    color:var(--gold-dark);
+}
+.tf-freq-card input:checked + .tf-freq-inner strong { color:var(--gold-dark); }
+.tf-freq-card:hover .tf-freq-inner { border-color:var(--gold); }
+
+/* ── Form inputs (global dans ce template) ── */
+.tf-wrap input[type="text"],
+.tf-wrap input[type="number"],
+.tf-wrap input[type="date"],
+.tf-wrap select,
+.tf-wrap textarea {
+    width:100%;
+    padding:.7rem .875rem;
+    border:1.5px solid var(--border);
+    border-radius:var(--r-md);
+    font-size:.875rem;
+    font-family:var(--font-body);
+    background:#fff;
+    color:var(--ink);
+    transition:border-color var(--t-fast), box-shadow var(--t-fast);
+    appearance:none;
+}
+.tf-wrap input[type="text"]:focus,
+.tf-wrap input[type="number"]:focus,
+.tf-wrap input[type="date"]:focus,
+.tf-wrap select:focus,
+.tf-wrap textarea:focus {
+    outline:none;
+    border-color:var(--gold);
+    box-shadow:var(--glow-gold);
+}
+.tf-wrap select {
+    cursor:pointer;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23526475' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+    background-repeat:no-repeat;
+    background-position:right 10px center;
+    background-size:18px;
+    padding-right:36px;
+}
+.tf-wrap textarea { resize:vertical; min-height:110px; line-height:1.6; }
+
+/* ── Helpers ── */
+.tf-hint { font-size:.73rem; color:var(--muted); margin:.375rem 0 0; }
+.tf-field-error { font-size:.75rem; color:var(--danger); margin:.375rem 0 0; font-weight:600; }
+
+/* ── Preview card ── */
+.tf-preview-amount {
+    font-family:var(--font-heading);
+    font-size:2rem; font-weight:700;
+    color:var(--ink);
+    padding:.875rem 1rem;
+    background:var(--bg); border-radius:var(--r-md);
+    text-align:center; letter-spacing:-.02em;
+    border:1px solid var(--border-light);
+    transition:color var(--t-base);
+}
+.tf-preview-amount.is-entry { color:#166534; }
+.tf-preview-amount.is-exit  { color:#991b1b; }
+.tf-preview-meta { display:grid; grid-template-columns:1fr 1fr; gap:.875rem; }
+
+/* ── Sidebar buttons ── */
+.tf-submit-btn {
+    display:flex; align-items:center; justify-content:center; gap:.5rem;
+    width:100%; padding:.75rem 1rem;
+    background:var(--gold-dark); color:#fff;
+    border:none; border-radius:var(--r-md);
+    font-size:.875rem; font-weight:700;
+    font-family:var(--font-body);
+    cursor:pointer;
+    transition:background var(--t-fast), box-shadow var(--t-fast);
+    letter-spacing:.02em;
+}
+.tf-submit-btn:hover { background:var(--gold); box-shadow:var(--shadow-sm); }
+
+.tf-cancel-btn {
+    display:flex; align-items:center; justify-content:center;
+    width:100%; padding:.65rem 1rem;
+    background:transparent; color:var(--muted);
+    border:1.5px solid var(--border); border-radius:var(--r-md);
+    font-size:.85rem; font-weight:600;
+    text-decoration:none;
+    transition:border-color var(--t-fast), color var(--t-fast), background var(--t-fast);
+    text-align:center;
+}
+.tf-cancel-btn:hover { border-color:var(--border); background:var(--bg); color:var(--ink); }
+
+.tf-delete-btn {
+    display:flex; align-items:center; justify-content:center; gap:.4rem;
+    width:100%; padding:.6rem 1rem;
+    background:rgba(239,68,68,.06); color:#991b1b;
+    border:1.5px solid rgba(239,68,68,.22); border-radius:var(--r-md);
+    font-size:.82rem; font-weight:600;
+    text-decoration:none; text-align:center;
+    transition:background var(--t-fast), border-color var(--t-fast);
+}
+.tf-delete-btn:hover { background:rgba(239,68,68,.12); border-color:rgba(239,68,68,.4); }
+
+/* ── Tip card ── */
+.tf-tip-card {
+    display:flex; gap:.75rem; align-items:flex-start;
+    padding:1rem 1.125rem;
+    background:var(--gold-mist); border:1px solid rgba(201,169,110,.25);
+    border-radius:var(--r-md);
+}
+.tf-tip-card p { margin:0; font-size:.8rem; line-height:1.6; color:var(--muted); }
+
+/* ── Type pill in header ── */
+.tf-type-pill {
+    display:inline-block; padding:.35rem .875rem;
+    border-radius:var(--r-full); font-size:.78rem; font-weight:700;
+    border:1px solid transparent;
+}
+.tf-type-pill.tf-type-entry { background:rgba(22,101,52,.1); color:#166534; border-color:rgba(22,101,52,.2); }
+.tf-type-pill.tf-type-exit  { background:rgba(153,27,27,.1); color:#991b1b; border-color:rgba(153,27,27,.2); }
+
+/* ── Shared adm- classes ── */
+.adm-info-grid { display:grid; grid-template-columns:1fr 1fr; gap:1.25rem; }
+.adm-info-block { display:flex; flex-direction:column; gap:.2rem; }
+.adm-label { font-size:.68rem; font-weight:700; text-transform:uppercase; letter-spacing:.08em; color:var(--muted); margin:0; }
+.adm-value { font-size:.9rem; font-weight:500; color:var(--ink); margin:0; }
+
+/* ── Responsive ── */
+@media (max-width: 860px) {
+    .adm-layout { grid-template-columns:1fr; }
+    .adm-sidebar { order:-1; }
+    .tf-freq-grid { grid-template-columns:repeat(3,1fr); }
+}
+@media (max-width: 540px) {
+    .tf-type-row { grid-template-columns:1fr; }
+    .tf-freq-grid { grid-template-columns:1fr; }
+    .adm-info-grid { grid-template-columns:1fr; }
+    .tf-preview-meta { grid-template-columns:1fr 1fr; }
+}
 </style>
 
 <script>
 (function () {
+    /* ── Recurring toggle ── */
     const checkbox = document.getElementById('id_is_recurring');
-    const panel    = document.getElementById('recur-options');
-    if (!checkbox || !panel) return;
+    const panel    = document.getElementById('tf-recur-panel');
+    if (checkbox && panel) {
+        function syncRecur() {
+            if (checkbox.checked) {
+                panel.classList.remove('tf-recur-hidden');
+            } else {
+                panel.classList.add('tf-recur-hidden');
+                panel.querySelectorAll('input[type=radio]').forEach(r => r.checked = false);
+                syncPreview();
+            }
+        }
+        checkbox.addEventListener('change', syncRecur);
+        syncRecur();
+    }
 
-    function toggle() {
-        if (checkbox.checked) {
-            panel.classList.remove('recur-hidden');
-        } else {
-            panel.classList.add('recur-hidden');
-            // Désélectionner la fréquence si on décoche
-            panel.querySelectorAll('input[type=radio]').forEach(r => r.checked = false);
+    /* ── Live preview sidebar ── */
+    const amountInput  = document.querySelector('input[name=amount]');
+    const dateInput    = document.querySelector('input[name=transaction_date]');
+    const previewAmt   = document.getElementById('tf-preview-amount');
+    const previewSign  = document.getElementById('tf-preview-sign');
+    const previewVal   = document.getElementById('tf-preview-val');
+    const previewType  = document.getElementById('tf-preview-type');
+    const previewSt    = document.getElementById('tf-preview-status');
+    const previewDate  = document.getElementById('tf-preview-date');
+    const previewRBlk  = document.getElementById('tf-preview-recur-block');
+    const previewRec   = document.getElementById('tf-preview-recur');
+
+    const typeLabels   = { entry: 'Entrée', exit: 'Sortie' };
+    const statusLabels = { completed: 'Complété', pending: 'En attente', cancelled: 'Annulé' };
+    const freqLabels   = { monthly: 'Par mois', quarterly: 'Par trimestre', yearly: 'Par an' };
+
+    function getChecked(name) {
+        const el = document.querySelector(`input[name=${name}]:checked`);
+        return el ? el.value : null;
+    }
+
+    function formatAmount(v) {
+        if (!v || isNaN(v)) return '0';
+        return parseFloat(v).toLocaleString('fr-FR', { minimumFractionDigits: 0, maximumFractionDigits: 2 });
+    }
+
+    function formatDate(v) {
+        if (!v) return '—';
+        const d = new Date(v);
+        if (isNaN(d)) return v;
+        return d.toLocaleDateString('fr-FR', { day:'2-digit', month:'short', year:'numeric' });
+    }
+
+    function syncPreview() {
+        const type   = getChecked('type');
+        const status = getChecked('status');
+        const freq   = getChecked('recurrence');
+        const recOn  = checkbox && checkbox.checked;
+
+        if (previewAmt) {
+            previewAmt.className = 'tf-preview-amount' + (type === 'entry' ? ' is-entry' : type === 'exit' ? ' is-exit' : '');
+        }
+        if (previewSign) previewSign.textContent = type === 'exit' ? '−' : '+';
+        if (previewVal)  previewVal.textContent  = formatAmount(amountInput?.value);
+        if (previewType) previewType.textContent = typeLabels[type] || '—';
+        if (previewSt)   previewSt.textContent   = statusLabels[status] || '—';
+        if (previewDate) previewDate.textContent  = formatDate(dateInput?.value);
+
+        if (previewRBlk && previewRec) {
+            if (recOn && freq) {
+                previewRBlk.style.display = '';
+                previewRec.textContent    = freqLabels[freq] || freq;
+            } else {
+                previewRBlk.style.display = 'none';
+            }
         }
     }
-    checkbox.addEventListener('change', toggle);
-    toggle(); // état initial
+
+    /* Listeners */
+    document.querySelectorAll('input[name=type], input[name=status], input[name=recurrence]')
+        .forEach(el => el.addEventListener('change', syncPreview));
+    if (amountInput) amountInput.addEventListener('input', syncPreview);
+    if (dateInput)   dateInput.addEventListener('change', syncPreview);
+
+    syncPreview();
 })();
 </script>
+
 {% endblock %}
