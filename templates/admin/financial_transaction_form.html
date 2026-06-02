@@ -4,545 +4,422 @@
 {% block title %}{% if object %}Modifier{% else %}Nouvelle{% endif %} Transaction - Yalaz Agence{% endblock %}
 
 {% block content %}
-<div class="container" style="padding-top: var(--sp-8); padding-bottom: var(--sp-16); max-width: 960px;">
-
+<div class="container" style="padding-top: var(--sp-8); padding-bottom: var(--sp-16); max-width: 900px;">
+    
     <!-- Header -->
     <div style="margin-bottom: var(--sp-8);">
-        <a href="{% url 'financial_transactions_list' %}" style="color: var(--gold-dark); text-decoration: none; font-size: var(--text-sm); display: inline-flex; align-items: center; gap: 4px; margin-bottom: var(--sp-3);">
-            ← Retour aux transactions
+        <a href="{% url 'financial_dashboard' %}" style="color: var(--gold-dark); text-decoration: none; font-size: var(--text-sm); display: flex; align-items: center; gap: 4px; margin-bottom: var(--sp-2);">
+            ← Retour
         </a>
-        <h1 style="font-size: clamp(1.5rem, 3vw, 2.2rem); margin: 0 0 var(--sp-1) 0; font-weight: 700;">
+        <h1 style="font-size: clamp(1.5rem, 3vw, 2.5rem); margin: 0 0 var(--sp-2) 0; font-weight: 700;">
             {% if object %}Modifier la Transaction{% else %}Nouvelle Transaction{% endif %}
         </h1>
-        <p style="color: var(--muted); margin: 0; font-size: var(--text-sm);">Enregistrez une entrée ou sortie d'argent liée à l'activité</p>
+        <p style="color: var(--muted); margin: 0;">Enregistrez une entrée ou sortie d'argent</p>
     </div>
 
-    <form method="post" id="transaction-form">
+    <!-- Formulaire -->
+    <form method="post" class="card" style="padding: var(--sp-8);">
         {% csrf_token %}
-
-        <!-- Erreurs globales -->
+        
+        <!-- Messages d'erreur -->
         {% if form.non_field_errors %}
-        <div style="background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.3); border-radius: var(--r-md); padding: var(--sp-4); margin-bottom: var(--sp-6);">
+        <div style="background: rgba(239, 68, 68, 0.1); border: 1px solid var(--danger-light); border-radius: var(--r-md); padding: var(--sp-4); margin-bottom: var(--sp-6);">
+            <p style="color: var(--danger); margin: 0; font-weight: 500;">Erreurs détectées :</p>
             {% for error in form.non_field_errors %}
-            <p style="color: var(--danger); margin: 0;">• {{ error }}</p>
+            <p style="color: var(--danger); margin: var(--sp-1) 0 0;">• {{ error }}</p>
             {% endfor %}
         </div>
         {% endif %}
 
-        <!-- ═══════════════════════════════════════════════ -->
-        <!-- SECTION 1 — Informations générales              -->
-        <!-- ═══════════════════════════════════════════════ -->
-        <div class="form-card" style="margin-bottom: var(--sp-6);">
-            <div class="form-card-header">
-                <span class="section-num">1</span>
-                <h2 class="section-title">Informations générales</h2>
+        <!-- Type et Statut -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-6); margin-bottom: var(--sp-8);">
+            
+            <div>
+                <label for="{{ form.type.id_for_label }}" style="display: block; font-weight: 600; margin-bottom: var(--sp-2); color: var(--text);">
+                    {{ form.type.label }} *
+                </label>
+                {{ form.type }}
+                {% if form.type.errors %}
+                <p style="color: var(--danger); font-size: var(--text-xs); margin: var(--sp-1) 0 0;">{{ form.type.errors.0 }}</p>
+                {% endif %}
+                <p style="color: var(--muted); font-size: var(--text-xs); margin: var(--sp-1) 0 0;">Sélectionnez le type de transaction</p>
             </div>
-            <div class="form-card-body">
 
-                <!-- Type (Entrée / Sortie) - boutons toggle -->
-                <div class="field-group" style="margin-bottom: var(--sp-6);">
-                    <label class="field-label">Type de transaction *</label>
-                    <div class="type-toggle" id="type-toggle">
-                        <button type="button" class="type-btn entry-btn {% if form.type.value == 'entry' or not form.type.value %}active{% endif %}" data-value="entry" onclick="selectType('entry')">
-                            <span style="font-size: 1.2rem;">↓</span>
-                            <strong>Entrée</strong>
-                            <small>Revenu, commission...</small>
-                        </button>
-                        <button type="button" class="type-btn exit-btn {% if form.type.value == 'exit' %}active{% endif %}" data-value="exit" onclick="selectType('exit')">
-                            <span style="font-size: 1.2rem;">↑</span>
-                            <strong>Sortie</strong>
-                            <small>Dépense, frais...</small>
-                        </button>
-                    </div>
-                    {{ form.type }}
-                    {% if form.type.errors %}<p class="field-error">{{ form.type.errors.0 }}</p>{% endif %}
+            <div>
+                <label for="{{ form.status.id_for_label }}" style="display: block; font-weight: 600; margin-bottom: var(--sp-2); color: var(--text);">
+                    {{ form.status.label }} *
+                </label>
+                {{ form.status }}
+                {% if form.status.errors %}
+                <p style="color: var(--danger); font-size: var(--text-xs); margin: var(--sp-1) 0 0;">{{ form.status.errors.0 }}</p>
+                {% endif %}
+            </div>
+
+        </div>
+
+        <!-- Montant et Date -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-6); margin-bottom: var(--sp-8);">
+            
+            <div>
+                <label for="{{ form.amount.id_for_label }}" style="display: block; font-weight: 600; margin-bottom: var(--sp-2); color: var(--text);">
+                    {{ form.amount.label }} *
+                </label>
+                <div style="display: flex; align-items: center; gap: var(--sp-2);">
+                    {{ form.amount }}
+                    <span style="color: var(--muted); font-weight: 600; min-width: 40px;">DH</span>
                 </div>
+                {% if form.amount.errors %}
+                <p style="color: var(--danger); font-size: var(--text-xs); margin: var(--sp-1) 0 0;">{{ form.amount.errors.0 }}</p>
+                {% endif %}
+            </div>
 
-                <!-- Montant + Date -->
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-5); margin-bottom: var(--sp-5);">
-                    <div class="field-group">
-                        <label class="field-label">{{ form.amount.label }} *</label>
-                        <div style="position: relative;">
-                            {{ form.amount }}
-                            <span style="position: absolute; right: var(--sp-3); top: 50%; transform: translateY(-50%); color: var(--muted); font-weight: 600; pointer-events: none;">DH</span>
-                        </div>
-                        {% if form.amount.errors %}<p class="field-error">{{ form.amount.errors.0 }}</p>{% endif %}
-                    </div>
-                    <div class="field-group">
-                        <label class="field-label">{{ form.transaction_date.label }} *</label>
-                        {{ form.transaction_date }}
-                        {% if form.transaction_date.errors %}<p class="field-error">{{ form.transaction_date.errors.0 }}</p>{% endif %}
-                    </div>
+            <div>
+                <label for="{{ form.transaction_date.id_for_label }}" style="display: block; font-weight: 600; margin-bottom: var(--sp-2); color: var(--text);">
+                    {{ form.transaction_date.label }} *
+                </label>
+                {{ form.transaction_date }}
+                {% if form.transaction_date.errors %}
+                <p style="color: var(--danger); font-size: var(--text-xs); margin: var(--sp-1) 0 0;">{{ form.transaction_date.errors.0 }}</p>
+                {% endif %}
+            </div>
+
+        </div>
+
+        <!-- Description et Catégorie -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-6); margin-bottom: var(--sp-8);">
+            
+            <div>
+                <label for="{{ form.description.id_for_label }}" style="display: block; font-weight: 600; margin-bottom: var(--sp-2); color: var(--text);">
+                    {{ form.description.label }} *
+                </label>
+                {{ form.description }}
+                {% if form.description.errors %}
+                <p style="color: var(--danger); font-size: var(--text-xs); margin: var(--sp-1) 0 0;">{{ form.description.errors.0 }}</p>
+                {% endif %}
+                <p style="color: var(--muted); font-size: var(--text-xs); margin: var(--sp-1) 0 0;">Exemples: Vidéo 500dh, Commission vente bien, Déplacement, etc.</p>
+            </div>
+
+            <div>
+                <label for="{{ form.category.id_for_label }}" style="display: block; font-weight: 600; margin-bottom: var(--sp-2); color: var(--text);">
+                    {{ form.category.label }}
+                </label>
+                {{ form.category }}
+                {% if form.category.errors %}
+                <p style="color: var(--danger); font-size: var(--text-xs); margin: var(--sp-1) 0 0;">{{ form.category.errors.0 }}</p>
+                {% endif %}
+                <p style="color: var(--muted); font-size: var(--text-xs); margin: var(--sp-1) 0 0;">Exemples: Vidéo, Photographie, Commission, etc.</p>
+            </div>
+
+        </div>
+
+        <!-- Bien Immobilier et Personnes -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-6); margin-bottom: var(--sp-8);">
+            
+            <div>
+                <label for="{{ form.listing.id_for_label }}" style="display: block; font-weight: 600; margin-bottom: var(--sp-2); color: var(--text);">
+                    {{ form.listing.label }}
+                </label>
+                {{ form.listing }}
+                {% if form.listing.errors %}
+                <p style="color: var(--danger); font-size: var(--text-xs); margin: var(--sp-1) 0 0;">{{ form.listing.errors.0 }}</p>
+                {% endif %}
+                <p style="color: var(--muted); font-size: var(--text-xs); margin: var(--sp-1) 0 0;">Lier à un bien (optionnel)</p>
+            </div>
+
+            <div>
+                <label for="{{ form.assigned_to.id_for_label }}" style="display: block; font-weight: 600; margin-bottom: var(--sp-2); color: var(--text);">
+                    {{ form.assigned_to.label }}
+                </label>
+                {{ form.assigned_to }}
+                {% if form.assigned_to.errors %}
+                <p style="color: var(--danger); font-size: var(--text-xs); margin: var(--sp-1) 0 0;">{{ form.assigned_to.errors.0 }}</p>
+                {% endif %}
+                <p style="color: var(--muted); font-size: var(--text-xs); margin: var(--sp-1) 0 0;">Personne concernée (optionnel)</p>
+            </div>
+
+        </div>
+
+        <!-- Récurrence -->
+        <div style="margin-bottom: var(--sp-8);">
+            <div class="recur-toggle-row">
+                <div class="recur-toggle-label">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
+                    <span>Transaction récurrente ?</span>
                 </div>
+                <label class="recur-switch">
+                    {{ form.is_recurring }}
+                    <span class="recur-slider"></span>
+                </label>
+            </div>
 
-                <!-- Description + Catégorie -->
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-5); margin-bottom: var(--sp-5);">
-                    <div class="field-group">
-                        <label class="field-label">{{ form.description.label }} *</label>
-                        {{ form.description }}
-                        <p class="field-hint">Ex: Vidéo réseaux sociaux, Commission vente villa...</p>
-                        {% if form.description.errors %}<p class="field-error">{{ form.description.errors.0 }}</p>{% endif %}
-                    </div>
-                    <div class="field-group">
-                        <label class="field-label">{{ form.category.label }} *</label>
-                        {{ form.category }}
-                        {% if form.category.errors %}<p class="field-error">{{ form.category.errors.0 }}</p>{% endif %}
-                    </div>
+            <div id="recur-options" class="recur-options{% if not form.is_recurring.value %} recur-hidden{% endif %}">
+                <p style="font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin:0 0 .75rem;">Fréquence</p>
+                <div class="recur-freq-row">
+                    <label class="recur-freq-btn">
+                        <input type="radio" name="recurrence" value="monthly"
+                            {% if form.recurrence.value == 'monthly' %}checked{% endif %}>
+                        <span>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                            Par mois
+                        </span>
+                    </label>
+                    <label class="recur-freq-btn">
+                        <input type="radio" name="recurrence" value="quarterly"
+                            {% if form.recurrence.value == 'quarterly' %}checked{% endif %}>
+                        <span>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                            Par trimestre
+                        </span>
+                    </label>
+                    <label class="recur-freq-btn">
+                        <input type="radio" name="recurrence" value="yearly"
+                            {% if form.recurrence.value == 'yearly' %}checked{% endif %}>
+                        <span>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                            Par an
+                        </span>
+                    </label>
                 </div>
-
-                <!-- Membre staff + Statut -->
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-5);">
-                    <div class="field-group">
-                        <label class="field-label">{{ form.assigned_to.label }}</label>
-                        {{ form.assigned_to }}
-                        <p class="field-hint">Membre du staff lié à cette transaction</p>
-                        {% if form.assigned_to.errors %}<p class="field-error">{{ form.assigned_to.errors.0 }}</p>{% endif %}
-                    </div>
-                    <div class="field-group">
-                        <label class="field-label">{{ form.status.label }}</label>
-                        {{ form.status }}
-                        {% if form.status.errors %}<p class="field-error">{{ form.status.errors.0 }}</p>{% endif %}
-                    </div>
-                </div>
-
+                {% if form.recurrence.errors %}
+                <p style="color: var(--danger); font-size: var(--text-xs); margin: .5rem 0 0;">{{ form.recurrence.errors.0 }}</p>
+                {% endif %}
             </div>
         </div>
 
-        <!-- ═══════════════════════════════════════════════ -->
-        <!-- SECTION 2 — Commission immobilière (optionnel)  -->
-        <!-- ═══════════════════════════════════════════════ -->
-        <div class="form-card" id="commission-section" style="margin-bottom: var(--sp-6); display: none;">
-            <div class="form-card-header" style="background: rgba(59,130,246,0.06); border-bottom-color: rgba(59,130,246,0.15);">
-                <span class="section-num" style="background: rgba(59,130,246,0.15); color: #3b82f6;">%</span>
-                <h2 class="section-title">Calcul de commission immobilière</h2>
-                <span style="font-size: var(--text-xs); color: var(--muted); margin-left: auto;">Optionnel — rempli automatiquement</span>
-            </div>
-            <div class="form-card-body">
-
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-5); margin-bottom: var(--sp-5);">
-                    <div class="field-group">
-                        <label class="field-label">{{ form.property_price.label }}</label>
-                        <div style="position: relative;">
-                            {{ form.property_price }}
-                            <span style="position: absolute; right: var(--sp-3); top: 50%; transform: translateY(-50%); color: var(--muted); font-weight: 600; pointer-events: none;">DH</span>
-                        </div>
-                        <p class="field-hint">Prix total de vente ou location du bien</p>
-                        {% if form.property_price.errors %}<p class="field-error">{{ form.property_price.errors.0 }}</p>{% endif %}
-                    </div>
-                    <div class="field-group">
-                        <label class="field-label">{{ form.commission_percentage.label }}</label>
-                        <div style="position: relative;">
-                            {{ form.commission_percentage }}
-                            <span style="position: absolute; right: var(--sp-3); top: 50%; transform: translateY(-50%); color: var(--muted); font-weight: 600; pointer-events: none;">%</span>
-                        </div>
-                        <p class="field-hint">Ex: 2.5 pour 2,5%</p>
-                        {% if form.commission_percentage.errors %}<p class="field-error">{{ form.commission_percentage.errors.0 }}</p>{% endif %}
-                    </div>
-                </div>
-
-                <!-- Résultat du calcul -->
-                <div id="commission-result" style="display: none; background: rgba(59,130,246,0.06); border: 1px solid rgba(59,130,246,0.2); border-radius: var(--r-md); padding: var(--sp-4);">
-                    <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: var(--sp-3);">
-                        <div>
-                            <p style="color: var(--muted); font-size: var(--text-xs); margin: 0; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Commission calculée</p>
-                            <p id="commission-calc-text" style="color: #3b82f6; font-size: 1.5rem; font-weight: 700; margin: var(--sp-1) 0 0;">—</p>
-                        </div>
-                        <button type="button" onclick="applyCommission()" class="btn btn-blue" style="white-space: nowrap;">
-                            Appliquer au montant →
-                        </button>
-                    </div>
-                    <p id="commission-formula" style="color: var(--muted); font-size: var(--text-xs); margin: var(--sp-2) 0 0;"></p>
-                </div>
-
-            </div>
-        </div>
-
-        <!-- ═══════════════════════════════════════════════ -->
-        <!-- SECTION 3 — Source du paiement (optionnel)      -->
-        <!-- ═══════════════════════════════════════════════ -->
-        <div class="form-card" id="payment-section" style="margin-bottom: var(--sp-6); display: none;">
-            <div class="form-card-header" style="background: rgba(16,185,129,0.05); border-bottom-color: rgba(16,185,129,0.15);">
-                <span class="section-num" style="background: rgba(16,185,129,0.15); color: var(--success);">💰</span>
-                <h2 class="section-title">Source du paiement</h2>
-                <span style="font-size: var(--text-xs); color: var(--muted); margin-left: auto;">Qui a payé la commission ?</span>
-            </div>
-            <div class="form-card-body">
-
-                <!-- Cases à cocher - source -->
-                <div class="field-group" style="margin-bottom: var(--sp-5);">
-                    <label class="field-label">{{ form.payment_source.label }}</label>
-                    <div class="payment-source-grid">
-                        <label class="payment-source-option" id="src-owner">
-                            <input type="radio" name="payment_source" value="owner"
-                                {% if form.payment_source.value == 'owner' %}checked{% endif %}
-                                onchange="updatePaymentSource('owner')">
-                            <div class="payment-source-card">
-                                <span style="font-size: 1.5rem;">🏠</span>
-                                <strong>Propriétaire</strong>
-                                <small>La commission est payée par le propriétaire</small>
-                            </div>
-                        </label>
-                        <label class="payment-source-option" id="src-client">
-                            <input type="radio" name="payment_source" value="client"
-                                {% if form.payment_source.value == 'client' %}checked{% endif %}
-                                onchange="updatePaymentSource('client')">
-                            <div class="payment-source-card">
-                                <span style="font-size: 1.5rem;">👤</span>
-                                <strong>Client</strong>
-                                <small>La commission est payée par le client</small>
-                            </div>
-                        </label>
-                        <label class="payment-source-option" id="src-both">
-                            <input type="radio" name="payment_source" value="both"
-                                {% if form.payment_source.value == 'both' %}checked{% endif %}
-                                onchange="updatePaymentSource('both')">
-                            <div class="payment-source-card">
-                                <span style="font-size: 1.5rem;">🤝</span>
-                                <strong>Les deux</strong>
-                                <small>Partagée entre propriétaire et client</small>
-                            </div>
-                        </label>
-                    </div>
-                    <!-- Champ caché pour Django -->
-                    <input type="hidden" id="id_payment_source" name="payment_source_hidden" value="{{ form.payment_source.value|default:'' }}">
-                    {% if form.payment_source.errors %}<p class="field-error">{{ form.payment_source.errors.0 }}</p>{% endif %}
-                </div>
-
-                <!-- Montants détaillés (visible uniquement si "Les deux") -->
-                <div id="both-amounts" style="display: {% if form.payment_source.value == 'both' %}grid{% else %}none{% endif %}; grid-template-columns: 1fr 1fr; gap: var(--sp-5);">
-                    <div class="field-group">
-                        <label class="field-label">{{ form.owner_amount.label }}</label>
-                        <div style="position: relative;">
-                            {{ form.owner_amount }}
-                            <span style="position: absolute; right: var(--sp-3); top: 50%; transform: translateY(-50%); color: var(--muted); font-weight: 600; pointer-events: none;">DH</span>
-                        </div>
-                        {% if form.owner_amount.errors %}<p class="field-error">{{ form.owner_amount.errors.0 }}</p>{% endif %}
-                    </div>
-                    <div class="field-group">
-                        <label class="field-label">{{ form.client_amount.label }}</label>
-                        <div style="position: relative;">
-                            {{ form.client_amount }}
-                            <span style="position: absolute; right: var(--sp-3); top: 50%; transform: translateY(-50%); color: var(--muted); font-weight: 600; pointer-events: none;">DH</span>
-                        </div>
-                        {% if form.client_amount.errors %}<p class="field-error">{{ form.client_amount.errors.0 }}</p>{% endif %}
-                    </div>
-                </div>
-
-            </div>
-        </div>
-
-        <!-- ═══════════════════════════════════════════════ -->
-        <!-- SECTION 4 — Bien immobilier & Notes             -->
-        <!-- ═══════════════════════════════════════════════ -->
-        <div class="form-card" style="margin-bottom: var(--sp-6);">
-            <div class="form-card-header">
-                <span class="section-num">4</span>
-                <h2 class="section-title">Bien immobilier & Notes</h2>
-            </div>
-            <div class="form-card-body">
-
-                <div class="field-group" style="margin-bottom: var(--sp-5);">
-                    <label class="field-label">{{ form.listing.label }}</label>
-                    {{ form.listing }}
-                    <p class="field-hint">Lier cette transaction à un bien publié (optionnel)</p>
-                    {% if form.listing.errors %}<p class="field-error">{{ form.listing.errors.0 }}</p>{% endif %}
-                </div>
-
-                <div class="field-group">
-                    <label class="field-label">{{ form.notes.label }}</label>
-                    {{ form.notes }}
-                    {% if form.notes.errors %}<p class="field-error">{{ form.notes.errors.0 }}</p>{% endif %}
-                </div>
-
-            </div>
+        <!-- Notes -->
+        <div style="margin-bottom: var(--sp-8);">
+            <label for="{{ form.notes.id_for_label }}" style="display: block; font-weight: 600; margin-bottom: var(--sp-2); color: var(--text);">
+                {{ form.notes.label }}
+            </label>
+            {{ form.notes }}
+            {% if form.notes.errors %}
+            <p style="color: var(--danger); font-size: var(--text-xs); margin: var(--sp-1) 0 0;">{{ form.notes.errors.0 }}</p>
+            {% endif %}
+            <p style="color: var(--muted); font-size: var(--text-xs); margin: var(--sp-1) 0 0;">Notes supplémentaires ou détails importants</p>
         </div>
 
         <!-- Boutons -->
-        <div style="display: flex; gap: var(--sp-4); justify-content: flex-end;">
-            <a href="{% url 'financial_transactions_list' %}" class="btn btn-ghost">Annuler</a>
-            <button type="submit" class="btn btn-primary" style="padding: var(--sp-3) var(--sp-8);">
-                {% if object %}Mettre à jour{% else %}Créer la transaction{% endif %}
+        <div style="display: flex; gap: var(--sp-4); justify-content: flex-end; padding-top: var(--sp-6); border-top: 1px solid var(--border-color);">
+            <a href="{% url 'financial_dashboard' %}" class="btn btn-ghost" style="border: 1px solid var(--border-color);">
+                Annuler
+            </a>
+            <button type="submit" class="btn btn-primary">
+                {% if object %}Mettre à jour{% else %}Créer{% endif %} la Transaction
             </button>
         </div>
 
     </form>
+
+    <!-- Carte Info -->
+    <div class="card" style="margin-top: var(--sp-8); padding: var(--sp-6); background: rgba(251, 146, 60, 0.05); border: 1px solid rgba(251, 146, 60, 0.2);">
+        <p style="margin: 0; color: var(--text);">
+            <strong>💡 Conseil:</strong> Assurez-vous que les informations sont exactes. Chaque transaction est enregistrée avec le nom de la personne qui l'a créée.
+        </p>
+    </div>
+
 </div>
 
 <style>
-/* ── Layout ── */
-.form-card {
-    background: white;
-    border: 1px solid var(--border-color);
-    border-radius: var(--r-xl);
-    box-shadow: var(--shadow-sm);
-    overflow: hidden;
-}
-.form-card-header {
-    display: flex;
-    align-items: center;
-    gap: var(--sp-3);
-    padding: var(--sp-4) var(--sp-6);
-    background: var(--bg-sand);
-    border-bottom: 1px solid var(--border-color);
-}
-.form-card-body {
-    padding: var(--sp-6);
-}
-.section-num {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 28px;
-    height: 28px;
-    border-radius: 50%;
-    background: rgba(201,169,110,0.2);
-    color: var(--gold-dark);
-    font-weight: 700;
-    font-size: var(--text-sm);
-    flex-shrink: 0;
-}
-.section-title {
-    font-size: 1rem;
-    font-weight: 700;
-    margin: 0;
-    color: var(--text);
-}
-.field-group { display: flex; flex-direction: column; gap: var(--sp-1); }
-.field-label { font-weight: 600; font-size: var(--text-sm); color: var(--text); }
-.field-hint { color: var(--muted); font-size: var(--text-xs); margin: 0; }
-.field-error { color: var(--danger); font-size: var(--text-xs); margin: 0; }
+    .card {
+        background: white;
+        border: 1px solid var(--border-color);
+        border-radius: var(--r-xl);
+        box-shadow: var(--shadow-sm);
+    }
+    
+    .btn {
+        display: inline-block;
+        padding: var(--sp-3) var(--sp-6);
+        border-radius: var(--r-md);
+        text-decoration: none;
+        font-weight: 500;
+        cursor: pointer;
+        border: none;
+        transition: all 0.2s;
+    }
+    
+    .btn-primary {
+        background: var(--gold-dark);
+        color: white;
+    }
+    
+    .btn-primary:hover {
+        background: var(--gold-darker);
+    }
+    
+    .btn-ghost {
+        background: transparent;
+        color: var(--muted);
+    }
+    
+    .btn-ghost:hover {
+        background: var(--bg-sand);
+        color: var(--text);
+    }
 
-/* ── Inputs ── */
-input[type="text"],
-input[type="number"],
-input[type="date"],
-select,
-textarea {
-    width: 100%;
-    padding: var(--sp-3) var(--sp-4);
-    border: 1px solid var(--border-color);
-    border-radius: var(--r-md);
-    font-size: var(--text-sm);
-    font-family: inherit;
-    background: white;
-    color: var(--text);
-    transition: border-color 0.2s, box-shadow 0.2s;
-    box-sizing: border-box;
-}
-input[type="text"]:focus,
-input[type="number"]:focus,
-input[type="date"]:focus,
-select:focus,
-textarea:focus {
-    outline: none;
-    border-color: var(--gold-dark);
-    box-shadow: 0 0 0 3px rgba(217,119,6,0.1);
-}
-select {
-    cursor: pointer;
-    appearance: none;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 10px center;
-    background-size: 18px;
-    padding-right: 36px;
-}
-textarea { resize: vertical; min-height: 100px; }
+    /* Styles des champs de formulaire */
+    input[type="text"],
+    input[type="number"],
+    input[type="date"],
+    select,
+    textarea {
+        width: 100%;
+        padding: var(--sp-3) var(--sp-4);
+        border: 1px solid var(--border-color);
+        border-radius: var(--r-md);
+        font-size: var(--text-sm);
+        font-family: inherit;
+        background: white;
+        color: var(--text);
+        transition: all 0.2s;
+    }
+    
+    input[type="text"]:focus,
+    input[type="number"]:focus,
+    input[type="date"]:focus,
+    select:focus,
+    textarea:focus {
+        outline: none;
+        border-color: var(--gold-dark);
+        box-shadow: 0 0 0 3px rgba(217, 119, 6, 0.1);
+    }
+    
+    textarea {
+        resize: vertical;
+        min-height: 120px;
+    }
 
-/* ── Type toggle ── */
-#id_type { display: none !important; }
-.type-toggle {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: var(--sp-3);
-}
-.type-btn {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 4px;
-    padding: var(--sp-4) var(--sp-6);
-    border: 2px solid var(--border-color);
-    border-radius: var(--r-lg);
-    background: white;
-    cursor: pointer;
-    transition: all 0.2s;
-    font-family: inherit;
-    color: var(--muted);
-}
-.type-btn strong { font-size: 1rem; }
-.type-btn small { font-size: var(--text-xs); }
-.type-btn.entry-btn.active {
-    border-color: var(--success);
-    background: rgba(16,185,129,0.06);
-    color: var(--success);
-}
-.type-btn.exit-btn.active {
-    border-color: var(--danger);
-    background: rgba(239,68,68,0.06);
-    color: var(--danger);
-}
-.type-btn:hover:not(.active) {
-    border-color: var(--gold-mist);
-    background: var(--bg-sand);
-}
+    select {
+        cursor: pointer;
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 8px center;
+        background-size: 20px;
+        padding-right: 32px;
+    }
 
-/* ── Payment source ── */
-.payment-source-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: var(--sp-3);
-}
-.payment-source-option input[type="radio"] { display: none; }
-.payment-source-card {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 6px;
-    padding: var(--sp-4);
-    border: 2px solid var(--border-color);
-    border-radius: var(--r-lg);
-    cursor: pointer;
-    transition: all 0.2s;
-    text-align: center;
-    background: white;
-}
-.payment-source-card strong { font-size: var(--text-sm); color: var(--text); }
-.payment-source-card small { font-size: var(--text-xs); color: var(--muted); }
-.payment-source-option input:checked + .payment-source-card {
-    border-color: var(--gold-dark);
-    background: rgba(201,169,110,0.08);
-}
+    /* ── Récurrence ── */
+    .recur-toggle-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: .875rem 1.25rem;
+        background: var(--bg-sand, #faf9f6);
+        border: 1px solid var(--border-color);
+        border-radius: var(--r-md);
+        margin-bottom: 0;
+    }
+    .recur-toggle-label {
+        display: flex;
+        align-items: center;
+        gap: .5rem;
+        font-weight: 600;
+        font-size: .9rem;
+        color: var(--text);
+    }
 
-/* ── Buttons ── */
-.btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: var(--sp-3) var(--sp-6);
-    border-radius: var(--r-md);
-    text-decoration: none;
-    font-weight: 600;
-    font-size: var(--text-sm);
-    cursor: pointer;
-    border: none;
-    transition: all 0.2s;
-    font-family: inherit;
-}
-.btn-primary { background: var(--gold-dark); color: white; }
-.btn-primary:hover { background: var(--gold-darker); }
-.btn-ghost { background: transparent; color: var(--muted); border: 1px solid var(--border-color); }
-.btn-ghost:hover { background: var(--bg-sand); color: var(--text); }
-.btn-blue { background: rgba(59,130,246,0.1); color: #3b82f6; border: 1px solid rgba(59,130,246,0.3); }
-.btn-blue:hover { background: rgba(59,130,246,0.2); }
+    /* Toggle switch */
+    .recur-switch {
+        position: relative;
+        display: inline-block;
+        width: 42px;
+        height: 24px;
+        flex-shrink: 0;
+    }
+    .recur-switch input { opacity: 0; width: 0; height: 0; }
+    .recur-slider {
+        position: absolute;
+        inset: 0;
+        background: #d1d5db;
+        border-radius: 99px;
+        cursor: pointer;
+        transition: background .2s;
+    }
+    .recur-slider::before {
+        content: '';
+        position: absolute;
+        width: 18px; height: 18px;
+        left: 3px; top: 3px;
+        background: white;
+        border-radius: 50%;
+        transition: transform .2s;
+        box-shadow: 0 1px 3px rgba(0,0,0,.2);
+    }
+    .recur-switch input:checked + .recur-slider { background: var(--gold-dark, #b45309); }
+    .recur-switch input:checked + .recur-slider::before { transform: translateX(18px); }
 
-@media (max-width: 640px) {
-    .type-toggle { grid-template-columns: 1fr; }
-    .payment-source-grid { grid-template-columns: 1fr; }
-    [style*="grid-template-columns: 1fr 1fr"] { grid-template-columns: 1fr !important; }
-}
+    /* Options panel */
+    .recur-options {
+        padding: 1.25rem;
+        border: 1px solid var(--border-color);
+        border-top: none;
+        border-radius: 0 0 var(--r-md) var(--r-md);
+        background: white;
+        overflow: hidden;
+        max-height: 200px;
+        transition: max-height .25s ease, padding .25s ease, opacity .2s;
+        opacity: 1;
+    }
+    .recur-hidden {
+        max-height: 0;
+        padding-top: 0;
+        padding-bottom: 0;
+        opacity: 0;
+        border-color: transparent;
+    }
+
+    /* Frequency buttons */
+    .recur-freq-row {
+        display: flex;
+        gap: .625rem;
+        flex-wrap: wrap;
+    }
+    .recur-freq-btn { cursor: pointer; }
+    .recur-freq-btn input { display: none; }
+    .recur-freq-btn span {
+        display: inline-flex;
+        align-items: center;
+        gap: .4rem;
+        padding: .55rem 1rem;
+        border: 1.5px solid var(--border-color);
+        border-radius: var(--r-md);
+        font-size: .85rem;
+        font-weight: 600;
+        color: var(--muted);
+        background: var(--bg-sand, #faf9f6);
+        transition: border-color .15s, color .15s, background .15s;
+        -webkit-user-select: none;
+        user-select: none;
+    }
+    .recur-freq-btn input:checked + span {
+        border-color: var(--gold-dark, #b45309);
+        color: var(--gold-dark, #b45309);
+        background: rgba(180, 83, 9, .06);
+    }
+    .recur-freq-btn span:hover {
+        border-color: var(--gold-dark, #b45309);
+        color: var(--gold-dark, #b45309);
+    }
 </style>
 
 <script>
-// ── Sélection du type (Entrée / Sortie) ──
-function selectType(value) {
-    document.getElementById('id_type').value = value;
-    document.querySelectorAll('.type-btn').forEach(btn => {
-        btn.classList.toggle('active', btn.dataset.value === value);
-    });
-    toggleCommissionSection();
-    togglePaymentSection();
-}
+(function () {
+    const checkbox = document.getElementById('id_is_recurring');
+    const panel    = document.getElementById('recur-options');
+    if (!checkbox || !panel) return;
 
-// ── Catégories commission ──
-const COMMISSION_CATEGORIES = ['commission_vente', 'commission_location'];
-
-function toggleCommissionSection() {
-    const type = document.getElementById('id_type').value;
-    const cat = document.getElementById('id_category').value;
-    const show = type === 'entry' && COMMISSION_CATEGORIES.includes(cat);
-    document.getElementById('commission-section').style.display = show ? 'block' : 'none';
-    if (show) updateCommissionCalc();
-}
-
-function togglePaymentSection() {
-    const type = document.getElementById('id_type').value;
-    const cat = document.getElementById('id_category').value;
-    const show = type === 'entry' && COMMISSION_CATEGORIES.includes(cat);
-    document.getElementById('payment-section').style.display = show ? 'block' : 'none';
-}
-
-// ── Calcul commission ──
-function updateCommissionCalc() {
-    const price = parseFloat(document.getElementById('id_property_price').value) || 0;
-    const pct = parseFloat(document.getElementById('id_commission_percentage').value) || 0;
-    const resultDiv = document.getElementById('commission-result');
-    if (price > 0 && pct > 0) {
-        const commission = price * pct / 100;
-        document.getElementById('commission-calc-text').textContent = formatDH(commission);
-        document.getElementById('commission-formula').textContent =
-            `${formatDH(price)} × ${pct}% = ${formatDH(commission)}`;
-        resultDiv.style.display = 'block';
-    } else {
-        resultDiv.style.display = 'none';
+    function toggle() {
+        if (checkbox.checked) {
+            panel.classList.remove('recur-hidden');
+        } else {
+            panel.classList.add('recur-hidden');
+            // Désélectionner la fréquence si on décoche
+            panel.querySelectorAll('input[type=radio]').forEach(r => r.checked = false);
+        }
     }
-}
-
-function applyCommission() {
-    const price = parseFloat(document.getElementById('id_property_price').value) || 0;
-    const pct = parseFloat(document.getElementById('id_commission_percentage').value) || 0;
-    if (price > 0 && pct > 0) {
-        const commission = price * pct / 100;
-        document.getElementById('id_amount').value = commission.toFixed(2);
-        document.getElementById('id_amount').dispatchEvent(new Event('input'));
-        // Flash visual
-        const amountInput = document.getElementById('id_amount');
-        amountInput.style.borderColor = '#3b82f6';
-        amountInput.style.boxShadow = '0 0 0 3px rgba(59,130,246,0.2)';
-        setTimeout(() => {
-            amountInput.style.borderColor = '';
-            amountInput.style.boxShadow = '';
-        }, 1200);
-    }
-}
-
-function formatDH(val) {
-    return new Intl.NumberFormat('fr-MA', { maximumFractionDigits: 2 }).format(val) + ' DH';
-}
-
-// ── Source de paiement ──
-function updatePaymentSource(value) {
-    document.getElementById('id_payment_source').value = value;
-    // Sync avec le champ Django (hidden)
-    document.querySelector('[name="payment_source"]') && (
-        document.querySelectorAll('[name="payment_source"]').forEach(r => r.checked = r.value === value)
-    );
-    const bothDiv = document.getElementById('both-amounts');
-    bothDiv.style.display = value === 'both' ? 'grid' : 'none';
-}
-
-// ── Catégorie change ──
-document.getElementById('id_category').addEventListener('change', function() {
-    toggleCommissionSection();
-    togglePaymentSection();
-});
-
-// ── Commission fields change ──
-document.getElementById('id_property_price').addEventListener('input', updateCommissionCalc);
-document.getElementById('id_commission_percentage').addEventListener('input', updateCommissionCalc);
-
-// ── Init ──
-(function init() {
-    // Sync le type depuis le select caché
-    const typeVal = document.getElementById('id_type').value || 'entry';
-    selectType(typeVal);
-
-    // Sync payment source depuis l'état des radios
-    const checkedRadio = document.querySelector('input[name="payment_source"]:checked');
-    if (checkedRadio) updatePaymentSource(checkedRadio.value);
-
-    // Calculer la commission si données déjà présentes (edit mode)
-    updateCommissionCalc();
+    checkbox.addEventListener('change', toggle);
+    toggle(); // état initial
 })();
 </script>
 {% endblock %}

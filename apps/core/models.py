@@ -36,6 +36,12 @@ class FinancialTransaction(models.Model):
         ('both', 'Les deux'),
     ]
 
+    RECURRENCE_CHOICES = [
+        ('monthly', 'Par mois'),
+        ('quarterly', 'Par trimestre'),
+        ('yearly', 'Par an'),
+    ]
+
     # Informations de base
     type = models.CharField(max_length=20, choices=TYPE_CHOICES)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='completed')
@@ -133,6 +139,16 @@ class FinancialTransaction(models.Model):
     )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    # Récurrence
+    is_recurring = models.BooleanField(default=False, help_text='Transaction récurrente')
+    recurrence = models.CharField(
+        max_length=20,
+        choices=RECURRENCE_CHOICES,
+        blank=True,
+        null=True,
+        help_text='Fréquence de récurrence'
+    )
 
     # Notes
     notes = models.TextField(blank=True, help_text='Notes supplémentaires')
