@@ -157,6 +157,95 @@
                     </div>
                 </div>
 
+                <!-- ── Bloc 3b : Commission (affiché si catégorie commission) ── -->
+                <div class="admin-panel-card" id="tf-commission-panel" style="display:none;">
+                    <div class="admin-panel-head">
+                        <div>
+                            <span class="eyebrow" style="color:var(--gold);display:block;margin-bottom:.2rem;">Immobilier</span>
+                            <h2>Détails de la commission</h2>
+                        </div>
+                    </div>
+                    <div style="padding:0 1.5rem 1.5rem;display:flex;flex-direction:column;gap:1.25rem;">
+
+                        <!-- Prix du bien + taux -->
+                        <div class="adm-info-grid">
+                            <div>
+                                <label class="adm-label" style="margin-bottom:.5rem;display:block;">Prix du bien (DH)</label>
+                                <div class="tf-amount-wrap">
+                                    <span class="tf-amount-currency">DH</span>
+                                    {{ form.property_price }}
+                                </div>
+                                {% if form.property_price.errors %}<p class="tf-field-error">{{ form.property_price.errors.0 }}</p>{% endif %}
+                                <p class="tf-hint">Prix total du bien vendu / loué</p>
+                            </div>
+                            <div>
+                                <label class="adm-label" style="margin-bottom:.5rem;display:block;">Taux de commission (%)</label>
+                                <div class="tf-amount-wrap">
+                                    <span class="tf-amount-currency">%</span>
+                                    {{ form.commission_percentage }}
+                                </div>
+                                {% if form.commission_percentage.errors %}<p class="tf-field-error">{{ form.commission_percentage.errors.0 }}</p>{% endif %}
+                                <p class="tf-hint">Ex : 2.5 pour 2,5%</p>
+                            </div>
+                        </div>
+
+                        <!-- Calcul automatique -->
+                        <div class="tf-commission-calc" id="tf-commission-calc" style="display:none;">
+                            <span class="tf-calc-label">Commission calculée</span>
+                            <span class="tf-calc-value" id="tf-calc-result">— DH</span>
+                        </div>
+
+                        <!-- Qui a payé -->
+                        <div>
+                            <label class="adm-label" style="margin-bottom:.75rem;display:block;">Qui a payé la commission</label>
+                            <div class="tf-source-row">
+                                {% for val, label in form.fields.payment_source.choices %}
+                                {% if val %}
+                                <label class="tf-source-btn">
+                                    <input type="radio" name="payment_source" value="{{ val }}"
+                                        {% if form.payment_source.value == val %}checked{% endif %}>
+                                    <span>
+                                        {% if val == 'owner' %}
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+                                        {% elif val == 'client' %}
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                                        {% else %}
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                                        {% endif %}
+                                        {{ label }}
+                                    </span>
+                                </label>
+                                {% endif %}
+                                {% endfor %}
+                            </div>
+                            {% if form.payment_source.errors %}<p class="tf-field-error">{{ form.payment_source.errors.0 }}</p>{% endif %}
+                        </div>
+
+                        <!-- Parts propriétaire / client (si "les deux") -->
+                        <div id="tf-split-panel" style="display:none;">
+                            <div class="adm-info-grid">
+                                <div>
+                                    <label class="adm-label" style="margin-bottom:.5rem;display:block;">Part propriétaire (DH)</label>
+                                    <div class="tf-amount-wrap">
+                                        <span class="tf-amount-currency">DH</span>
+                                        {{ form.owner_amount }}
+                                    </div>
+                                    {% if form.owner_amount.errors %}<p class="tf-field-error">{{ form.owner_amount.errors.0 }}</p>{% endif %}
+                                </div>
+                                <div>
+                                    <label class="adm-label" style="margin-bottom:.5rem;display:block;">Part client (DH)</label>
+                                    <div class="tf-amount-wrap">
+                                        <span class="tf-amount-currency">DH</span>
+                                        {{ form.client_amount }}
+                                    </div>
+                                    {% if form.client_amount.errors %}<p class="tf-field-error">{{ form.client_amount.errors.0 }}</p>{% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
                 <!-- ── Bloc 4 : Récurrence ── -->
                 <div class="admin-panel-card">
                     <div class="admin-panel-head">
@@ -257,6 +346,25 @@
                     </div>
                 </div>
 
+                <!-- ── Bloc 7 : Boutons (toujours en bas du main) ── -->
+                <div class="tf-actions-bar">
+                    <button type="submit" class="tf-submit-btn">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15"><polyline points="20 6 9 17 4 12"/></svg>
+                        {% if object %}Mettre à jour{% else %}Créer la transaction{% endif %}
+                    </button>
+                    <a href="{% url 'financial_dashboard' %}" class="tf-cancel-btn">
+                        Annuler
+                    </a>
+                    {% if object %}
+                    <a href="{% url 'financial_transaction_delete' object.pk %}"
+                       onclick="return confirm('Supprimer définitivement cette transaction ?')"
+                       class="tf-delete-btn tf-delete-btn-inline">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+                        Supprimer
+                    </a>
+                    {% endif %}
+                </div>
+
             </div>
 
             <!-- ── SIDEBAR ── -->
@@ -295,39 +403,10 @@
                     </div>
                 </div>
 
-                <!-- Actions -->
-                <div class="admin-panel-card">
-                    <div class="admin-panel-head">
-                        <div>
-                            <span class="eyebrow" style="color:var(--gold);display:block;margin-bottom:.2rem;">Actions</span>
-                            <h2>Enregistrement</h2>
-                        </div>
-                    </div>
-                    <div style="padding:0 1.5rem 1.5rem;display:flex;flex-direction:column;gap:.625rem;">
-                        <button type="submit" class="tf-submit-btn">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15"><polyline points="20 6 9 17 4 12"/></svg>
-                            {% if object %}Mettre à jour{% else %}Créer la transaction{% endif %}
-                        </button>
-                        <a href="{% url 'financial_dashboard' %}" class="tf-cancel-btn">
-                            Annuler
-                        </a>
-                        {% if object %}
-                        <div style="margin-top:.5rem;padding-top:.875rem;border-top:1px solid var(--border-light);">
-                            <a href="{% url 'financial_transaction_delete' object.pk %}"
-                               onclick="return confirm('Supprimer définitivement cette transaction ?')"
-                               class="tf-delete-btn">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
-                                Supprimer
-                            </a>
-                        </div>
-                        {% endif %}
-                    </div>
-                </div>
-
                 <!-- Conseil -->
                 <div class="tf-tip-card">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" width="18" height="18" style="flex-shrink:0;color:var(--gold);margin-top:.1rem;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-                    <p>Chaque transaction est horodatée et liée à votre compte. Les récurrentes sont à créer manuellement à chaque période.</p>
+                    <p>Chaque transaction est horodatée et liée à votre compte. Les récurrentes sont générées automatiquement chaque matin.</p>
                 </div>
 
             </div>
@@ -570,6 +649,15 @@
 .tf-preview-amount.is-exit  { color:#991b1b; }
 .tf-preview-meta { display:grid; grid-template-columns:1fr 1fr; gap:.875rem; }
 
+/* ── Actions bar (bottom of main column) ── */
+.tf-actions-bar {
+    display:flex; flex-direction:column; gap:.75rem;
+    padding:1.5rem;
+    background:var(--bg-sand);
+    border:1px solid var(--border-light);
+    border-radius:var(--r-xl);
+}
+
 /* ── Sidebar buttons ── */
 .tf-submit-btn {
     display:flex; align-items:center; justify-content:center; gap:.5rem;
@@ -631,22 +719,148 @@
 .adm-label { font-size:.68rem; font-weight:700; text-transform:uppercase; letter-spacing:.08em; color:var(--muted); margin:0; }
 .adm-value { font-size:.9rem; font-weight:500; color:var(--ink); margin:0; }
 
+/* ── Commission ── */
+.tf-commission-calc {
+    display:flex; align-items:center; justify-content:space-between;
+    padding:.875rem 1.125rem;
+    background:var(--gold-mist); border:1px solid rgba(201,169,110,.3);
+    border-radius:var(--r-md);
+}
+.tf-calc-label { font-size:.8rem; font-weight:700; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); }
+.tf-calc-value { font-family:var(--font-heading); font-size:1.25rem; font-weight:700; color:var(--gold-dark); }
+
+.tf-source-row { display:flex; gap:.5rem; flex-wrap:wrap; }
+.tf-source-btn { cursor:pointer; }
+.tf-source-btn input { display:none; }
+.tf-source-btn span {
+    display:inline-flex; align-items:center; gap:.4rem;
+    padding:.55rem 1rem;
+    border:1.5px solid var(--border); border-radius:var(--r-md);
+    font-size:.85rem; font-weight:600; color:var(--muted); background:var(--bg);
+    transition:all var(--t-fast); cursor:pointer;
+}
+.tf-source-btn input:checked + span {
+    border-color:var(--gold); background:var(--gold-mist); color:var(--gold-dark);
+    box-shadow:var(--glow-gold);
+}
+.tf-source-btn span:hover { border-color:var(--gold); color:var(--gold-dark); }
+
 /* ── Responsive ── */
 @media (max-width: 860px) {
     .adm-layout { grid-template-columns:1fr; }
-    .adm-sidebar { order:-1; }
     .tf-freq-grid { grid-template-columns:repeat(3,1fr); }
+    .tf-wrap { padding-top:1rem; padding-bottom:2rem; }
+    /* Sidebar va en bas — bouton Créer à la fin du formulaire */
+    .adm-sidebar { order:2; }
+    /* Cache la carte aperçu sur tablette/mobile, inutile quand tout est en 1 col */
+    #tf-summary-card { display:none; }
 }
-@media (max-width: 540px) {
-    .tf-type-row { grid-template-columns:1fr; }
-    .tf-freq-grid { grid-template-columns:1fr; }
+
+@media (max-width: 600px) {
+    /* Header */
+    .admin-header-inner { flex-direction:column; align-items:flex-start; gap:.75rem; }
+    .admin-header-inner h1 { font-size:1.35rem; }
+
+    /* Type selector : empilé verticalement */
+    .tf-type-row { grid-template-columns:1fr; gap:.625rem; }
+    .tf-type-inner { padding:.875rem 1rem; }
+    .tf-type-icon { width:36px; height:36px; }
+
+    /* Status pills : wrap naturel, pleine largeur */
+    .tf-status-row { gap:.4rem; }
+    .tf-status-btn span { font-size:.78rem; padding:.4rem .875rem; }
+
+    /* Grilles 2 col → 1 col */
     .adm-info-grid { grid-template-columns:1fr; }
     .tf-preview-meta { grid-template-columns:1fr 1fr; }
+
+    /* Fréquence récurrence : 1 colonne */
+    .tf-freq-grid { grid-template-columns:1fr; }
+    .tf-freq-inner { flex-direction:row; justify-content:flex-start; gap:.75rem; padding:.75rem 1rem; }
+    .tf-freq-inner strong { font-size:.85rem; }
+    .tf-freq-inner small { display:none; }
+
+    /* Source paiement commission */
+    .tf-source-row { flex-direction:column; }
+    .tf-source-btn span { width:100%; justify-content:center; }
+
+    /* Toggle récurrence */
+    .tf-recur-toggle-row { flex-direction:column; align-items:flex-start; gap:.75rem; }
+    .tf-switch { align-self:flex-end; margin-top:-.5rem; }
+
+    /* Preview sidebar */
+    .tf-preview-amount { font-size:1.6rem; }
+
+    /* Boutons sidebar pleine largeur */
+    .tf-submit-btn, .tf-cancel-btn, .tf-delete-btn { font-size:.875rem; padding:.75rem; }
+
+    /* Cards : padding réduit */
+    .admin-panel-card .adm-info-grid,
+    .admin-panel-card > div[style*="padding:0 1.5rem"] { padding-left:1rem !important; padding-right:1rem !important; }
+    .admin-panel-head { padding:1rem 1rem .75rem !important; }
 }
 </style>
 
 <script>
 (function () {
+    /* ── Commission panel ── */
+    const categorySelect   = document.querySelector('select[name=category]');
+    const commissionPanel  = document.getElementById('tf-commission-panel');
+    const commissionCalc   = document.getElementById('tf-commission-calc');
+    const calcResult       = document.getElementById('tf-calc-result');
+    const splitPanel       = document.getElementById('tf-split-panel');
+    const priceInput       = document.querySelector('input[name=property_price]');
+    const pctInput         = document.querySelector('input[name=commission_percentage]');
+
+    const COMMISSION_CATS = ['commission_vente', 'commission_location'];
+
+    function syncCommissionPanel() {
+        if (!categorySelect || !commissionPanel) return;
+        const isComm = COMMISSION_CATS.includes(categorySelect.value);
+        commissionPanel.style.display = isComm ? '' : 'none';
+        if (isComm) updateCalc();
+    }
+
+    function updateCalc() {
+        if (!priceInput || !pctInput || !commissionCalc || !calcResult) return;
+        const price = parseFloat(priceInput.value);
+        const pct   = parseFloat(pctInput.value);
+        if (price > 0 && pct > 0) {
+            const result = (price * pct / 100).toLocaleString('fr-FR', {minimumFractionDigits:0, maximumFractionDigits:2});
+            calcResult.textContent = result + ' DH';
+            commissionCalc.style.display = '';
+            // Auto-remplir le montant de la transaction
+            const amountField = document.querySelector('input[name=amount]');
+            if (amountField && !amountField.dataset.manual) {
+                amountField.value = (price * pct / 100).toFixed(2);
+                syncPreview();
+            }
+        } else {
+            commissionCalc.style.display = 'none';
+        }
+    }
+
+    function syncSplitPanel() {
+        if (!splitPanel) return;
+        const src = document.querySelector('input[name=payment_source]:checked');
+        splitPanel.style.display = (src && src.value === 'both') ? '' : 'none';
+    }
+
+    if (categorySelect) {
+        categorySelect.addEventListener('change', syncCommissionPanel);
+        syncCommissionPanel();
+    }
+    if (priceInput) priceInput.addEventListener('input', updateCalc);
+    if (pctInput)   pctInput.addEventListener('input', updateCalc);
+    document.querySelectorAll('input[name=payment_source]').forEach(r => r.addEventListener('change', syncSplitPanel));
+    syncSplitPanel();
+
+    // Marquer le montant comme modifié manuellement
+    const amountField = document.querySelector('input[name=amount]');
+    if (amountField) {
+        amountField.addEventListener('input', () => { amountField.dataset.manual = '1'; });
+    }
+
     /* ── Recurring toggle ── */
     const checkbox = document.getElementById('id_is_recurring');
     const panel    = document.getElementById('tf-recur-panel');

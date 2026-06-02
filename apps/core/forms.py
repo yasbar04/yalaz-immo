@@ -8,65 +8,65 @@ class FinancialTransactionForm(forms.ModelForm):
     
     class Meta:
         model = FinancialTransaction
-        fields = ['type', 'amount', 'description', 'category', 'listing', 'assigned_to', 'transaction_date', 'status', 'is_recurring', 'recurrence', 'notes']
+        fields = [
+            'type', 'status', 'amount', 'transaction_date',
+            'description', 'category',
+            'property_price', 'commission_percentage', 'payment_source', 'owner_amount', 'client_amount',
+            'listing', 'assigned_to',
+            'is_recurring', 'recurrence',
+            'notes',
+        ]
         widgets = {
-            'type': forms.Select(attrs={
-                'class': 'form-control',
-                'required': True,
-            }),
+            'type': forms.Select(attrs={'class': 'form-control', 'required': True}),
+            'status': forms.Select(attrs={'class': 'form-control'}),
             'amount': forms.NumberInput(attrs={
-                'class': 'form-control',
-                'type': 'number',
-                'step': '0.01',
-                'min': '0',
-                'placeholder': '0.00',
-                'required': True,
+                'class': 'form-control', 'step': '0.01', 'min': '0', 'placeholder': '0.00', 'required': True,
+            }),
+            'transaction_date': forms.DateInput(attrs={
+                'class': 'form-control', 'type': 'date',
+                'value': timezone.now().date().isoformat(),
             }),
             'description': forms.TextInput(attrs={
                 'class': 'form-control',
-                'placeholder': 'Exemple: Vidéo 500dh, Commission vente bien...',
+                'placeholder': 'Ex : Vidéo shooting, Commission vente villa…',
                 'required': True,
             }),
-            'category': forms.TextInput(attrs={
-                'class': 'form-control',
-                'placeholder': 'Exemple: Vidéo, Photographie, Commission...',
+            'category': forms.Select(attrs={'class': 'form-control'}),
+            'property_price': forms.NumberInput(attrs={
+                'class': 'form-control', 'step': '1', 'min': '0', 'placeholder': 'Ex : 2500000',
             }),
-            'listing': forms.Select(attrs={
-                'class': 'form-control',
+            'commission_percentage': forms.NumberInput(attrs={
+                'class': 'form-control', 'step': '0.01', 'min': '0', 'max': '100', 'placeholder': 'Ex : 2.5',
             }),
-            'assigned_to': forms.Select(attrs={
-                'class': 'form-control',
+            'payment_source': forms.Select(attrs={'class': 'form-control'}),
+            'owner_amount': forms.NumberInput(attrs={
+                'class': 'form-control', 'step': '0.01', 'min': '0', 'placeholder': '0.00',
             }),
-            'transaction_date': forms.DateInput(attrs={
-                'class': 'form-control',
-                'type': 'date',
-                'value': timezone.now().date().isoformat(),
+            'client_amount': forms.NumberInput(attrs={
+                'class': 'form-control', 'step': '0.01', 'min': '0', 'placeholder': '0.00',
             }),
-            'status': forms.Select(attrs={
-                'class': 'form-control',
-            }),
+            'listing': forms.Select(attrs={'class': 'form-control'}),
+            'assigned_to': forms.Select(attrs={'class': 'form-control'}),
+            'is_recurring': forms.CheckboxInput(attrs={'id': 'id_is_recurring'}),
+            'recurrence': forms.Select(attrs={'class': 'form-control', 'id': 'id_recurrence'}),
             'notes': forms.Textarea(attrs={
-                'class': 'form-control',
-                'rows': 3,
-                'placeholder': 'Notes supplémentaires...',
-            }),
-            'is_recurring': forms.CheckboxInput(attrs={
-                'id': 'id_is_recurring',
-            }),
-            'recurrence': forms.Select(attrs={
-                'class': 'form-control',
-                'id': 'id_recurrence',
+                'class': 'form-control', 'rows': 3, 'placeholder': 'Notes supplémentaires…',
             }),
         }
         labels = {
             'type': 'Type de transaction',
+            'status': 'Statut',
             'amount': 'Montant (DH)',
-            'description': 'Description *',
+            'transaction_date': 'Date',
+            'description': 'Description',
             'category': 'Catégorie',
+            'property_price': 'Prix du bien (DH)',
+            'commission_percentage': 'Taux de commission (%)',
+            'payment_source': 'Qui a payé la commission',
+            'owner_amount': 'Part propriétaire (DH)',
+            'client_amount': 'Part client (DH)',
             'listing': 'Bien immobilier (optionnel)',
             'assigned_to': 'Attribué à',
-            'transaction_date': 'Date *',
-            'status': 'Statut',
             'is_recurring': 'Transaction récurrente',
             'recurrence': 'Fréquence',
             'notes': 'Notes',
