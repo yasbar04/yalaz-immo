@@ -149,6 +149,14 @@ class FinancialTransaction(models.Model):
         null=True,
         help_text='Fréquence de récurrence'
     )
+    recurring_parent = models.ForeignKey(
+        'self',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='recurring_children',
+        help_text='Transaction source dont celle-ci a été générée automatiquement'
+    )
 
     # Notes
     notes = models.TextField(blank=True, help_text='Notes supplémentaires')
