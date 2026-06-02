@@ -620,3 +620,89 @@ def politique_cookies(request):
 
 def cgu(request):
     return render(request, 'core/cgu.html')
+
+
+def cron_recurring_transactions(request):
+    """
+    Endpoint HTTP déclenché par cron-job.org pour générer les transactions récurrentes.
+    Protégé par CRON_SECRET dans les variables d'environnement.
+    """
+    import os
+    import calendar
+    from datetime import date
+
+    secret = os.environ.get('CRON_SECRET', '')
+    if not secret or request.GET.get('key') != secret:
+        return JsonResponse({'error': 'Unauthorized'}, status=401)
+
+    def _add_months(d, months):
+        total = d.month - 1 + months
+        year  = d.year + total // 12
+        month = total % 12 + 1
+        day   = min(d.day, calendar.monthrange(year, month)[1])
+        return d.replace(year=year, month=month, day=day)
+
+    def _next_date(from_date, recurrence):
+        if recurrence == 'monthly':
+            return _add_months(from_date, 1)
+        if recurrence == 'quarterly':
+            return _add_months(from_date, 3)
+        if recurrence == 'yearly':
+            return from_date.replace(year=from_date.year + 1)
+        return None
+
+    today   = date.today()
+    created = []
+    skipped = 0
+
+    sources = FinancialTransaction.objects.filter(
+        is_recurring=True,
+        recurring_parent=None,
+    ).prefetch_related('recurring_children')
+
+    for source in sources:
+        if not source.recurrence:
+            skipped += 1
+            continue
+
+        latest_date   = source.created_at.date()
+        children_dates = source.recurring_children.values_list('transaction_date', flat=True)
+        if children_dates:
+            latest_date = max(latest_date, max(children_dates))
+
+        next_due = _next_date(latest_date, source.recurrence)
+        if next_due is None or next_due > today:
+            skipped += 1
+            continue
+
+        if source.recurring_children.filter(transaction_date=next_due).exists():
+            skipped += 1
+            continue
+
+        FinancialTransaction.objects.create(
+            type=source.type,
+            status='pending',
+            amount=source.amount,
+            description=source.description,
+            category=source.category,
+            property_price=source.property_price,
+            commission_percentage=source.commission_percentage,
+            payment_source=source.payment_source,
+            owner_amount=source.owner_amount,
+            client_amount=source.client_amount,
+            listing=source.listing,
+            created_by=source.created_by,
+            assigned_to=source.assigned_to,
+            transaction_date=next_due,
+            notes=f'Générée automatiquement depuis #{source.pk}',
+            is_recurring=False,
+            recurring_parent=source,
+        )
+        created.append({'id': source.pk, 'description': source.description, 'date': str(next_due)})
+
+    return JsonResponse({
+        'status': 'ok',
+        'created': len(created),
+        'skipped': skipped,
+        'transactions': created,
+    })

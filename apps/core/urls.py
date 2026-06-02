@@ -7,6 +7,7 @@ from .views import (
     FinancialTransactionUpdateView, FinancialTransactionDeleteView,
     FinancialTransactionDetailView,
     mentions_legales, politique_confidentialite, politique_cookies, cgu,
+    cron_recurring_transactions,
 )
 from .analytics_views import analytics_dashboard
 from .sitemaps import SitemapView, SitemapListingsView, SitemapIndexView
@@ -39,6 +40,7 @@ urlpatterns = [
     path('confidentialite/', politique_confidentialite, name='politique_confidentialite'),
     path('cookies/', politique_cookies, name='politique_cookies'),
     path('cgu/', cgu, name='cgu'),
+    path('internal/cron/recurring/', cron_recurring_transactions, name='cron_recurring_transactions'),
 
     # Sitemaps
     path('sitemap.xml', SitemapView.as_view(), name='sitemap'),
