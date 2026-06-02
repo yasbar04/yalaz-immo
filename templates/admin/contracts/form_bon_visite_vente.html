@@ -1,0 +1,161 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Bon de visite — Vente — Yalaz{% endblock %}
+
+{% block content %}
+<div class="admin-prem-header">
+    <div class="container admin-header-inner">
+        <div>
+            <a href="{% url 'contracts_list' %}" class="admin-back-pill">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><path d="M15 18l-6-6 6-6"/></svg>
+                Contrats
+            </a>
+            <span class="eyebrow" style="display:block;margin-top:.5rem;">Nouveau document</span>
+            <h1>Bon de visite — Vente</h1>
+        </div>
+    </div>
+</div>
+
+<div class="container cf-wrap">
+    <form method="post" id="cf-form">
+        {% csrf_token %}
+        <div class="adm-layout">
+
+            <!-- MAIN -->
+            <div class="adm-main">
+
+                <!-- Section : Prospect -->
+                <div class="admin-panel-card" style="margin-bottom:1.25rem;">
+                    <div class="admin-panel-head">
+                        <div>
+                            <span class="eyebrow" style="color:var(--gold);display:block;margin-bottom:.2rem;">Section 1</span>
+                            <h2>Prospect (Visiteur)</h2>
+                        </div>
+                    </div>
+                    <div style="padding:0 1.5rem 1.5rem;">
+                        <div class="cf-grid-2">
+                            <div class="cf-field">
+                                <label class="adm-label">{{ form.nom_prenom.label }} *</label>
+                                {{ form.nom_prenom }}
+                                {% if form.nom_prenom.errors %}<p class="tf-field-error">{{ form.nom_prenom.errors.0 }}</p>{% endif %}
+                            </div>
+                            <div class="cf-field">
+                                <label class="adm-label">{{ form.cin_passeport.label }} *</label>
+                                {{ form.cin_passeport }}
+                                {% if form.cin_passeport.errors %}<p class="tf-field-error">{{ form.cin_passeport.errors.0 }}</p>{% endif %}
+                            </div>
+                        </div>
+                        <div class="cf-field">
+                            <label class="adm-label">{{ form.telephone_prospect.label }} *</label>
+                            {{ form.telephone_prospect }}
+                            {% if form.telephone_prospect.errors %}<p class="tf-field-error">{{ form.telephone_prospect.errors.0 }}</p>{% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section : Bien visité -->
+                <div class="admin-panel-card" style="margin-bottom:1.25rem;">
+                    <div class="admin-panel-head">
+                        <div>
+                            <span class="eyebrow" style="color:var(--gold);display:block;margin-bottom:.2rem;">Section 2</span>
+                            <h2>Bien visité</h2>
+                        </div>
+                    </div>
+                    <div style="padding:0 1.5rem 1.5rem;">
+                        <div class="cf-grid-2">
+                            <div class="cf-field">
+                                <label class="adm-label">{{ form.type_bien.label }} *</label>
+                                {{ form.type_bien }}
+                                {% if form.type_bien.errors %}<p class="tf-field-error">{{ form.type_bien.errors.0 }}</p>{% endif %}
+                            </div>
+                            <div class="cf-field">
+                                <label class="adm-label">{{ form.reference_bien.label }}</label>
+                                {{ form.reference_bien }}
+                            </div>
+                        </div>
+                        <div class="cf-field">
+                            <label class="adm-label">{{ form.adresse_bien.label }} *</label>
+                            {{ form.adresse_bien }}
+                            {% if form.adresse_bien.errors %}<p class="tf-field-error">{{ form.adresse_bien.errors.0 }}</p>{% endif %}
+                        </div>
+                        <div class="cf-grid-2">
+                            <div class="cf-field">
+                                <label class="adm-label">{{ form.date_visite.label }} *</label>
+                                {{ form.date_visite }}
+                                {% if form.date_visite.errors %}<p class="tf-field-error">{{ form.date_visite.errors.0 }}</p>{% endif %}
+                            </div>
+                            <div class="cf-field">
+                                <label class="adm-label">{{ form.heure_visite.label }}</label>
+                                {{ form.heure_visite }}
+                            </div>
+                        </div>
+                        <div class="cf-field">
+                            <label class="adm-label">{{ form.agent_accompagnant.label }} *</label>
+                            {{ form.agent_accompagnant }}
+                            {% if form.agent_accompagnant.errors %}<p class="tf-field-error">{{ form.agent_accompagnant.errors.0 }}</p>{% endif %}
+                        </div>
+                        <div class="cf-grid-2">
+                            <div class="cf-field">
+                                <label class="adm-label">{{ form.agent_cin.label }}</label>
+                                {{ form.agent_cin }}
+                            </div>
+                            <div class="cf-field">
+                                <label class="adm-label">{{ form.agent_telephone.label }}</label>
+                                {{ form.agent_telephone }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section : Rémunération -->
+                <div class="admin-panel-card" style="margin-bottom:1.25rem;">
+                    <div class="admin-panel-head">
+                        <div>
+                            <span class="eyebrow" style="color:var(--gold);display:block;margin-bottom:.2rem;">Section 5</span>
+                            <h2>Rémunération</h2>
+                        </div>
+                    </div>
+                    <div style="padding:0 1.5rem 1.5rem;">
+                        <div class="cf-field">
+                            <label class="adm-label">{{ form.remuneration_type.label }}</label>
+                            {{ form.remuneration_type }}
+                        </div>
+                        <div class="cf-grid-2">
+                            <div class="cf-field">
+                                <label class="adm-label">{{ form.remuneration_percentage.label }}</label>
+                                {{ form.remuneration_percentage }}
+                            </div>
+                            <div class="cf-field">
+                                <label class="adm-label">{{ form.remuneration_forfait.label }}</label>
+                                {{ form.remuneration_forfait }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+            </div>
+
+            <!-- SIDEBAR -->
+            <div class="adm-sidebar">
+                <div class="tf-actions-bar">
+                    <div style="font-size:.8rem;color:var(--muted);line-height:1.5;">
+                        <strong style="color:var(--ink);display:block;margin-bottom:.4rem;">Bon de visite — Vente</strong>
+                        Ce document acte la visite d'un bien immobilier mis en vente par un prospect. Il engage les deux parties pendant 12 mois.
+                    </div>
+                    <hr style="border:none;border-top:1px solid var(--border-light);margin:.25rem 0;">
+                    <button type="submit" class="tf-submit-btn">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="15" height="15"><polyline points="20 6 9 17 4 12"/></svg>
+                        Continuer vers la signature →
+                    </button>
+                    <a href="{% url 'contracts_list' %}" class="tf-cancel-btn">Annuler</a>
+                </div>
+            </div>
+
+        </div>
+    </form>
+</div>
+
+{% include "admin/contracts/_form_styles.html" %}
+{% endblock %}

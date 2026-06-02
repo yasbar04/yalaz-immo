@@ -9,6 +9,8 @@ urlpatterns = [
     path('', include('apps.core.urls')),
     path('accounts/', include('apps.accounts.urls')),
     path('listings/', include('apps.listings.urls')),
+    # Contracts / Documents
+    path('contrats/', include('apps.contracts.urls')),
     # API v1
     path('api/v1/', include('apps.api.urls')),
     path('api/auth/token/', obtain_auth_token, name='api_token_auth'),

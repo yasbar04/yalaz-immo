@@ -1,0 +1,190 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Mandat de recherche — Yalaz{% endblock %}
+
+{% block content %}
+<div class="admin-prem-header">
+    <div class="container admin-header-inner">
+        <div>
+            <a href="{% url 'contracts_list' %}" class="admin-back-pill">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><path d="M15 18l-6-6 6-6"/></svg>
+                Contrats
+            </a>
+            <span class="eyebrow" style="display:block;margin-top:.5rem;">Nouveau document</span>
+            <h1>Mandat de recherche</h1>
+        </div>
+    </div>
+</div>
+
+<div class="container cf-wrap">
+    <form method="post" id="cf-form">
+        {% csrf_token %}
+        <div class="adm-layout">
+
+            <!-- MAIN -->
+            <div class="adm-main">
+
+                <!-- Section : Mandant (Client) -->
+                <div class="admin-panel-card" style="margin-bottom:1.25rem;">
+                    <div class="admin-panel-head">
+                        <div>
+                            <span class="eyebrow" style="color:var(--gold);display:block;margin-bottom:.2rem;">Section 1a</span>
+                            <h2>Mandant (Client)</h2>
+                        </div>
+                    </div>
+                    <div style="padding:0 1.5rem 1.5rem;">
+                        <div class="cf-field">
+                            <label class="adm-label">{{ form.mandant_nom.label }} *</label>
+                            {{ form.mandant_nom }}
+                            {% if form.mandant_nom.errors %}<p class="tf-field-error">{{ form.mandant_nom.errors.0 }}</p>{% endif %}
+                        </div>
+                        <div class="cf-grid-2">
+                            <div class="cf-field">
+                                <label class="adm-label">{{ form.mandant_cin.label }}</label>
+                                {{ form.mandant_cin }}
+                            </div>
+                            <div class="cf-field">
+                                <label class="adm-label">{{ form.mandant_telephone.label }} *</label>
+                                {{ form.mandant_telephone }}
+                                {% if form.mandant_telephone.errors %}<p class="tf-field-error">{{ form.mandant_telephone.errors.0 }}</p>{% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section : Mandataire (Agent) -->
+                <div class="admin-panel-card" style="margin-bottom:1.25rem;">
+                    <div class="admin-panel-head">
+                        <div>
+                            <span class="eyebrow" style="color:var(--gold);display:block;margin-bottom:.2rem;">Section 1b</span>
+                            <h2>Mandataire (Agent Immobilier)</h2>
+                        </div>
+                    </div>
+                    <div style="padding:0 1.5rem 1.5rem;">
+                        <div class="cf-field">
+                            <label class="adm-label">{{ form.agent_nom.label }} *</label>
+                            {{ form.agent_nom }}
+                            {% if form.agent_nom.errors %}<p class="tf-field-error">{{ form.agent_nom.errors.0 }}</p>{% endif %}
+                        </div>
+                        <div class="cf-grid-2">
+                            <div class="cf-field">
+                                <label class="adm-label">{{ form.agent_cin.label }}</label>
+                                {{ form.agent_cin }}
+                            </div>
+                            <div class="cf-field">
+                                <label class="adm-label">{{ form.agent_telephone.label }}</label>
+                                {{ form.agent_telephone }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section : Critères de recherche -->
+                <div class="admin-panel-card" style="margin-bottom:1.25rem;">
+                    <div class="admin-panel-head">
+                        <div>
+                            <span class="eyebrow" style="color:var(--gold);display:block;margin-bottom:.2rem;">Section 3</span>
+                            <h2>Critères de recherche</h2>
+                        </div>
+                    </div>
+                    <div style="padding:0 1.5rem 1.5rem;">
+                        <div class="cf-grid-2">
+                            <div class="cf-field">
+                                <label class="adm-label">{{ form.type_bien_recherche.label }} *</label>
+                                {{ form.type_bien_recherche }}
+                                {% if form.type_bien_recherche.errors %}<p class="tf-field-error">{{ form.type_bien_recherche.errors.0 }}</p>{% endif %}
+                            </div>
+                            <div class="cf-field">
+                                <label class="adm-label">{{ form.localisation_souhaitee.label }} *</label>
+                                {{ form.localisation_souhaitee }}
+                                {% if form.localisation_souhaitee.errors %}<p class="tf-field-error">{{ form.localisation_souhaitee.errors.0 }}</p>{% endif %}
+                            </div>
+                        </div>
+                        <div class="cf-grid-2">
+                            <div class="cf-field">
+                                <label class="adm-label">{{ form.surface_minimum.label }}</label>
+                                {{ form.surface_minimum }}
+                            </div>
+                            <div class="cf-field">
+                                <label class="adm-label">{{ form.nb_pieces.label }}</label>
+                                {{ form.nb_pieces }}
+                            </div>
+                        </div>
+                        <div class="cf-field">
+                            <label class="adm-label">{{ form.budget.label }}</label>
+                            {{ form.budget }}
+                        </div>
+                        <div class="cf-field">
+                            <label class="adm-label">{{ form.autres_criteres.label }}</label>
+                            {{ form.autres_criteres }}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section : Durée & Rémunération -->
+                <div class="admin-panel-card" style="margin-bottom:1.25rem;">
+                    <div class="admin-panel-head">
+                        <div>
+                            <span class="eyebrow" style="color:var(--gold);display:block;margin-bottom:.2rem;">Section 5 — 7</span>
+                            <h2>Durée, Rémunération &amp; Exclusivité</h2>
+                        </div>
+                    </div>
+                    <div style="padding:0 1.5rem 1.5rem;">
+                        <div class="cf-grid-2">
+                            <div class="cf-field">
+                                <label class="adm-label">{{ form.duree_mois.label }} *</label>
+                                {{ form.duree_mois }}
+                                {% if form.duree_mois.errors %}<p class="tf-field-error">{{ form.duree_mois.errors.0 }}</p>{% endif %}
+                            </div>
+                            <div class="cf-field">
+                                <label class="adm-label">{{ form.periode_reconduction.label }}</label>
+                                {{ form.periode_reconduction }}
+                            </div>
+                        </div>
+                        <div class="cf-grid-2">
+                            <div class="cf-field">
+                                <label class="adm-label">{{ form.remuneration_percentage.label }}</label>
+                                {{ form.remuneration_percentage }}
+                            </div>
+                            <div class="cf-field">
+                                <label class="adm-label">{{ form.remuneration_forfait.label }}</label>
+                                {{ form.remuneration_forfait }}
+                            </div>
+                        </div>
+                        <div class="cf-field">
+                            <label class="adm-label">{{ form.exclusivite.label }}</label>
+                            {{ form.exclusivite }}
+                        </div>
+                        <div class="cf-field">
+                            <label class="adm-label">{{ form.tribunal_competent.label }}</label>
+                            {{ form.tribunal_competent }}
+                        </div>
+                    </div>
+                </div>
+
+
+            </div>
+
+            <!-- SIDEBAR -->
+            <div class="adm-sidebar">
+                <div class="tf-actions-bar">
+                    <div style="font-size:.8rem;color:var(--muted);line-height:1.5;">
+                        <strong style="color:var(--ink);display:block;margin-bottom:.4rem;">Mandat de recherche</strong>
+                        Mission de recherche d'un bien immobilier pour le compte d'un client. La rémunération est due à la conclusion de la transaction.
+                    </div>
+                    <hr style="border:none;border-top:1px solid var(--border-light);margin:.25rem 0;">
+                    <button type="submit" class="tf-submit-btn">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="15" height="15"><polyline points="20 6 9 17 4 12"/></svg>
+                        Continuer vers la signature →
+                    </button>
+                    <a href="{% url 'contracts_list' %}" class="tf-cancel-btn">Annuler</a>
+                </div>
+            </div>
+
+        </div>
+    </form>
+</div>
+
+{% include "admin/contracts/_form_styles.html" %}
+{% endblock %}

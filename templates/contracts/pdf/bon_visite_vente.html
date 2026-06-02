@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Bon de visite &mdash; Vente &mdash; {{ contract.reference }}</title>
+<style>
+@page { size: A4; margin: 0; }
+body { font-family: Arial, Helvetica, sans-serif; font-size: 9px; color: #1E2B3C; background: #fff; margin: 0; padding: 0; }
+table { border-collapse: collapse; }
+p { margin: 0 0 4px 0; line-height: 1.5; }
+ul { margin: 2px 0 4px 0; padding-left: 14px; }
+li { margin-bottom: 3px; line-height: 1.4; }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<table width="100%" cellpadding="0" style="background:#0D1B2A; border-bottom:4px solid #C9A96E;">
+<tr>
+    <td style="padding:18px 22px 15px; width:45%; vertical-align:middle;">
+      {% if logo_b64 %}
+      <img src="{{ logo_b64 }}" style="height:46px; width:auto; display:block; margin-bottom:8px;">
+      {% else %}
+      <div style="color:#fff; font-size:22px; font-weight:900; letter-spacing:4px; line-height:1; margin-bottom:3px;">YALAZ</div>
+      <div style="color:#C9A96E; font-size:6px; letter-spacing:3px; text-transform:uppercase; margin-bottom:8px;">Agence Immobili&egrave;re</div>
+      {% endif %}
+      <div style="height:1px; background:#1e3050; margin-bottom:5px;"></div>
+      <div style="color:#3a5070; font-size:6.5px; line-height:1.7;">+212 648 707 583 &nbsp;&nbsp;&bull;&nbsp;&nbsp; yalaz-immo.com</div>
+    </td>
+    <td style="padding:18px 22px 15px; vertical-align:middle; text-align:right;">
+      <div style="color:#7a8fa8; font-size:6.5px; text-transform:uppercase; letter-spacing:3px; margin-bottom:6px;">Document officiel</div>
+      <div style="color:#fff; font-size:22px; font-weight:900; text-transform:uppercase; letter-spacing:0.5px; line-height:1;">BON DE</div>
+      <div style="color:#C9A96E; font-size:26px; font-weight:900; text-transform:uppercase; letter-spacing:0.5px; line-height:1.1; margin-bottom:8px;">VISITE &mdash; VENTE</div>
+      <div style="color:#4a6080; font-size:7px; font-family:monospace; letter-spacing:0.5px;">{{ contract.reference }}</div>
+      <div style="color:#2a3f5a; font-size:6.5px; margin-top:2px;">{{ contract.created_at|date:"d/m/Y"|default:"" }}</div>
+    </td>
+</tr>
+</table>
+
+<!-- CONTENT -->
+<div style="padding:14px 22px 10px;">
+
+<!-- SÉPARATEUR -->
+<table width="100%" cellpadding="0" style="margin:6px 0 12px;">
+<tr><td style="padding:5px 12px; background:#C9A96E; text-align:center;">
+  <span style="color:#0D1B2A; font-size:7px; font-weight:900; text-transform:uppercase; letter-spacing:3px;">Informations de visite</span>
+</td></tr></table>
+
+<!-- Parties -->
+<table width="100%" cellpadding="0" style="margin:0 0 6px;">
+<tr><td style="padding:5px 10px; background:#0D1B2A; border-left:4px solid #C9A96E;">
+  <span style="color:#C9A96E; font-size:7.5px; font-weight:900; text-transform:uppercase; letter-spacing:1.5px;">1. Parties</span>
+</td></tr></table>
+<table width="100%" cellpadding="0" style="margin-bottom:12px;">
+<tr>
+  <td width="49%" style="vertical-align:top; padding-right:8px;">
+    <div style="font-size:7px; font-weight:900; color:#64748b; text-transform:uppercase; letter-spacing:1px; margin-bottom:5px; padding-bottom:3px; border-bottom:1px solid #e8edf2;">Le Visiteur &mdash; Acqu&eacute;reur potentiel</div>
+    <table width="100%" cellpadding="0">
+      <tr><td style="padding:3px 6px 3px 0; font-size:7.5px; font-weight:700; color:#64748b; border-bottom:1px solid #e8edf2; white-space:nowrap; width:38%;">Nom &amp; Pr&eacute;nom</td><td style="padding:3px 0; font-size:8.5px; font-weight:700; color:#0D1B2A; border-bottom:1px solid #e8edf2;">{{ d.nom_prenom|default:"" }}</td></tr>
+      <tr><td style="padding:3px 6px 3px 0; font-size:7.5px; font-weight:700; color:#64748b; border-bottom:1px solid #e8edf2; white-space:nowrap;">CIN / Passeport</td><td style="padding:3px 0; font-size:8.5px; color:#1E2B3C; border-bottom:1px solid #e8edf2;">{{ d.cin_passeport|default:"" }}</td></tr>
+      <tr><td style="padding:3px 6px 3px 0; font-size:7.5px; font-weight:700; color:#64748b; white-space:nowrap;">T&eacute;l&eacute;phone</td><td style="padding:3px 0; font-size:8.5px; color:#1E2B3C;">{{ d.telephone_prospect|default:"" }}</td></tr>
+    </table>
+  </td>
+  <td width="2%" style="padding:0;">&nbsp;</td>
+  <td width="49%" style="vertical-align:top; padding-left:8px;">
+    <table width="100%" cellpadding="0" style="background:#0D1B2A; border:1px solid #C9A96E;">
+    <tr><td style="padding:8px 10px;">
+      <div style="font-size:6.5px; font-weight:900; color:#C9A96E; text-transform:uppercase; letter-spacing:2px; margin-bottom:6px; padding-bottom:4px; border-bottom:1px solid #1e3050;">L&rsquo;Agent &mdash; Agence YALAZ</div>
+      <table width="100%" cellpadding="0">
+        <tr><td style="padding:2px 6px 2px 0; font-size:7.5px; color:#6a7f97; white-space:nowrap; border-bottom:1px solid #1e3050; width:28%;">Agence</td><td style="padding:2px 0; font-size:8px; font-weight:700; color:#fff; border-bottom:1px solid #1e3050;">YALAZ &ndash; Agence Immobili&egrave;re</td></tr>
+        <tr><td style="padding:2px 6px 2px 0; font-size:7.5px; color:#6a7f97; white-space:nowrap; border-bottom:1px solid #1e3050;">Agent</td><td style="padding:2px 0; font-size:8px; color:#e2e8f0; border-bottom:1px solid #1e3050;">{{ d.agent_accompagnant|default:"" }}</td></tr>
+        <tr><td style="padding:2px 6px 2px 0; font-size:7.5px; color:#6a7f97; white-space:nowrap; border-bottom:1px solid #1e3050;">CIN</td><td style="padding:2px 0; font-size:8px; color:#e2e8f0; border-bottom:1px solid #1e3050;">{{ d.agent_cin|default:"" }}</td></tr>
+        <tr><td style="padding:2px 6px 2px 0; font-size:7.5px; color:#6a7f97; white-space:nowrap;">T&eacute;l.</td><td style="padding:2px 0; font-size:8px; font-weight:700; color:#C9A96E;">{{ d.agent_telephone|default:"+212 648 707 583" }}</td></tr>
+      </table>
+    </td></tr>
+    </table>
+  </td>
+</tr>
+</table>
+
+<!-- Bien visité -->
+<table width="100%" cellpadding="0" style="margin:0 0 6px;">
+<tr><td style="padding:5px 10px; background:#0D1B2A; border-left:4px solid #C9A96E;">
+  <span style="color:#C9A96E; font-size:7.5px; font-weight:900; text-transform:uppercase; letter-spacing:1.5px;">2. Le bien visit&eacute;</span>
+</td></tr></table>
+<table width="100%" cellpadding="0" style="margin-bottom:12px;">
+<tr>
+  <td width="49%" style="vertical-align:top; padding-right:8px;">
+    <table width="100%" cellpadding="0">
+      <tr><td style="padding:3px 6px 3px 0; font-size:7.5px; font-weight:700; color:#64748b; border-bottom:1px solid #e8edf2; white-space:nowrap; width:38%;">Type de bien</td><td style="padding:3px 0; font-size:8.5px; color:#1E2B3C; border-bottom:1px solid #e8edf2;">{{ d.type_bien|default:"" }}</td></tr>
+      <tr><td style="padding:3px 6px 3px 0; font-size:7.5px; font-weight:700; color:#64748b; border-bottom:1px solid #e8edf2; white-space:nowrap;">Adresse</td><td style="padding:3px 0; font-size:8.5px; color:#1E2B3C; border-bottom:1px solid #e8edf2;">{{ d.adresse_bien|default:"" }}</td></tr>
+      <tr><td style="padding:3px 6px 3px 0; font-size:7.5px; font-weight:700; color:#64748b; white-space:nowrap;">R&eacute;f&eacute;rence bien</td><td style="padding:3px 0; font-size:8.5px; color:#1E2B3C;">{{ d.reference_bien|default:"" }}</td></tr>
+    </table>
+  </td>
+  <td width="2%" style="padding:0;">&nbsp;</td>
+  <td width="49%" style="vertical-align:top; padding-left:8px;">
+    <table width="100%" cellpadding="0">
+      <tr><td style="padding:3px 6px 3px 0; font-size:7.5px; font-weight:700; color:#64748b; border-bottom:1px solid #e8edf2; white-space:nowrap; width:38%;">Date de visite</td><td style="padding:3px 0; font-size:8.5px; font-weight:700; color:#0D1B2A; border-bottom:1px solid #e8edf2;">{{ d.date_visite|default:"" }}</td></tr>
+      <tr><td style="padding:3px 6px 3px 0; font-size:7.5px; font-weight:700; color:#64748b; white-space:nowrap;">Heure</td><td style="padding:3px 0; font-size:8.5px; color:#1E2B3C;">{{ d.heure_visite|default:"" }}</td></tr>
+    </table>
+  </td>
+</tr>
+</table>
+
+<!-- Art. 1 -->
+<table width="100%" cellpadding="0" style="margin:0 0 6px;">
+<tr><td style="padding:5px 10px; background:#0D1B2A; border-left:4px solid #C9A96E;">
+  <span style="color:#C9A96E; font-size:7.5px; font-weight:900; text-transform:uppercase; letter-spacing:1.5px;">Art. 1 &mdash; Engagement du visiteur</span>
+</td></tr></table>
+<p style="font-size:8.5px; margin-bottom:4px;">Le soussign&eacute; (ci-apr&egrave;s &laquo;&nbsp;le Visiteur&nbsp;&raquo;) reconna&icirc;t avoir visit&eacute; le bien immobilier d&eacute;sign&eacute; ci-dessous par l&rsquo;interm&eacute;diaire de l&rsquo;agence YALAZ. Ce bon de visite atteste que la d&eacute;couverte de ce bien r&eacute;sulte exclusivement de l&rsquo;action de l&rsquo;agence.</p>
+<div style="background:#FBF5E6; border-left:3px solid #C9A96E; padding:6px 10px; margin-bottom:10px;">
+<ul style="font-size:8.5px;">
+  <li>Le Visiteur s&rsquo;engage &agrave; ne pas traiter directement avec le propri&eacute;taire sans l&rsquo;interm&eacute;diaire de YALAZ</li>
+  <li>Toute acquisition r&eacute;alis&eacute;e dans les 24 mois suivant la visite donnera lieu au paiement des honoraires</li>
+  <li>Ce document vaut preuve de la pr&eacute;sentation du bien par l&rsquo;agence YALAZ</li>
+</ul>
+</div>
+
+<!-- Art. 2 -->
+<table width="100%" cellpadding="0" style="margin:0 0 6px;">
+<tr><td style="padding:5px 10px; background:#0D1B2A; border-left:4px solid #C9A96E;">
+  <span style="color:#C9A96E; font-size:7.5px; font-weight:900; text-transform:uppercase; letter-spacing:1.5px;">Art. 2 &mdash; Honoraires d&rsquo;agence</span>
+</td></tr></table>
+<p style="font-size:8.5px; margin-bottom:10px;">Les honoraires de l&rsquo;agence YALAZ sont dus d&egrave;s lors qu&rsquo;une offre d&rsquo;achat est accept&eacute;e ou qu&rsquo;un acte de vente est sign&eacute;, directement ou indirectement, suite &agrave; la pr&eacute;sentation du bien ci-dessous. {% if d.remuneration_type == 'percentage' %}Honoraires&nbsp;: <strong>{{ d.remuneration_percentage|default:"" }}&nbsp;% TTC</strong> du prix de vente.{% elif d.remuneration_type == 'forfait' %}Honoraires&nbsp;: <strong>{{ d.remuneration_forfait|default:"" }}&nbsp;MAD TTC</strong>.{% else %}Leur montant sera pr&eacute;cis&eacute; lors du compromis de vente.{% endif %}</p>
+
+<!-- SIGNATURES -->
+<div style="height:2px; background:#C9A96E; margin-bottom:8px;"></div>
+<table width="100%" cellpadding="0">
+<tr>
+  <td width="47%" style="border:1px solid #dde3ec; padding:10px 12px; vertical-align:top;">
+    <div style="font-size:7.5px; font-weight:900; color:#0D1B2A; text-transform:uppercase; letter-spacing:0.5px; padding-bottom:5px; margin-bottom:8px; border-bottom:1px solid #e8edf2;">Le Visiteur</div>
+    <div style="font-size:7px; color:#64748b; margin-bottom:10px;">Fait &agrave; {% if d.fait_a_prospect %}{{ d.fait_a_prospect }}{% else %}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{% endif %}, le {% if d.date_signature_prospect %}{{ d.date_signature_prospect }}{% else %}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{% endif %}</div>
+    {% if d.client_signature %}<img src="{{ d.client_signature }}" style="max-height:45px; max-width:100%; display:block; margin-bottom:4px;">{% else %}<div style="height:45px; border-bottom:1px dashed #c4cdd9; margin-bottom:4px;"></div>{% endif %}
+  </td>
+  <td width="6%" style="padding:0; background:#F5F7FA; border-top:1px solid #dde3ec; border-bottom:1px solid #dde3ec; text-align:center; vertical-align:middle;">
+    <div style="color:#C9A96E; font-size:14px; font-weight:900; font-style:italic; letter-spacing:-1px; opacity:0.35;">YZ</div>
+  </td>
+  <td width="47%" style="border:1px solid #dde3ec; padding:10px 12px; vertical-align:top;">
+    <div style="font-size:7.5px; font-weight:900; color:#0D1B2A; text-transform:uppercase; letter-spacing:0.5px; padding-bottom:5px; margin-bottom:8px; border-bottom:1px solid #e8edf2;">L&rsquo;Agent &mdash; Agence YALAZ</div>
+    <div style="font-size:7px; color:#64748b; margin-bottom:10px;">Fait &agrave; {% if d.fait_a_agence %}{{ d.fait_a_agence }}{% else %}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{% endif %}, le {% if d.date_signature_agence %}{{ d.date_signature_agence }}{% else %}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{% endif %}</div>
+    {% if d.agent_signature %}<img src="{{ d.agent_signature }}" style="max-height:45px; max-width:100%; display:block; margin-bottom:4px;">{% else %}<div style="height:45px; border-bottom:1px dashed #c4cdd9; margin-bottom:4px;"></div>{% endif %}
+  </td>
+</tr>
+</table>
+
+</div>
+
+<!-- FOOTER -->
+<table width="100%" cellpadding="0" style="background:#0D1B2A; border-top:2px solid #C9A96E; margin-top:8px;">
+<tr>
+  <td style="padding:7px 22px; color:#C9A96E; font-size:6.5px;">Boulevard de la Corniche, Casablanca &mdash; Maroc</td>
+  <td style="padding:7px; color:#4a6080; font-size:6.5px; text-align:center;">+212 648 707 583 &nbsp;&bull;&nbsp; yalaz-immo.com</td>
+  <td style="padding:7px 22px; color:#2a4060; font-size:6px; text-align:right; font-family:monospace;">{{ contract.reference }}</td>
+</tr>
+</table>
+
+</body>
+</html>

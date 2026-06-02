@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Contrats — Yalaz{% endblock %}
+
+{% block content %}
+<div class="admin-prem-header">
+    <div class="container admin-header-inner">
+        <div>
+            <a href="{% url 'financial_dashboard' %}" class="admin-back-pill">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><path d="M15 18l-6-6 6-6"/></svg>
+                Dashboard
+            </a>
+            <span class="eyebrow" style="display:block;margin-top:.5rem;">Back-office</span>
+            <h1>Documents &amp; Contrats</h1>
+        </div>
+        <a href="{% url 'contract_type_selector' %}" class="btn-gold">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="14" height="14"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Nouveau document
+        </a>
+    </div>
+</div>
+
+<div class="container" style="padding-top:2rem;padding-bottom:3rem;">
+    {% if contracts %}
+    <div class="admin-panel-card" style="overflow:hidden;">
+        <div class="adm-table-scroll">
+        <table class="adm-table">
+            <thead>
+                <tr>
+                    <th>Référence</th>
+                    <th>Type</th>
+                    <th>Client / Prospect</th>
+                    <th>Créé par</th>
+                    <th>Date</th>
+                    <th style="text-align:right;">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for c in contracts %}
+                <tr>
+                    <td><span class="adm-ref-pill">{{ c.reference }}</span></td>
+                    <td>{{ c.get_type_display }}</td>
+                    <td>{{ c.get_client_name|default:"—" }}</td>
+                    <td>{{ c.created_by.get_full_name|default:c.created_by.username|default:"—" }}</td>
+                    <td>{{ c.created_at|date:"d/m/Y" }}</td>
+                    <td style="text-align:right;">
+                        <a href="{% url 'contract_detail' c.pk %}" class="adm-action-link">Voir</a>
+                        <a href="{% url 'contract_pdf' c.pk %}" class="adm-action-link adm-action-pdf">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                            PDF
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        </div><!-- /.adm-table-scroll -->
+    </div>
+    {% else %}
+    <div class="adm-empty-state">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="40" height="40" style="color:var(--muted);"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        <p>Aucun document généré pour le moment.</p>
+        <a href="{% url 'contract_type_selector' %}" class="btn-gold" style="display:inline-flex;margin-top:1rem;">Créer le premier</a>
+    </div>
+    {% endif %}
+</div>
+
+<style>
+.adm-table { width:100%; border-collapse:collapse; font-size:.875rem; }
+.adm-table th { padding:.75rem 1rem; text-align:left; font-weight:600; color:var(--muted); font-size:.75rem; text-transform:uppercase; letter-spacing:.06em; border-bottom:1.5px solid var(--border-light); }
+.adm-table td { padding:.875rem 1rem; border-bottom:1px solid var(--border-light); color:var(--text); vertical-align:middle; }
+.adm-table tr:last-child td { border-bottom:none; }
+.adm-table tr:hover td { background:var(--bg-sand); }
+.adm-ref-pill { display:inline-block; padding:.2rem .6rem; background:var(--bg-sand); border:1px solid var(--border-light); border-radius:4px; font-family:monospace; font-size:.8rem; color:var(--ink); }
+.adm-action-link { display:inline-flex; align-items:center; gap:.3rem; padding:.3rem .7rem; border-radius:var(--r-md); font-size:.8rem; font-weight:600; text-decoration:none; color:var(--text); border:1px solid var(--border-light); margin-left:.375rem; transition:all .15s; }
+.adm-action-link:hover { background:var(--bg-sand); border-color:var(--border); }
+.adm-action-pdf { color:var(--gold-dark); border-color:rgba(201,169,110,.3); }
+.adm-action-pdf:hover { background:rgba(201,169,110,.08); }
+.adm-table-scroll { overflow-x:auto; }
+.adm-table-scroll .adm-table { min-width:640px; }
+.adm-empty-state { text-align:center; padding:4rem 2rem; color:var(--muted); }
+.adm-empty-state p { margin:.75rem 0 0; font-size:.9rem; }
+.btn-gold { display:inline-flex; align-items:center; gap:.5rem; padding:.6rem 1.25rem; background:var(--gold-dark); color:#fff; border-radius:var(--r-md); font-size:.875rem; font-weight:700; text-decoration:none; transition:background .15s; }
+.btn-gold:hover { background:var(--gold); }
+</style>
+{% endblock %}

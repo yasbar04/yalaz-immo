@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Nouveau document — Yalaz{% endblock %}
+
+{% block content %}
+<div class="admin-prem-header">
+    <div class="container admin-header-inner">
+        <div>
+            <a href="{% url 'contracts_list' %}" class="admin-back-pill">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><path d="M15 18l-6-6 6-6"/></svg>
+                Contrats
+            </a>
+            <span class="eyebrow" style="display:block;margin-top:.5rem;">Nouveau document</span>
+            <h1>Quel document souhaitez-vous créer ?</h1>
+        </div>
+    </div>
+</div>
+
+<div class="container" style="padding-top:2rem;padding-bottom:3rem;">
+    <div class="type-grid">
+        {% for t in types %}
+        <a href="{% url 'contract_create' t.key %}" class="type-card">
+            <div class="type-card-icon">
+                {% if t.icon == 'eye' %}
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="28" height="28"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                {% elif t.icon == 'key' %}
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="28" height="28"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>
+                {% elif t.icon == 'home' %}
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="28" height="28"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                {% elif t.icon == 'building' %}
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="28" height="28"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+                {% else %}
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="28" height="28"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                {% endif %}
+            </div>
+            <div class="type-card-body">
+                <p class="type-card-label">{{ t.label }}</p>
+                {% if t.sub %}<span class="type-card-sub">{{ t.sub }}</span>{% endif %}
+                <p class="type-card-desc">{{ t.desc }}</p>
+            </div>
+            <svg class="type-card-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M9 18l6-6-6-6"/></svg>
+        </a>
+        {% endfor %}
+    </div>
+</div>
+
+<style>
+.type-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(340px, 1fr)); gap:1rem; }
+.type-card { display:flex; align-items:flex-start; gap:1.125rem; padding:1.375rem 1.5rem; background:#fff; border:1.5px solid var(--border-light); border-radius:var(--r-xl); text-decoration:none; transition:border-color .2s, box-shadow .2s, transform .15s; cursor:pointer; position:relative; }
+.type-card:hover { border-color:var(--gold); box-shadow:0 4px 20px rgba(201,169,110,.15); transform:translateY(-1px); }
+.type-card-icon { flex-shrink:0; width:52px; height:52px; display:flex; align-items:center; justify-content:center; background:var(--bg-sand); border-radius:var(--r-md); color:var(--gold-dark); }
+.type-card-body { flex:1; }
+.type-card-label { font-size:1rem; font-weight:700; color:var(--ink); margin:0 0 .15rem; line-height:1.2; }
+.type-card-sub { display:inline-block; font-size:.72rem; font-weight:700; text-transform:uppercase; letter-spacing:.08em; color:var(--gold-dark); background:rgba(201,169,110,.1); padding:.15rem .5rem; border-radius:3px; margin-bottom:.45rem; }
+.type-card-desc { font-size:.82rem; color:var(--muted); margin:0; line-height:1.45; }
+.type-card-arrow { color:var(--muted); position:absolute; right:1.25rem; top:50%; transform:translateY(-50%); transition:color .2s, transform .2s; }
+.type-card:hover .type-card-arrow { color:var(--gold-dark); transform:translateY(-50%) translateX(2px); }
+@media(max-width:600px) { .type-grid { grid-template-columns:1fr; } }
+</style>
+{% endblock %}

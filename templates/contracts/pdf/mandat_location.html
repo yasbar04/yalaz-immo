@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Mandat de location &mdash; {{ contract.reference }}</title>
+<style>
+@page { size: A4; margin: 0; }
+body { font-family: Arial, Helvetica, sans-serif; font-size: 9px; color: #1E2B3C; background: #fff; margin: 0; padding: 0; }
+table { border-collapse: collapse; }
+p { margin: 0 0 4px 0; line-height: 1.5; }
+ul { margin: 2px 0 4px 0; padding-left: 14px; }
+li { margin-bottom: 3px; line-height: 1.4; }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<table width="100%" cellpadding="0" style="background:#0D1B2A; border-bottom:4px solid #C9A96E;">
+<tr>
+  <td style="padding:18px 22px 15px; vertical-align:middle; width:45%;">
+    {% if logo_b64 %}
+    <img src="{{ logo_b64 }}" style="height:46px; width:auto; display:block; margin-bottom:8px;">
+    {% else %}
+    <div style="color:#fff; font-size:22px; font-weight:900; letter-spacing:4px; line-height:1; margin-bottom:3px;">YALAZ</div>
+    <div style="color:#C9A96E; font-size:6px; letter-spacing:3px; text-transform:uppercase; margin-bottom:8px;">Agence Immobili&egrave;re</div>
+    {% endif %}
+    <div style="height:1px; background:#1e3050; margin-bottom:5px;"></div>
+    <div style="color:#3a5070; font-size:6.5px; line-height:1.7;">+212 648 707 583 &nbsp;&nbsp;&bull;&nbsp;&nbsp; yalaz-immo.com</div>
+  </td>
+  <td style="padding:18px 22px 15px; vertical-align:middle; text-align:right;">
+    <div style="color:#7a8fa8; font-size:6.5px; text-transform:uppercase; letter-spacing:3px; margin-bottom:6px;">Document officiel</div>
+    <div style="color:#fff; font-size:22px; font-weight:900; text-transform:uppercase; letter-spacing:0.5px; line-height:1;">MANDAT DE</div>
+    <div style="color:#C9A96E; font-size:26px; font-weight:900; text-transform:uppercase; letter-spacing:0.5px; line-height:1.1; margin-bottom:8px;">LOCATION IMMOBILIER</div>
+    <div style="color:#4a6080; font-size:7px; font-family:monospace; letter-spacing:0.5px;">{{ contract.reference }}</div>
+    <div style="color:#2a3f5a; font-size:6.5px; margin-top:2px;">{{ contract.created_at|date:"d/m/Y"|default:"" }}</div>
+  </td>
+</tr>
+</table>
+
+<!-- CONTENT -->
+<div style="padding:14px 22px 10px;">
+
+<!-- SÉPARATEUR -->
+<table width="100%" cellpadding="0" style="margin:6px 0 12px;">
+<tr><td style="padding:5px 12px; background:#C9A96E; text-align:center;">
+  <span style="color:#0D1B2A; font-size:7px; font-weight:900; text-transform:uppercase; letter-spacing:3px;">R&eacute;capitulatif du mandat</span>
+</td></tr>
+</table>
+
+<!-- Section 1 — Parties -->
+<table width="100%" cellpadding="0" style="margin:0 0 6px;">
+<tr><td style="padding:5px 10px; background:#0D1B2A; border-left:4px solid #C9A96E;">
+  <span style="color:#C9A96E; font-size:7.5px; font-weight:900; text-transform:uppercase; letter-spacing:1.5px;">1. Parties au contrat</span>
+</td></tr>
+</table>
+
+<table width="100%" cellpadding="0" style="margin-bottom:12px;">
+<tr>
+  <td width="49%" style="vertical-align:top; padding-right:8px;">
+    <div style="font-size:7px; font-weight:900; color:#64748b; text-transform:uppercase; letter-spacing:1px; margin-bottom:5px; padding-bottom:3px; border-bottom:1px solid #e8edf2;">Le Mandant &mdash; Propri&eacute;taire</div>
+    <table width="100%" cellpadding="0">
+      <tr>
+        <td style="padding:3px 6px 3px 0; font-size:7.5px; font-weight:700; color:#64748b; border-bottom:1px solid #e8edf2; white-space:nowrap; width:38%;">Nom &amp; Pr&eacute;nom</td>
+        <td style="padding:3px 0; font-size:8.5px; font-weight:700; color:#0D1B2A; border-bottom:1px solid #e8edf2;">{{ d.mandant_nom|default:"" }}</td>
+      </tr>
+      <tr>
+        <td style="padding:3px 6px 3px 0; font-size:7.5px; font-weight:700; color:#64748b; border-bottom:1px solid #e8edf2; white-space:nowrap;">CIN / RC</td>
+        <td style="padding:3px 0; font-size:8.5px; color:#1E2B3C; border-bottom:1px solid #e8edf2;">{{ d.mandant_cin|default:"" }}</td>
+      </tr>
+      <tr>
+        <td style="padding:3px 6px 3px 0; font-size:7.5px; font-weight:700; color:#64748b; white-space:nowrap;">T&eacute;l&eacute;phone</td>
+        <td style="padding:3px 0; font-size:8.5px; color:#1E2B3C;">{{ d.mandant_telephone|default:"" }}</td>
+      </tr>
+    </table>
+  </td>
+  <td width="2%" style="padding:0;">&nbsp;</td>
+  <td width="49%" style="vertical-align:top; padding-left:8px;">
+    <table width="100%" cellpadding="0" style="background:#0D1B2A; border:1px solid #C9A96E;">
+    <tr><td style="padding:8px 10px;">
+      <div style="font-size:6.5px; font-weight:900; color:#C9A96E; text-transform:uppercase; letter-spacing:2px; margin-bottom:6px; padding-bottom:4px; border-bottom:1px solid #1e3050;">Le Mandataire &mdash; Agence Immobili&egrave;re</div>
+      <table width="100%" cellpadding="0">
+        <tr>
+          <td style="padding:2px 6px 2px 0; font-size:7.5px; color:#6a7f97; white-space:nowrap; border-bottom:1px solid #1e3050; width:28%;">Agence</td>
+          <td style="padding:2px 0; font-size:8px; font-weight:700; color:#fff; border-bottom:1px solid #1e3050;">YALAZ &ndash; Agence Immobili&egrave;re</td>
+        </tr>
+        <tr>
+          <td style="padding:2px 6px 2px 0; font-size:7.5px; color:#6a7f97; white-space:nowrap; border-bottom:1px solid #1e3050;">Agent</td>
+          <td style="padding:2px 0; font-size:8px; color:#e2e8f0; border-bottom:1px solid #1e3050;">{{ d.agent_nom|default:"" }}</td>
+        </tr>
+        <tr>
+          <td style="padding:2px 6px 2px 0; font-size:7.5px; color:#6a7f97; white-space:nowrap; border-bottom:1px solid #1e3050;">CIN</td>
+          <td style="padding:2px 0; font-size:8px; color:#e2e8f0; border-bottom:1px solid #1e3050;">{{ d.agent_cin|default:"" }}</td>
+        </tr>
+        <tr>
+          <td style="padding:2px 6px 2px 0; font-size:7.5px; color:#6a7f97; white-space:nowrap;">T&eacute;l.</td>
+          <td style="padding:2px 0; font-size:8px; font-weight:700; color:#C9A96E;">{{ d.agent_telephone|default:"+212 648 707 583" }}</td>
+        </tr>
+      </table>
+    </td></tr>
+    </table>
+  </td>
+</tr>
+</table>
+
+<!-- Section 2 — Bien -->
+<table width="100%" cellpadding="0" style="margin:0 0 6px;">
+<tr><td style="padding:5px 10px; background:#0D1B2A; border-left:4px solid #C9A96E;">
+  <span style="color:#C9A96E; font-size:7.5px; font-weight:900; text-transform:uppercase; letter-spacing:1.5px;">2. Le bien immobilier</span>
+</td></tr>
+</table>
+
+<table width="100%" cellpadding="0" style="margin-bottom:12px;">
+<tr>
+  <td width="49%" style="vertical-align:top; padding-right:8px;">
+    <table width="100%" cellpadding="0">
+      <tr><td style="padding:3px 6px 3px 0; font-size:7.5px; font-weight:700; color:#64748b; border-bottom:1px solid #e8edf2; white-space:nowrap; width:38%;">Type de bien</td><td style="padding:3px 0; font-size:8.5px; color:#1E2B3C; border-bottom:1px solid #e8edf2;">{{ d.bien_type|default:"" }}</td></tr>
+      <tr><td style="padding:3px 6px 3px 0; font-size:7.5px; font-weight:700; color:#64748b; border-bottom:1px solid #e8edf2; white-space:nowrap;">Adresse</td><td style="padding:3px 0; font-size:8.5px; color:#1E2B3C; border-bottom:1px solid #e8edf2;">{{ d.bien_adresse|default:"" }}</td></tr>
+      <tr><td style="padding:3px 6px 3px 0; font-size:7.5px; font-weight:700; color:#64748b; border-bottom:1px solid #e8edf2; white-space:nowrap;">Surface (m&sup2;)</td><td style="padding:3px 0; font-size:8.5px; color:#1E2B3C; border-bottom:1px solid #e8edf2;">{{ d.bien_surface|default:"" }}</td></tr>
+      <tr><td style="padding:3px 6px 3px 0; font-size:7.5px; font-weight:700; color:#64748b; white-space:nowrap;">&Eacute;tage / N&deg;</td><td style="padding:3px 0; font-size:8.5px; color:#1E2B3C;">{{ d.bien_etage|default:"" }}</td></tr>
+    </table>
+  </td>
+  <td width="2%" style="padding:0;">&nbsp;</td>
+  <td width="49%" style="vertical-align:top; padding-left:8px;">
+    <table width="100%" cellpadding="0">
+      <tr><td style="padding:3px 6px 3px 0; font-size:7.5px; font-weight:700; color:#64748b; border-bottom:1px solid #e8edf2; white-space:nowrap; width:44%;">Loyer mensuel souhait&eacute;</td><td style="padding:3px 0; font-size:8.5px; font-weight:700; color:#0D1B2A; border-bottom:1px solid #e8edf2;">{{ d.loyer_mensuel_souhaite|default:"" }}{% if d.loyer_mensuel_souhaite %}&nbsp;MAD/mois{% endif %}</td></tr>
+      <tr><td style="padding:3px 6px 3px 0; font-size:7.5px; font-weight:700; color:#64748b; border-bottom:1px solid #e8edf2; white-space:nowrap;">&Eacute;tat / &Eacute;quipements</td><td style="padding:3px 0; font-size:8.5px; color:#1E2B3C; border-bottom:1px solid #e8edf2;">{{ d.bien_etat_equipements|default:"" }}</td></tr>
+      <tr><td style="padding:3px 6px 3px 0; font-size:7.5px; font-weight:700; color:#64748b; border-bottom:1px solid #e8edf2; white-space:nowrap;">Dur&eacute;e du mandat</td><td style="padding:3px 0; font-size:8.5px; color:#1E2B3C; border-bottom:1px solid #e8edf2;">{{ d.duree_mois|default:"" }}{% if d.duree_mois %}&nbsp;mois{% endif %}</td></tr>
+      <tr><td style="padding:3px 6px 3px 0; font-size:7.5px; font-weight:700; color:#64748b; white-space:nowrap;">R&eacute;mun&eacute;ration</td><td style="padding:3px 0; font-size:8.5px; font-weight:700; color:#C9A96E;">1 mois de loyer HC</td></tr>
+    </table>
+  </td>
+</tr>
+</table>
+
+<!-- ========================= CLAUSES ========================= -->
+
+<table width="100%" cellpadding="0" style="margin:0 0 6px;">
+<tr><td style="padding:5px 10px; background:#0D1B2A; border-left:4px solid #C9A96E;">
+  <span style="color:#C9A96E; font-size:7.5px; font-weight:900; text-transform:uppercase; letter-spacing:1.5px;">Art. 3 &mdash; Mission du mandataire</span>
+</td></tr>
+</table>
+<p style="font-size:8.5px; margin-bottom:4px;">Le Mandant confie au Mandataire, qui l&rsquo;accepte, la mission de rechercher un locataire pour le bien immobilier d&eacute;sign&eacute; ci-dessous. Le Mandataire s&rsquo;engage&nbsp;&agrave;&nbsp;:</p>
+<div style="background:#FBF5E6; border-left:3px solid #C9A96E; padding:6px 10px; margin-bottom:10px;">
+<ul style="font-size:8.5px;">
+  <li>Diffuser l&rsquo;annonce du bien sur ses supports marketing et plateformes en ligne</li>
+  <li>S&eacute;lectionner les candidats locataires et v&eacute;rifier leur solvabilit&eacute;</li>
+  <li>Organiser les visites et accompagner les parties jusqu&rsquo;&agrave; la signature du bail</li>
+</ul>
+</div>
+
+<table width="100%" cellpadding="0" style="margin:0 0 6px;">
+<tr><td style="padding:5px 10px; background:#0D1B2A; border-left:4px solid #C9A96E;">
+  <span style="color:#C9A96E; font-size:7.5px; font-weight:900; text-transform:uppercase; letter-spacing:1.5px;">Art. 4 &mdash; R&eacute;mun&eacute;ration du mandataire</span>
+</td></tr>
+</table>
+<p style="font-size:8.5px; margin-bottom:10px;">Les honoraires de l&rsquo;agence YALAZ s&rsquo;&eacute;l&egrave;vent &agrave; <strong>un (1) mois de loyer hors charges</strong>, exigibles &agrave; la signature du contrat de bail. Les honoraires sont &agrave; la charge du Mandant, sauf accord contraire &eacute;crit entre les parties.</p>
+
+<table width="100%" cellpadding="0" style="margin-bottom:10px;">
+<tr>
+  <td width="49%" style="vertical-align:top; padding-right:8px;">
+    <table width="100%" cellpadding="0" style="margin:0 0 6px;"><tr>
+      <td style="padding:5px 10px; background:#0D1B2A; border-left:4px solid #C9A96E;">
+        <span style="color:#C9A96E; font-size:7.5px; font-weight:900; text-transform:uppercase; letter-spacing:1.5px;">Art. 7 &mdash; Obligations du mandant</span>
+      </td>
+    </tr></table>
+    <ul style="font-size:8.5px;">
+      <li>Fournir toutes les informations exactes sur le bien et remettre les documents requis</li>
+      <li>Faciliter l&rsquo;acc&egrave;s au bien pour les visites organis&eacute;es par le Mandataire</li>
+      <li>Informer imm&eacute;diatement le Mandataire de toute offre directe de location re&ccedil;ue</li>
+    </ul>
+  </td>
+  <td width="2%" style="padding:0;">&nbsp;</td>
+  <td width="49%" style="vertical-align:top; padding-left:8px;">
+    <table width="100%" cellpadding="0" style="margin:0 0 6px;"><tr>
+      <td style="padding:5px 10px; background:#0D1B2A; border-left:4px solid #C9A96E;">
+        <span style="color:#C9A96E; font-size:7.5px; font-weight:900; text-transform:uppercase; letter-spacing:1.5px;">Art. 8 &mdash; Dispositions diverses</span>
+      </td>
+    </tr></table>
+    <p style="font-size:8.5px; line-height:1.5;">Le pr&eacute;sent contrat est soumis au droit marocain. En cas de litige, les parties s&rsquo;efforceront de trouver une solution amiable. &Agrave; d&eacute;faut, les tribunaux comp&eacute;tents de <strong>Casablanca</strong> seront seuls comp&eacute;tents.</p>
+  </td>
+</tr>
+</table>
+
+<!-- SIGNATURES -->
+<div style="height:2px; background:#C9A96E; margin-bottom:8px;"></div>
+<table width="100%" cellpadding="0">
+<tr>
+  <td width="47%" style="border:1px solid #dde3ec; padding:10px 12px; vertical-align:top;">
+    <div style="font-size:7.5px; font-weight:900; color:#0D1B2A; text-transform:uppercase; letter-spacing:0.5px; padding-bottom:5px; margin-bottom:8px; border-bottom:1px solid #e8edf2;">Le Mandant &mdash; Propri&eacute;taire</div>
+    <div style="font-size:7px; color:#64748b; margin-bottom:10px;">Fait &agrave; {% if d.fait_a_mandant %}{{ d.fait_a_mandant }}{% else %}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{% endif %}, le {% if d.date_mandant %}{{ d.date_mandant }}{% else %}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{% endif %}</div>
+    {% if d.client_signature %}<img src="{{ d.client_signature }}" style="max-height:45px; max-width:100%; display:block; margin-bottom:4px;">{% else %}<div style="height:45px; border-bottom:1px dashed #c4cdd9; margin-bottom:4px;"></div>{% endif %}
+  </td>
+  <td width="6%" style="padding:0; background:#F5F7FA; border-top:1px solid #dde3ec; border-bottom:1px solid #dde3ec; text-align:center; vertical-align:middle;">
+    <div style="color:#C9A96E; font-size:14px; font-weight:900; font-style:italic; letter-spacing:-1px; opacity:0.35;">YZ</div>
+  </td>
+  <td width="47%" style="border:1px solid #dde3ec; padding:10px 12px; vertical-align:top;">
+    <div style="font-size:7.5px; font-weight:900; color:#0D1B2A; text-transform:uppercase; letter-spacing:0.5px; padding-bottom:5px; margin-bottom:8px; border-bottom:1px solid #e8edf2;">Le Mandataire &mdash; Agence YALAZ</div>
+    <div style="font-size:7px; color:#64748b; margin-bottom:10px;">Fait &agrave; {% if d.fait_a_mandataire %}{{ d.fait_a_mandataire }}{% else %}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{% endif %}, le {% if d.date_mandataire %}{{ d.date_mandataire }}{% else %}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{% endif %}</div>
+    {% if d.agent_signature %}<img src="{{ d.agent_signature }}" style="max-height:45px; max-width:100%; display:block; margin-bottom:4px;">{% else %}<div style="height:45px; border-bottom:1px dashed #c4cdd9; margin-bottom:4px;"></div>{% endif %}
+  </td>
+</tr>
+</table>
+
+</div>
+
+<!-- FOOTER -->
+<table width="100%" cellpadding="0" style="background:#0D1B2A; border-top:2px solid #C9A96E; margin-top:8px;">
+<tr>
+  <td style="padding:7px 22px; color:#C9A96E; font-size:6.5px;">Boulevard de la Corniche, Casablanca &mdash; Maroc</td>
+  <td style="padding:7px; color:#4a6080; font-size:6.5px; text-align:center;">+212 648 707 583 &nbsp;&bull;&nbsp; yalaz-immo.com</td>
+  <td style="padding:7px 22px; color:#2a4060; font-size:6px; text-align:right; font-family:monospace;">{{ contract.reference }}</td>
+</tr>
+</table>
+
+</body>
+</html>

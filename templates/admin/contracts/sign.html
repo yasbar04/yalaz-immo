@@ -1,0 +1,150 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Signature — {{ contract.get_type_display }} — Yalaz{% endblock %}
+
+{% block content %}
+
+<div class="admin-prem-header">
+    <div class="container admin-header-inner">
+        <div>
+            <a href="{% url 'contracts_list' %}" class="admin-back-pill">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><path d="M15 18l-6-6 6-6"/></svg>
+                Contrats
+            </a>
+            <span class="eyebrow" style="display:block;margin-top:.5rem;">Étape 2 sur 2 — Récapitulatif &amp; Signature</span>
+            <h1>{{ contract.get_type_display }}</h1>
+        </div>
+        <div style="display:flex;align-items:center;gap:.75rem;">
+            <span style="display:inline-block;padding:.35rem .85rem;background:var(--bg-sand);border:1px solid var(--border-light);border-radius:var(--r-md);font-size:.8rem;font-weight:700;color:var(--muted);font-family:monospace;">{{ contract.reference }}</span>
+        </div>
+    </div>
+</div>
+
+<div class="container" style="padding-top:1.75rem;padding-bottom:3rem;max-width:860px;">
+
+    <!-- Récapitulatif -->
+    <div class="admin-panel-card" style="margin-bottom:1.5rem;">
+        <div class="admin-panel-head">
+            <div>
+                <span class="eyebrow" style="color:var(--gold);display:block;margin-bottom:.2rem;">Vérification</span>
+                <h2>Récapitulatif des informations</h2>
+            </div>
+            <a href="{% url 'contract_create' contract.type %}" style="font-size:.8rem;color:var(--muted);text-decoration:none;border:1px solid var(--border-light);padding:.35rem .8rem;border-radius:var(--r-md);">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12" style="margin-right:.3rem;"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                Modifier
+            </a>
+        </div>
+        <div style="padding:0 1.5rem 1.5rem;">
+            <div class="recap-grid">
+                {% for item in recap %}
+                <div class="recap-item">
+                    <span class="recap-label">{{ item.label }}</span>
+                    <span class="recap-value">{{ item.value }}</span>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Signature -->
+    <form method="post" id="sign-form">
+        {% csrf_token %}
+
+        <div class="admin-panel-card">
+            <div class="admin-panel-head">
+                <div>
+                    <span class="eyebrow" style="color:var(--gold);display:block;margin-bottom:.2rem;">Finalisation</span>
+                    <h2>Signatures</h2>
+                </div>
+            </div>
+            <div style="padding:0 1.5rem .75rem;">
+                <p style="font-size:.83rem;color:var(--muted);margin:0 0 1.25rem;line-height:1.55;">
+                    Renseignez le lieu et la date de signature, puis signez dans votre zone respective.
+                    Utilisez <strong>votre doigt</strong> sur mobile ou <strong>la souris</strong> sur ordinateur (cliquer-glisser).
+                </p>
+
+                {% if sign_config %}
+                <div class="cf-grid-2" style="margin-bottom:1.5rem;gap:1.25rem;">
+                    <div style="background:var(--bg-sand);border:1px solid var(--border-light);border-radius:var(--r-md);padding:1rem 1.1rem;">
+                        <p style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--gold-dark);margin:0 0 .75rem;">{{ sign_config.client.label }}</p>
+                        <div class="cf-grid-2" style="gap:.75rem;">
+                            <div class="cf-field">
+                                <label class="adm-label">Fait à</label>
+                                <input type="text" name="{{ sign_config.client.lieu }}" class="cf-input" placeholder="Casablanca">
+                            </div>
+                            <div class="cf-field">
+                                <label class="adm-label">Le</label>
+                                <input type="date" name="{{ sign_config.client.date }}" class="cf-input" title="Date de signature du client">
+                            </div>
+                        </div>
+                    </div>
+                    <div style="background:var(--bg-sand);border:1px solid var(--border-light);border-radius:var(--r-md);padding:1rem 1.1rem;">
+                        <p style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--gold-dark);margin:0 0 .75rem;">{{ sign_config.agent.label }}</p>
+                        <div class="cf-grid-2" style="gap:.75rem;">
+                            <div class="cf-field">
+                                <label class="adm-label">Fait à</label>
+                                <input type="text" name="{{ sign_config.agent.lieu }}" class="cf-input" placeholder="Casablanca">
+                            </div>
+                            <div class="cf-field">
+                                <label class="adm-label">Le</label>
+                                <input type="date" name="{{ sign_config.agent.date }}" class="cf-input" title="Date de signature de l'agent">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+
+                {% with client_sig_label=client_sig_label %}
+                {% include "admin/contracts/_signature_pad.html" %}
+                {% endwith %}
+            </div>
+            <div class="sign-actions-bar">
+                <button type="submit" class="sign-submit-btn" id="sign-submit">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="16" height="16"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><polyline points="7 13 9 15 13 11"/></svg>
+                    Signer &amp; Télécharger le PDF
+                </button>
+                <a href="{% url 'contracts_list' %}" class="sign-cancel-link">Annuler</a>
+            </div>
+        </div>
+
+    </form>
+
+</div>
+
+<style>
+.recap-grid {
+    display:grid;
+    grid-template-columns:repeat(auto-fill, minmax(220px, 1fr));
+    gap:.875rem 1.5rem;
+}
+.recap-item { display:flex; flex-direction:column; gap:.2rem; }
+.recap-label {
+    font-size:.68rem; font-weight:700; text-transform:uppercase;
+    letter-spacing:.07em; color:var(--muted);
+}
+.recap-value {
+    font-size:.9rem; color:var(--ink); font-weight:500;
+    word-break:break-word;
+}
+.sign-submit-btn {
+    display:inline-flex; align-items:center; gap:.6rem;
+    padding:.8rem 1.75rem;
+    background:var(--gold-dark); color:#fff;
+    border:none; border-radius:var(--r-md);
+    font-size:.9rem; font-weight:700;
+    font-family:inherit; cursor:pointer;
+    transition:background .15s;
+}
+.sign-submit-btn:hover { background:var(--gold); }
+.sign-actions-bar { display:flex; align-items:center; padding:1.25rem 1.5rem 1.5rem; border-top:1px solid var(--border-light); margin-top:.5rem; gap:1rem; }
+.sign-cancel-link { display:inline-flex; align-items:center; font-size:.85rem; color:var(--muted); text-decoration:none; }
+.sign-cancel-link:hover { color:var(--text); }
+@media(max-width:640px) {
+    .sign-actions-bar { flex-direction:column; align-items:stretch; }
+    .sign-submit-btn { width:100%; justify-content:center; min-height:48px; }
+    .sign-cancel-link { justify-content:center; padding:.5rem 0; }
+}
+</style>
+
+{% endblock %}

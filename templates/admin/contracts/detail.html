@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{{ contract.reference }} — Yalaz{% endblock %}
+
+{% block content %}
+<div class="admin-prem-header">
+    <div class="container admin-header-inner">
+        <div>
+            <a href="{% url 'contracts_list' %}" class="admin-back-pill">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><path d="M15 18l-6-6 6-6"/></svg>
+                Contrats
+            </a>
+            <span class="eyebrow" style="display:block;margin-top:.5rem;">{{ contract.get_type_display }}</span>
+            <h1>{{ contract.reference }}</h1>
+        </div>
+        <a href="{% url 'contract_pdf' contract.pk %}" class="btn-gold">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Télécharger le PDF
+        </a>
+    </div>
+</div>
+
+<div class="container" style="padding-top:2rem;padding-bottom:3rem;">
+
+    <!-- Meta info -->
+    <div style="display:flex;gap:.875rem;align-items:center;flex-wrap:wrap;margin-bottom:1.5rem;">
+        <span style="font-size:.8rem;color:var(--muted);">
+            Créé le {{ contract.created_at|date:"d/m/Y à H:i" }}
+            {% if contract.created_by %}
+            par <strong style="color:var(--ink);">{{ contract.created_by.get_full_name|default:contract.created_by.username }}</strong>
+            {% endif %}
+        </span>
+        <span style="display:inline-block;padding:.2rem .7rem;background:rgba(201,169,110,.1);border:1px solid rgba(201,169,110,.3);border-radius:4px;font-size:.75rem;font-weight:700;color:var(--gold-dark);">
+            {{ contract.get_type_display }}
+        </span>
+    </div>
+
+    <!-- Data grid -->
+    <div class="admin-panel-card" style="padding:1.5rem;">
+        <h2 style="font-size:1rem;font-weight:700;color:var(--ink);margin:0 0 1.25rem;">Données du document</h2>
+        <div class="adm-info-grid">
+            {% for key, value in contract.data.items %}
+            {% if value %}
+            <div>
+                <span class="adm-label">{{ key|title }}</span>
+                <span class="adm-value">{{ value }}</span>
+            </div>
+            {% endif %}
+            {% endfor %}
+        </div>
+        <div style="margin-top:1.5rem;padding-top:1.5rem;border-top:1px solid var(--border-light);display:flex;gap:.75rem;align-items:center;flex-wrap:wrap;">
+            <a href="{% url 'contract_pdf' contract.pk %}" class="btn-gold">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                Télécharger PDF
+            </a>
+            <a href="{% url 'contracts_list' %}" style="font-size:.85rem;color:var(--muted);text-decoration:none;padding:.6rem 1rem;border:1.5px solid var(--border);border-radius:var(--r-md);">
+                Retour à la liste
+            </a>
+            <a href="{% url 'contract_delete' contract.pk %}"
+               style="font-size:.85rem;color:#991b1b;text-decoration:none;margin-left:auto;"
+               onclick="return confirm('Supprimer ce document définitivement ?')">
+                Supprimer
+            </a>
+        </div>
+    </div>
+</div>
+
+<style>
+.adm-info-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(220px, 1fr)); gap:1rem; }
+.adm-label { display:block; font-size:.72rem; font-weight:700; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); margin-bottom:.25rem; }
+.adm-value { display:block; font-size:.9rem; color:var(--ink); font-weight:500; word-break:break-word; }
+.btn-gold { display:inline-flex; align-items:center; gap:.5rem; padding:.6rem 1.25rem; background:var(--gold-dark); color:#fff; border-radius:var(--r-md); font-size:.875rem; font-weight:700; text-decoration:none; transition:background .15s; }
+.btn-gold:hover { background:var(--gold); }
+</style>
+{% endblock %}

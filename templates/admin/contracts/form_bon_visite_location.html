@@ -1,0 +1,192 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Bon de visite — Location — Yalaz{% endblock %}
+
+{% block content %}
+<div class="admin-prem-header">
+    <div class="container admin-header-inner">
+        <div>
+            <a href="{% url 'contracts_list' %}" class="admin-back-pill">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><path d="M15 18l-6-6 6-6"/></svg>
+                Contrats
+            </a>
+            <span class="eyebrow" style="display:block;margin-top:.5rem;">Nouveau document</span>
+            <h1>Bon de visite — Location</h1>
+        </div>
+    </div>
+</div>
+
+<div class="container cf-wrap">
+    <form method="post" id="cf-form">
+        {% csrf_token %}
+        <div class="adm-layout">
+
+            <!-- MAIN -->
+            <div class="adm-main">
+
+                <!-- Section : Informations sur le bien -->
+                <div class="admin-panel-card" style="margin-bottom:1.25rem;">
+                    <div class="admin-panel-head">
+                        <div>
+                            <span class="eyebrow" style="color:var(--gold);display:block;margin-bottom:.2rem;">Section 1</span>
+                            <h2>Informations sur le bien</h2>
+                        </div>
+                    </div>
+                    <div style="padding:0 1.5rem 1.5rem;">
+                        <div class="cf-grid-2">
+                            <div class="cf-field">
+                                <label class="adm-label">{{ form.type_bien.label }} *</label>
+                                {{ form.type_bien }}
+                                {% if form.type_bien.errors %}<p class="tf-field-error">{{ form.type_bien.errors.0 }}</p>{% endif %}
+                            </div>
+                            <div class="cf-field">
+                                <label class="adm-label">{{ form.reference_bien.label }}</label>
+                                {{ form.reference_bien }}
+                            </div>
+                        </div>
+                        <div class="cf-field">
+                            <label class="adm-label">{{ form.adresse_bien.label }} *</label>
+                            {{ form.adresse_bien }}
+                            {% if form.adresse_bien.errors %}<p class="tf-field-error">{{ form.adresse_bien.errors.0 }}</p>{% endif %}
+                        </div>
+                        <div class="cf-grid-2">
+                            <div class="cf-field">
+                                <label class="adm-label">{{ form.ville_quartier.label }}</label>
+                                {{ form.ville_quartier }}
+                            </div>
+                            <div class="cf-field">
+                                <label class="adm-label">{{ form.meuble.label }}</label>
+                                {{ form.meuble }}
+                            </div>
+                        </div>
+                        <div class="cf-grid-2">
+                            <div class="cf-field">
+                                <label class="adm-label">{{ form.surface.label }}</label>
+                                {{ form.surface }}
+                            </div>
+                            <div class="cf-field">
+                                <label class="adm-label">{{ form.nb_pieces.label }}</label>
+                                {{ form.nb_pieces }}
+                            </div>
+                        </div>
+                        <div class="cf-field">
+                            <label class="adm-label">{{ form.etage.label }}</label>
+                            {{ form.etage }}
+                        </div>
+                        <div class="cf-grid-2">
+                            <div class="cf-field">
+                                <label class="adm-label">{{ form.loyer_mensuel.label }}</label>
+                                {{ form.loyer_mensuel }}
+                            </div>
+                            <div class="cf-field">
+                                <label class="adm-label">{{ form.charges_mensuelles.label }}</label>
+                                {{ form.charges_mensuelles }}
+                            </div>
+                        </div>
+                        <div class="cf-field">
+                            <label class="adm-label">{{ form.depot_garantie.label }}</label>
+                            {{ form.depot_garantie }}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section : Informations sur la visite -->
+                <div class="admin-panel-card" style="margin-bottom:1.25rem;">
+                    <div class="admin-panel-head">
+                        <div>
+                            <span class="eyebrow" style="color:var(--gold);display:block;margin-bottom:.2rem;">Section 2</span>
+                            <h2>Informations sur la visite</h2>
+                        </div>
+                    </div>
+                    <div style="padding:0 1.5rem 1.5rem;">
+                        <div class="cf-grid-2">
+                            <div class="cf-field">
+                                <label class="adm-label">{{ form.date_visite.label }} *</label>
+                                {{ form.date_visite }}
+                                {% if form.date_visite.errors %}<p class="tf-field-error">{{ form.date_visite.errors.0 }}</p>{% endif %}
+                            </div>
+                            <div class="cf-field">
+                                <label class="adm-label">{{ form.heure_visite.label }}</label>
+                                {{ form.heure_visite }}
+                            </div>
+                        </div>
+                        <div class="cf-grid-2">
+                            <div class="cf-field">
+                                <label class="adm-label">{{ form.agent_nom.label }} *</label>
+                                {{ form.agent_nom }}
+                                {% if form.agent_nom.errors %}<p class="tf-field-error">{{ form.agent_nom.errors.0 }}</p>{% endif %}
+                            </div>
+                            <div class="cf-field">
+                                <label class="adm-label">{{ form.agent_cin.label }}</label>
+                                {{ form.agent_cin }}
+                            </div>
+                        </div>
+                        <div class="cf-field">
+                            <label class="adm-label">{{ form.agent_telephone.label }}</label>
+                            {{ form.agent_telephone }}
+                        </div>
+                        <div class="cf-field">
+                            <label class="adm-label">{{ form.duree_visite.label }}</label>
+                            {{ form.duree_visite }}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section : Informations sur le visiteur -->
+                <div class="admin-panel-card" style="margin-bottom:1.25rem;">
+                    <div class="admin-panel-head">
+                        <div>
+                            <span class="eyebrow" style="color:var(--gold);display:block;margin-bottom:.2rem;">Section 3</span>
+                            <h2>Informations sur le visiteur</h2>
+                        </div>
+                    </div>
+                    <div style="padding:0 1.5rem 1.5rem;">
+                        <div class="cf-grid-2">
+                            <div class="cf-field">
+                                <label class="adm-label">{{ form.visiteur_nom_prenom.label }} *</label>
+                                {{ form.visiteur_nom_prenom }}
+                                {% if form.visiteur_nom_prenom.errors %}<p class="tf-field-error">{{ form.visiteur_nom_prenom.errors.0 }}</p>{% endif %}
+                            </div>
+                            <div class="cf-field">
+                                <label class="adm-label">{{ form.visiteur_telephone.label }} *</label>
+                                {{ form.visiteur_telephone }}
+                                {% if form.visiteur_telephone.errors %}<p class="tf-field-error">{{ form.visiteur_telephone.errors.0 }}</p>{% endif %}
+                            </div>
+                        </div>
+                        <div class="cf-field">
+                            <label class="adm-label">{{ form.visiteur_piece_identite.label }}</label>
+                            {{ form.visiteur_piece_identite }}
+                        </div>
+                        <div class="cf-field">
+                            <label class="adm-label">{{ form.visiteur_num_piece.label }}</label>
+                            {{ form.visiteur_num_piece }}
+                        </div>
+                    </div>
+                </div>
+
+
+            </div>
+
+            <!-- SIDEBAR -->
+            <div class="adm-sidebar">
+                <div class="tf-actions-bar">
+                    <div style="font-size:.8rem;color:var(--muted);line-height:1.5;">
+                        <strong style="color:var(--ink);display:block;margin-bottom:.4rem;">Bon de visite — Location</strong>
+                        Document établi lors de la visite d'un bien immobilier mis en location long terme. Engage le visiteur et l'agent.
+                    </div>
+                    <hr style="border:none;border-top:1px solid var(--border-light);margin:.25rem 0;">
+                    <button type="submit" class="tf-submit-btn">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="15" height="15"><polyline points="20 6 9 17 4 12"/></svg>
+                        Continuer vers la signature →
+                    </button>
+                    <a href="{% url 'contracts_list' %}" class="tf-cancel-btn">Annuler</a>
+                </div>
+            </div>
+
+        </div>
+    </form>
+</div>
+
+{% include "admin/contracts/_form_styles.html" %}
+{% endblock %}

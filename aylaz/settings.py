@@ -80,6 +80,7 @@ INSTALLED_APPS = [
     'apps.core',
     'apps.listings',
     'apps.api',
+    'apps.contracts',
 ]
 
 MIDDLEWARE = [
