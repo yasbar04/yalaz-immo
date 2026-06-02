@@ -12,4 +12,6 @@ redis==7.4.0
 sentry-sdk==2.58.0
 dj-database-url
 psycopg2-binary
+cloudinary
+django-cloudinary-storage
 xhtml2pdf
