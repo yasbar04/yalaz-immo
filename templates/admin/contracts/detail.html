@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load static %}
+{% load static contracts_tags %}
 
 {% block title %}{{ contract.reference }} — Yalaz{% endblock %}
 
@@ -41,14 +41,34 @@
         <h2 style="font-size:1rem;font-weight:700;color:var(--ink);margin:0 0 1.25rem;">Données du document</h2>
         <div class="adm-info-grid">
             {% for key, value in contract.data.items %}
-            {% if value %}
+            {% if value and key != 'client_signature' and key != 'agent_signature' %}
             <div>
                 <span class="adm-label">{{ key|title }}</span>
-                <span class="adm-value">{{ value }}</span>
+                <span class="adm-value">{{ value|fr_num }}</span>
             </div>
             {% endif %}
             {% endfor %}
         </div>
+
+        {% if contract.data.client_signature or contract.data.agent_signature %}
+        <div class="detail-sigs-wrap">
+            <p class="adm-label detail-sigs-title">Signatures</p>
+            <div class="detail-sigs-row">
+                {% if contract.data.client_signature %}
+                <div>
+                    <span class="adm-label detail-sig-label">Client / Mandant</span>
+                    <img src="{{ contract.data.client_signature }}" alt="Signature client" class="detail-sig-img">
+                </div>
+                {% endif %}
+                {% if contract.data.agent_signature %}
+                <div>
+                    <span class="adm-label detail-sig-label">Agent YALAZ</span>
+                    <img src="{{ contract.data.agent_signature }}" alt="Signature agent" class="detail-sig-img">
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
         <div style="margin-top:1.5rem;padding-top:1.5rem;border-top:1px solid var(--border-light);display:flex;gap:.75rem;align-items:center;flex-wrap:wrap;">
             <a href="{% url 'contract_pdf' contract.pk %}" class="btn-gold">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
@@ -72,5 +92,10 @@
 .adm-value { display:block; font-size:.9rem; color:var(--ink); font-weight:500; word-break:break-word; }
 .btn-gold { display:inline-flex; align-items:center; gap:.5rem; padding:.6rem 1.25rem; background:var(--gold-dark); color:#fff; border-radius:var(--r-md); font-size:.875rem; font-weight:700; text-decoration:none; transition:background .15s; }
 .btn-gold:hover { background:var(--gold); }
+.detail-sigs-wrap { margin-top:1.5rem; padding-top:1.5rem; border-top:1px solid var(--border-light); }
+.detail-sigs-title { margin-bottom:1rem; }
+.detail-sigs-row { display:flex; gap:1.5rem; flex-wrap:wrap; }
+.detail-sig-label { display:block; margin-bottom:.5rem; }
+.detail-sig-img { max-width:220px; max-height:100px; border:1px solid var(--border-light); border-radius:var(--r-md); background:#fff; padding:.5rem; }
 </style>
 {% endblock %}

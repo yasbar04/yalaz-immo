@@ -2,6 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
+{% load contracts_tags %}
 <title>Bon de visite &mdash; Vente &mdash; {{ contract.reference }}</title>
 <style>
 @page { size: A4; margin: 0; }
@@ -121,7 +122,7 @@ li { margin-bottom: 3px; line-height: 1.4; }
 <tr><td style="padding:5px 10px; background:#0D1B2A; border-left:4px solid #C9A96E;">
   <span style="color:#C9A96E; font-size:7.5px; font-weight:900; text-transform:uppercase; letter-spacing:1.5px;">Art. 2 &mdash; Honoraires d&rsquo;agence</span>
 </td></tr></table>
-<p style="font-size:8.5px; margin-bottom:10px;">Les honoraires de l&rsquo;agence YALAZ sont dus d&egrave;s lors qu&rsquo;une offre d&rsquo;achat est accept&eacute;e ou qu&rsquo;un acte de vente est sign&eacute;, directement ou indirectement, suite &agrave; la pr&eacute;sentation du bien ci-dessous. {% if d.remuneration_type == 'percentage' %}Honoraires&nbsp;: <strong>{{ d.remuneration_percentage|default:"" }}&nbsp;% TTC</strong> du prix de vente.{% elif d.remuneration_type == 'forfait' %}Honoraires&nbsp;: <strong>{{ d.remuneration_forfait|default:"" }}&nbsp;MAD TTC</strong>.{% else %}Leur montant sera pr&eacute;cis&eacute; lors du compromis de vente.{% endif %}</p>
+<p style="font-size:8.5px; margin-bottom:10px;">Les honoraires de l&rsquo;agence YALAZ sont dus d&egrave;s lors qu&rsquo;une offre d&rsquo;achat est accept&eacute;e ou qu&rsquo;un acte de vente est sign&eacute;, directement ou indirectement, suite &agrave; la pr&eacute;sentation du bien ci-dessous. {% if d.remuneration_type == 'percentage' %}Honoraires&nbsp;: <strong>{{ d.remuneration_percentage|default:"" }}&nbsp;% TTC</strong> du prix de vente.{% elif d.remuneration_type == 'forfait' %}Honoraires&nbsp;: <strong>{{ d.remuneration_forfait|fr_num|default:"" }}&nbsp;MAD TTC</strong>.{% else %}Leur montant sera pr&eacute;cis&eacute; lors du compromis de vente.{% endif %}</p>
 
 <!-- SIGNATURES -->
 <div style="height:2px; background:#C9A96E; margin-bottom:8px;"></div>

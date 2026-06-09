@@ -2,6 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
+{% load contracts_tags %}
 <title>Bon de visite &mdash; Location &mdash; {{ contract.reference }}</title>
 <style>
 @page { size: A4; margin: 0; }
@@ -122,8 +123,8 @@ li { margin-bottom: 3px; line-height: 1.4; }
   <td width="2%" style="padding:0;">&nbsp;</td>
   <td width="49%" style="vertical-align:top; padding-left:8px;">
     <table width="100%" cellpadding="0">
-      <tr><td style="padding:3px 6px 3px 0; font-size:7.5px; font-weight:700; color:#64748b; border-bottom:1px solid #e8edf2; white-space:nowrap; width:42%;">Loyer mensuel</td><td style="padding:3px 0; font-size:8.5px; font-weight:700; color:#0D1B2A; border-bottom:1px solid #e8edf2;">{{ d.loyer_mensuel|default:"" }}{% if d.loyer_mensuel %}&nbsp;MAD/mois{% endif %}</td></tr>
-      <tr><td style="padding:3px 6px 3px 0; font-size:7.5px; font-weight:700; color:#64748b; border-bottom:1px solid #e8edf2; white-space:nowrap;">Charges mens.</td><td style="padding:3px 0; font-size:8.5px; color:#1E2B3C; border-bottom:1px solid #e8edf2;">{{ d.charges_mensuelles|default:"" }}{% if d.charges_mensuelles %}&nbsp;MAD{% endif %}</td></tr>
+      <tr><td style="padding:3px 6px 3px 0; font-size:7.5px; font-weight:700; color:#64748b; border-bottom:1px solid #e8edf2; white-space:nowrap; width:42%;">Loyer mensuel</td><td style="padding:3px 0; font-size:8.5px; font-weight:700; color:#0D1B2A; border-bottom:1px solid #e8edf2;">{{ d.loyer_mensuel|fr_num|default:"" }}{% if d.loyer_mensuel %}&nbsp;MAD/mois{% endif %}</td></tr>
+      <tr><td style="padding:3px 6px 3px 0; font-size:7.5px; font-weight:700; color:#64748b; border-bottom:1px solid #e8edf2; white-space:nowrap;">Charges mens.</td><td style="padding:3px 0; font-size:8.5px; color:#1E2B3C; border-bottom:1px solid #e8edf2;">{{ d.charges_mensuelles|fr_num|default:"" }}{% if d.charges_mensuelles %}&nbsp;MAD{% endif %}</td></tr>
       <tr><td style="padding:3px 6px 3px 0; font-size:7.5px; font-weight:700; color:#64748b; border-bottom:1px solid #e8edf2; white-space:nowrap;">Date de visite</td><td style="padding:3px 0; font-size:8.5px; color:#1E2B3C; border-bottom:1px solid #e8edf2;">{{ d.date_visite|default:"" }}</td></tr>
       <tr><td style="padding:3px 6px 3px 0; font-size:7.5px; font-weight:700; color:#64748b; white-space:nowrap;">Heure</td><td style="padding:3px 0; font-size:8.5px; color:#1E2B3C;">{{ d.heure_visite|default:"" }}</td></tr>
     </table>

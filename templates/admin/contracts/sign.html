@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load static %}
+{% load static contracts_tags %}
 
 {% block title %}Signature — {{ contract.get_type_display }} — Yalaz{% endblock %}
 
@@ -40,7 +40,7 @@
                 {% for item in recap %}
                 <div class="recap-item">
                     <span class="recap-label">{{ item.label }}</span>
-                    <span class="recap-value">{{ item.value }}</span>
+                    <span class="recap-value">{{ item.value|fr_num }}</span>
                 </div>
                 {% endfor %}
             </div>
@@ -66,8 +66,8 @@
                     <div class="sign-clause-title">{{ clause.title }}</div>
                     <div class="sign-clause-body">
                         {% if clause.body %}<p>{{ clause.body }}</p>{% endif %}
-                        {% if clause.items %}
-                        <ul>{% for item in clause.items %}<li>{{ item }}</li>{% endfor %}</ul>
+                        {% if clause.bullets %}
+                        <ul>{% for bullet in clause.bullets %}<li>{{ bullet }}</li>{% endfor %}</ul>
                         {% endif %}
                     </div>
                 </div>

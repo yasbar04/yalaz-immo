@@ -19,7 +19,7 @@ CONTRACT_CLAUSES = {
         {
             'title': 'Art. 3 — Mission du mandataire',
             'body': "Le Mandant confie au Mandataire, qui l'accepte, la mission de commercialiser à la vente le bien immobilier désigné ci-dessus. Le Mandataire s'engage à :",
-            'items': [
+            'bullets': [
                 "Rechercher des acquéreurs potentiels et diffuser le bien sur ses supports marketing",
                 "Organiser les visites et négocier avec les acquéreurs",
                 "Accompagner les parties jusqu'à la signature finale chez le notaire",
@@ -31,7 +31,7 @@ CONTRACT_CLAUSES = {
         },
         {
             'title': 'Art. 7 — Obligations du mandant',
-            'items': [
+            'bullets': [
                 "Fournir des informations exactes sur le bien et remettre les documents nécessaires",
                 "Faciliter l'accès au bien pour les visites organisées",
                 "Informer immédiatement le Mandataire de toute offre directe reçue",
@@ -46,7 +46,7 @@ CONTRACT_CLAUSES = {
         {
             'title': 'Art. 3 — Mission du mandataire',
             'body': "Le Mandant confie au Mandataire, qui l'accepte, la mission de rechercher un locataire pour le bien immobilier désigné ci-dessus. Le Mandataire s'engage à :",
-            'items': [
+            'bullets': [
                 "Diffuser l'annonce du bien sur ses supports marketing et plateformes en ligne",
                 "Sélectionner les candidats locataires et vérifier leur solvabilité",
                 "Organiser les visites et accompagner les parties jusqu'à la signature du bail",
@@ -58,7 +58,7 @@ CONTRACT_CLAUSES = {
         },
         {
             'title': 'Art. 7 — Obligations du mandant',
-            'items': [
+            'bullets': [
                 "Fournir toutes les informations exactes sur le bien et remettre les documents requis",
                 "Faciliter l'accès au bien pour les visites organisées par le Mandataire",
                 "Informer immédiatement le Mandataire de toute candidature directe reçue",
@@ -73,7 +73,7 @@ CONTRACT_CLAUSES = {
         {
             'title': 'Art. 3 — Objet du mandat',
             'body': "Le Mandant confie au Mandataire, qui l'accepte, la mission exclusive de rechercher pour son compte un bien immobilier correspondant aux critères définis ci-après. Le Mandataire s'engage à :",
-            'items': [
+            'bullets': [
                 "Prospecter activement le marché immobilier selon les critères définis par le Mandant",
                 "Sélectionner et présenter au Mandant les biens correspondant à son cahier des charges",
                 "Organiser les visites et négocier les conditions d'acquisition au nom du Mandant",
@@ -86,7 +86,7 @@ CONTRACT_CLAUSES = {
         },
         {
             'title': 'Art. 7 — Obligations du mandant',
-            'items': [
+            'bullets': [
                 "Communiquer au Mandataire toutes informations utiles à la recherche (budget, critères, délais)",
                 "Informer immédiatement le Mandataire de toute offre ou découverte directe de bien",
                 "Ne pas conclure d'opération immobilière sans en informer préalablement le Mandataire",
@@ -101,7 +101,7 @@ CONTRACT_CLAUSES = {
         {
             'title': 'Art. 1 — Engagement du visiteur',
             'body': "Le soussigné (ci-après « le Visiteur ») reconnaît avoir visité le bien immobilier désigné ci-dessus par l'intermédiaire de l'agence YALAZ. Ce bon de visite atteste que la découverte de ce bien résulte exclusivement de l'action de l'agence.",
-            'items': [
+            'bullets': [
                 "Le Visiteur s'engage à ne pas traiter directement avec le propriétaire sans l'intermédiaire de YALAZ",
                 "Toute acquisition réalisée dans les 24 mois suivant la visite donnera lieu au paiement des honoraires",
                 "Ce document vaut preuve de la présentation du bien par l'agence YALAZ",
@@ -116,7 +116,7 @@ CONTRACT_CLAUSES = {
         {
             'title': 'Art. 1 — Engagement du visiteur',
             'body': "Le soussigné (ci-après « le Visiteur ») reconnaît avoir visité le bien immobilier désigné ci-dessus par l'intermédiaire de l'agence YALAZ. Ce bon de visite atteste que la découverte de ce bien résulte exclusivement de l'action de l'agence.",
-            'items': [
+            'bullets': [
                 "Le Visiteur s'engage à ne pas traiter directement avec le propriétaire sans l'intermédiaire de YALAZ",
                 "Toute location réalisée dans les 12 mois suivant la visite donnera lieu au paiement des honoraires",
                 "Ce document vaut preuve de la présentation du bien par l'agence YALAZ",

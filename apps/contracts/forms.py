@@ -20,6 +20,19 @@ def text_widget(placeholder=''):
 def number_widget(placeholder=''):
     return forms.NumberInput(attrs={'class': 'form-control', 'placeholder': placeholder, 'min': '0'})
 
+def price_widget(placeholder='Ex : 600 000'):
+    return forms.TextInput(attrs={
+        'class': 'form-control js-price', 'placeholder': placeholder,
+        'inputmode': 'numeric', 'autocomplete': 'off',
+    })
+
+
+class PriceField(forms.DecimalField):
+    def to_python(self, value):
+        if isinstance(value, str):
+            value = value.replace(' ', '').replace(' ', '')
+        return super().to_python(value)
+
 def select_widget():
     return forms.Select(attrs={'class': 'form-control'})
 
@@ -49,8 +62,8 @@ class BonVisiteVenteForm(forms.Form):
                                                 widget=select_widget(), required=False)
     remuneration_percentage = forms.DecimalField(label='Pourcentage (%)', max_digits=5, decimal_places=2,
                                                  required=False, widget=number_widget('Ex : 2.5'))
-    remuneration_forfait    = forms.DecimalField(label='Forfait (MAD)', max_digits=12, decimal_places=2,
-                                                 required=False, widget=number_widget('Ex : 50000'))
+    remuneration_forfait    = PriceField(label='Forfait (MAD)', max_digits=12, decimal_places=2,
+                                                 required=False, widget=price_widget())
 
     # Lieu & date
     fait_a_prospect        = forms.CharField(label='Fait à (Prospect)', widget=text_widget('Casablanca'), required=False)
@@ -72,12 +85,12 @@ class BonVisiteLocationForm(forms.Form):
     nb_pieces           = forms.CharField(label='Nombre de pièces', widget=text_widget(), required=False)
     etage               = forms.CharField(label='Étage', widget=text_widget(), required=False)
     meuble              = forms.ChoiceField(label='Meublé', choices=MEUBLE_CHOICES, widget=select_widget(), required=False)
-    loyer_mensuel       = forms.DecimalField(label='Loyer mensuel (MAD)', max_digits=12, decimal_places=2,
-                                             required=False, widget=number_widget())
-    charges_mensuelles  = forms.DecimalField(label='Charges mensuelles (MAD)', max_digits=12, decimal_places=2,
-                                             required=False, widget=number_widget())
-    depot_garantie      = forms.DecimalField(label='Dépôt de garantie (MAD)', max_digits=12, decimal_places=2,
-                                             required=False, widget=number_widget())
+    loyer_mensuel       = PriceField(label='Loyer mensuel (MAD)', max_digits=12, decimal_places=2,
+                                             required=False, widget=price_widget())
+    charges_mensuelles  = PriceField(label='Charges mensuelles (MAD)', max_digits=12, decimal_places=2,
+                                             required=False, widget=price_widget('Ex : 500'))
+    depot_garantie      = PriceField(label='Dépôt de garantie (MAD)', max_digits=12, decimal_places=2,
+                                             required=False, widget=price_widget())
 
     # Section 2 — Visite & Agent
     date_visite         = forms.DateField(label='Date de la visite', widget=date_widget(), initial=timezone.now().date)
@@ -122,8 +135,8 @@ class MandatVenteForm(forms.Form):
     bien_adresse        = forms.CharField(label='Adresse du bien', widget=text_widget())
     bien_surface        = forms.CharField(label='Surface (m²)', widget=text_widget(), required=False)
     bien_titre_foncier  = forms.CharField(label='Titre foncier', widget=text_widget(), required=False)
-    prix_net_vendeur    = forms.DecimalField(label='Prix net vendeur souhaité (MAD)', max_digits=15, decimal_places=2,
-                                             required=False, widget=number_widget())
+    prix_net_vendeur    = PriceField(label='Prix net vendeur souhaité (MAD)', max_digits=15, decimal_places=2,
+                                             required=False, widget=price_widget())
 
     # Section 4 — Durée
     duree_mois = forms.IntegerField(label='Durée du mandat (mois)', min_value=1,
@@ -134,8 +147,8 @@ class MandatVenteForm(forms.Form):
                                                 widget=select_widget(), required=False)
     remuneration_percentage = forms.DecimalField(label='Pourcentage (%)', max_digits=5, decimal_places=2,
                                                  required=False, widget=number_widget('Ex : 2.5'))
-    remuneration_forfait    = forms.DecimalField(label='Forfait (MAD)', max_digits=12, decimal_places=2,
-                                                 required=False, widget=number_widget())
+    remuneration_forfait    = PriceField(label='Forfait (MAD)', max_digits=12, decimal_places=2,
+                                                 required=False, widget=price_widget())
 
     # Section 6 — Exclusivité
     exclusivite = forms.ChoiceField(label='Exclusivité', choices=EXCLUSIVITE_CHOICES, widget=select_widget())
@@ -168,8 +181,8 @@ class MandatLocationForm(forms.Form):
     bien_surface            = forms.CharField(label='Surface (m²)', widget=text_widget(), required=False)
     bien_etage              = forms.CharField(label='Étage / N°', widget=text_widget(), required=False)
     bien_etat_equipements   = forms.CharField(label='État / Équipements', widget=text_widget(), required=False)
-    loyer_mensuel_souhaite  = forms.DecimalField(label='Loyer mensuel souhaité (MAD)', max_digits=12,
-                                                 decimal_places=2, required=False, widget=number_widget())
+    loyer_mensuel_souhaite  = PriceField(label='Loyer mensuel souhaité (MAD)', max_digits=12,
+                                                 decimal_places=2, required=False, widget=price_widget())
 
     # Section 5 — Durée
     duree_mois = forms.IntegerField(label='Durée du mandat (mois)', min_value=1,
@@ -204,8 +217,8 @@ class MandatRechercheForm(forms.Form):
     type_bien_recherche  = forms.CharField(label='Type de bien recherché', widget=text_widget())
     localisation_souhaitee = forms.CharField(label='Localisation souhaitée', widget=text_widget())
     surface_minimum      = forms.CharField(label='Surface minimum (m²)', widget=text_widget(), required=False)
-    budget               = forms.DecimalField(label='Budget indicatif (MAD)', max_digits=15, decimal_places=2,
-                                              required=False, widget=number_widget())
+    budget               = PriceField(label='Budget indicatif (MAD)', max_digits=15, decimal_places=2,
+                                              required=False, widget=price_widget())
     nb_pieces            = forms.CharField(label='Nombre de pièces', widget=text_widget(), required=False)
     autres_criteres      = forms.CharField(label='Autres critères / précisions', widget=textarea_widget(2), required=False)
 
@@ -218,8 +231,8 @@ class MandatRechercheForm(forms.Form):
     # Section 6 — Rémunération
     remuneration_percentage = forms.DecimalField(label='Pourcentage (%)', max_digits=5, decimal_places=2,
                                                  required=False, widget=number_widget('Ex : 2.5'))
-    remuneration_forfait    = forms.DecimalField(label='Forfait MAD TTC', max_digits=12, decimal_places=2,
-                                                 required=False, widget=number_widget())
+    remuneration_forfait    = PriceField(label='Forfait MAD TTC', max_digits=12, decimal_places=2,
+                                                 required=False, widget=price_widget())
 
     # Section 7 — Exclusivité
     exclusivite = forms.ChoiceField(label='Exclusivité', choices=EXCLUSIVITE_CHOICES, widget=select_widget())

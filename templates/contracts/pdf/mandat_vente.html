@@ -2,6 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
+{% load contracts_tags %}
 <title>Mandat de vente &mdash; {{ contract.reference }}</title>
 <style>
 @page { size: A4; margin: 0; }
@@ -122,10 +123,10 @@ li { margin-bottom: 3px; line-height: 1.4; }
   <td width="2%" style="padding:0;">&nbsp;</td>
   <td width="49%" style="vertical-align:top; padding-left:8px;">
     <table width="100%" cellpadding="0">
-      <tr><td style="padding:3px 6px 3px 0; font-size:7.5px; font-weight:700; color:#64748b; border-bottom:1px solid #e8edf2; white-space:nowrap; width:42%;">Prix net vendeur</td><td style="padding:3px 0; font-size:8.5px; font-weight:700; color:#0D1B2A; border-bottom:1px solid #e8edf2;">{{ d.prix_net_vendeur|default:"" }}{% if d.prix_net_vendeur %}&nbsp;MAD{% endif %}</td></tr>
+      <tr><td style="padding:3px 6px 3px 0; font-size:7.5px; font-weight:700; color:#64748b; border-bottom:1px solid #e8edf2; white-space:nowrap; width:42%;">Prix net vendeur</td><td style="padding:3px 0; font-size:8.5px; font-weight:700; color:#0D1B2A; border-bottom:1px solid #e8edf2;">{{ d.prix_net_vendeur|fr_num|default:"" }}{% if d.prix_net_vendeur %}&nbsp;MAD{% endif %}</td></tr>
       <tr><td style="padding:3px 6px 3px 0; font-size:7.5px; font-weight:700; color:#64748b; border-bottom:1px solid #e8edf2; white-space:nowrap;">Dur&eacute;e du mandat</td><td style="padding:3px 0; font-size:8.5px; color:#1E2B3C; border-bottom:1px solid #e8edf2;">{{ d.duree_mois|default:"" }}{% if d.duree_mois %}&nbsp;mois{% endif %}</td></tr>
       <tr><td style="padding:3px 6px 3px 0; font-size:7.5px; font-weight:700; color:#64748b; border-bottom:1px solid #e8edf2; white-space:nowrap;">Exclusivit&eacute;</td><td style="padding:3px 0; font-size:8.5px; color:#1E2B3C; border-bottom:1px solid #e8edf2;">{{ d.exclusivite|default:"" }}</td></tr>
-      <tr><td style="padding:3px 6px 3px 0; font-size:7.5px; font-weight:700; color:#64748b; white-space:nowrap;">R&eacute;mun&eacute;ration</td><td style="padding:3px 0; font-size:8.5px; font-weight:700; color:#C9A96E;">{% if d.remuneration_type == 'percentage' %}{{ d.remuneration_percentage|default:"" }}&nbsp;% TTC{% elif d.remuneration_type == 'forfait' %}{{ d.remuneration_forfait|default:"" }}&nbsp;MAD TTC{% else %}Voir conditions{% endif %}</td></tr>
+      <tr><td style="padding:3px 6px 3px 0; font-size:7.5px; font-weight:700; color:#64748b; white-space:nowrap;">R&eacute;mun&eacute;ration</td><td style="padding:3px 0; font-size:8.5px; font-weight:700; color:#C9A96E;">{% if d.remuneration_type == 'percentage' %}{{ d.remuneration_percentage|default:"" }}&nbsp;% TTC{% elif d.remuneration_type == 'forfait' %}{{ d.remuneration_forfait|fr_num|default:"" }}&nbsp;MAD TTC{% else %}Voir conditions{% endif %}</td></tr>
     </table>
   </td>
 </tr>

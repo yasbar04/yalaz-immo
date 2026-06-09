@@ -15,4 +15,28 @@
 .tf-cancel-btn:hover { border-color:var(--text); color:var(--text); }
 .tf-field-error { font-size:.78rem; color:#dc2626; margin:0; }
 .adm-main { min-width:0; }
+.price-hint { font-size:.72rem; color:var(--muted); margin-top:.2rem; min-height:.9rem; display:block; }
 </style>
+<script>
+(function(){
+  function frNum(n){return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g,' ');}
+  document.querySelectorAll('.js-price').forEach(function(inp){
+    var hint=document.createElement('span');
+    hint.className='price-hint';
+    inp.parentNode.appendChild(hint);
+    function update(){
+      var raw=inp.value.replace(/[\s ]/g,'');
+      var n=parseInt(raw,10);
+      hint.textContent=isNaN(n)?'':frNum(n)+' MAD';
+    }
+    inp.addEventListener('input',update);
+    update();
+  });
+  var form=document.querySelector('form');
+  if(form){form.addEventListener('submit',function(){
+    document.querySelectorAll('.js-price').forEach(function(inp){
+      inp.value=inp.value.replace(/[\s ]/g,'');
+    });
+  });}
+})();
+</script>
