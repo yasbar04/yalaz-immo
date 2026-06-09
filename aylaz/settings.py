@@ -375,4 +375,3 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Allowed to run without CSRF in specific cases (e.g., API requests with auth tokens)
 CSRF_FAILURE_VIEW = 'apps.core.views.csrf_failure'
-CSRF_USE_SESSIONS = True
