@@ -47,6 +47,36 @@
         </div>
     </div>
 
+    <!-- Clauses du contrat -->
+    {% if clauses %}
+    <div class="admin-panel-card" style="margin-bottom:1.5rem;">
+        <div class="admin-panel-head">
+            <div>
+                <span class="eyebrow" style="color:var(--gold);display:block;margin-bottom:.2rem;">À lire avant de signer</span>
+                <h2>Conditions du contrat</h2>
+            </div>
+        </div>
+        <div style="padding:0 1.5rem 1.5rem;">
+            <p style="font-size:.8rem;color:var(--muted);margin:0 0 1.25rem;line-height:1.55;">
+                Les clauses ci-dessous figurent intégralement dans le document PDF qui sera généré.
+            </p>
+            <div class="sign-clauses">
+                {% for clause in clauses %}
+                <div class="sign-clause">
+                    <div class="sign-clause-title">{{ clause.title }}</div>
+                    <div class="sign-clause-body">
+                        {% if clause.body %}<p>{{ clause.body }}</p>{% endif %}
+                        {% if clause.items %}
+                        <ul>{% for item in clause.items %}<li>{{ item }}</li>{% endfor %}</ul>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
     <!-- Signature -->
     <form method="post" id="sign-form">
         {% csrf_token %}
@@ -137,6 +167,27 @@
     transition:background .15s;
 }
 .sign-submit-btn:hover { background:var(--gold); }
+
+/* ── Clauses ── */
+.sign-clauses { display:flex; flex-direction:column; gap:.875rem; }
+.sign-clause { border:1px solid var(--border-light); border-radius:var(--r-md); overflow:hidden; }
+.sign-clause-title {
+    padding:.6rem 1rem;
+    background:var(--ink); color:var(--gold);
+    font-size:.72rem; font-weight:700;
+    text-transform:uppercase; letter-spacing:.07em;
+}
+.sign-clause-body { padding:.875rem 1rem; }
+.sign-clause-body p { font-size:.84rem; color:var(--text); line-height:1.65; margin:0 0 .5rem; }
+.sign-clause-body p:last-child { margin-bottom:0; }
+.sign-clause-body ul { margin:.25rem 0 0; padding-left:1.25rem; }
+.sign-clause-body li { font-size:.84rem; color:var(--text); line-height:1.65; margin-bottom:.25rem; }
+@media(max-width:640px) {
+    .sign-clause-title { font-size:.68rem; padding:.55rem .875rem; }
+    .sign-clause-body { padding:.75rem .875rem; }
+    .sign-clause-body p, .sign-clause-body li { font-size:.82rem; }
+}
+
 .sign-actions-bar { display:flex; align-items:center; padding:1.25rem 1.5rem 1.5rem; border-top:1px solid var(--border-light); margin-top:.5rem; gap:1rem; }
 .sign-cancel-link { display:inline-flex; align-items:center; font-size:.85rem; color:var(--muted); text-decoration:none; }
 .sign-cancel-link:hover { color:var(--text); }
